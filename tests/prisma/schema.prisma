@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique @db.VarChar(50)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  displayName  String?  @map("display_name") @db.VarChar(100)
+  bio          String?  @db.Text
+  avatarUrl    String?  @map("avatar_url") @db.Text
+  isVerified   Boolean  @default(false) @map("is_verified")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+  lastLogin    DateTime? @map("last_login") @db.Timestamptz()
+
+  // Relations
+  stories      Story[]
+  ratings      Rating[]
+  comments     Comment[]
+  playSessions PlaySession[]
+  followers    UserFollow[] @relation("UserFollows")
+  following    UserFollow[] @relation("UserFollowing")
+  bookmarks    StoryBookmark[]
+
+  @@map("users")
+}
+
+model Story {
+  id                String    @id @default(uuid())
+  authorId          String    @map("author_id")
+  author            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title             String    @db.VarChar(255)
+  description       String?   @db.Text
+  coverImageUrl     String?   @map("cover_image_url") @db.Text
+  category          String?   @db.VarChar(50)
+  tags              String[]  @db.Text
+  isPublished       Boolean   @default(false) @map("is_published")
+  isFeatured        Boolean   @default(false) @map("is_featured")
+  visibility        String    @default("public") @db.VarChar(20)
+  contentRating     String    @default("general") @map("content_rating") @db.VarChar(10)
+  estimatedDuration Int?      @map("estimated_duration")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+  publishedAt       DateTime? @map("published_at") @db.Timestamptz()
+
+  // Relations
+  chapters     Chapter[]
+  nodes        Node[]
+  variables    StoryVariable[]
+  items        Item[]
+  ratings      Rating[]
+  comments     Comment[]
+  playSessions PlaySession[]
+  bookmarks    StoryBookmark[]
+
+  @@map("stories")
+}
+
+model Chapter {
+  id          String   @id @default(uuid())
+  storyId     String   @map("story_id")
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  chapterOrder Int     @map("chapter_order")
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  nodes Node[]
+
+  @@unique([storyId, chapterOrder])
+  @@map("chapters")
+}
+
+model Node {
+  id        String   @id @default(uuid())
+  storyId   String   @map("story_id")
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  chapterId String?  @map("chapter_id")
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  nodeType  String   @default("story") @map("node_type") @db.VarChar(20)
+  title     String   @db.VarChar(255)
+  content   Json     @db.JsonB
+  position  Json     @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  fromChoices Choice[] @relation("ChoiceFrom")
+  toChoices   Choice[] @relation("ChoiceTo")
+
+  @@map("nodes")
+}
+
+model Choice {
+  id          String   @id @default(uuid())
+  fromNodeId  String   @map("from_node_id")
+  fromNode    Node     @relation("ChoiceFrom", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNodeId    String   @map("to_node_id")
+  toNode      Node     @relation("ChoiceTo", fields: [toNodeId], references: [id], onDelete: Cascade)
+  choiceText  String   @map("choice_text") @db.Text
+  conditions  Json?    @db.JsonB
+  effects     Json?    @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  analytics ChoiceAnalytics[]
+
+  @@map("choices")
+}
+
+model StoryVariable {
+  id         String @id @default(uuid())
+  storyId    String @map("story_id")
+  story      Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  variableName String @map("variable_name") @db.VarChar(100)
+  variableType String @default("boolean") @map("variable_type") @db.VarChar(20)
+  defaultValue Json? @map("default_value") @db.JsonB
+
+  @@unique([storyId, variableName])
+  @@map("story_variables")
+}
+
+model Item {
+  id       String @id @default(uuid())
+  storyId  String @map("story_id")
+  story    Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  itemName String @map("item_name") @db.VarChar(100)
+  description String? @db.Text
+  imageUrl String? @map("image_url") @db.Text
+
+  @@unique([storyId, itemName])
+  @@map("items")
+}
+
+model PlaySession {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storyId     String   @map("story_id")
+  story       Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  currentNodeId String? @map("current_node_id")
+  gameState   Json     @map("game_state") @db.JsonB
+  isCompleted Boolean  @default(false) @map("is_completed")
+  startedAt   DateTime @default(now()) @map("started_at") @db.Timestamptz()
+  completedAt DateTime? @map("completed_at") @db.Timestamptz()
+  lastPlayedAt DateTime @updatedAt @map("last_played_at") @db.Timestamptz()
+
+  // Relations
+  analytics ChoiceAnalytics[]
+
+  @@map("play_sessions")
+}
+
+model ChoiceAnalytics {
+  id        String     @id @default(uuid())
+  choiceId  String     @map("choice_id")
+  choice    Choice     @relation(fields: [choiceId], references: [id], onDelete: Cascade)
+  sessionId String     @map("session_id")
+  session   PlaySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  selectedAt DateTime   @default(now()) @map("selected_at") @db.Timestamptz()
+
+  @@map("choice_analytics")
+}
+
+model Rating {
+  id     String @id @default(uuid())
+  storyId String @map("story_id")
+  story  Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating Int
+  review String? @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@unique([storyId, userId])
+  @@map("ratings")
+}
+
+model Comment {
+  id            String   @id @default(uuid())
+  storyId       String   @map("story_id")
+  story         Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  userId        String   @map("user_id")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentCommentId String? @map("parent_comment_id")
+  parentComment Comment? @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  content       String   @db.Text
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  replies Comment[] @relation("CommentReplies")
+
+  @@map("comments")
+}
+
+model UserFollow {
+  id          String @id @default(uuid())
+  followerId  String @map("follower_id")
+  follower    User   @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String @map("following_id")
+  following   User   @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@unique([followerId, followingId])
+  @@map("user_follows")
+}
+
+model StoryBookmark {
+  id       String  @id @default(uuid())
+  userId   String  @map("user_id")
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storyId  String  @map("story_id")
+  story    Story   @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@unique([userId, storyId])
+  @@map("story_bookmarks")
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  fileName  String   @map("file_name") @db.VarChar(255)
+  fileUrl   String   @map("file_url") @db.Text
+  fileType  String   @map("file_type") @db.VarChar(50)
+  fileSize  Int      @map("file_size")
+  uploadedBy String  @map("uploaded_by")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("assets")
+}

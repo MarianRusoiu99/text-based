@@ -1,0 +1,150 @@
+import { useAuthStore } from '../stores/authStore';
+
+const API_BASE_URL = 'http://localhost:3000';
+
+interface RegisterData {
+  username: string;
+  email: string;
+  password: string;
+  displayName?: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    user: {
+      id: string;
+      username: string;
+      email: string;
+      displayName?: string;
+    };
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
+interface UpdateProfileData {
+  displayName?: string;
+  bio?: string;
+  avatarUrl?: string;
+}
+
+interface ProfileResponse {
+  success: boolean;
+  data: {
+    id: string;
+    username: string;
+    email: string;
+    displayName?: string;
+    bio?: string;
+    avatarUrl?: string;
+    isVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    username: string;
+    email: string;
+    displayName?: string;
+    bio?: string;
+    avatarUrl?: string;
+    isVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+class AuthService {
+  async register(data: RegisterData): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      useAuthStore.getState().login(
+        result.data.user,
+        result.data.accessToken,
+        result.data.refreshToken
+      );
+    }
+
+    return result;
+  }
+
+  async login(data: LoginData): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      useAuthStore.getState().login(
+        result.data.user,
+        result.data.accessToken,
+        result.data.refreshToken
+      );
+    }
+
+    return result;
+  }
+
+  logout() {
+    useAuthStore.getState().logout();
+  }
+
+  async getProfile(): Promise<ProfileResponse> {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+
+  async updateProfile(data: UpdateProfileData): Promise<UpdateProfileResponse> {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.getAuthHeaders(),
+      },
+      body: JSON.stringify(data),
+    });
+
+    return response.json();
+  }
+
+  private getAuthHeaders(): { Authorization?: string } {
+    const token = useAuthStore.getState().accessToken;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+}
+
+export const authService = new AuthService();

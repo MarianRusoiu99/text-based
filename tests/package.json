@@ -1,0 +1,39 @@
+{
+  "name": "text-based-adventure-tests",
+  "version": "1.0.0",
+  "description": "End-to-end and API tests for Text-Based Adventure Platform",
+  "scripts": {
+    "test": "npm run test:api && npm run test:e2e",
+    "test:api": "playwright test --config playwright.config.ts --project=api",
+    "test:e2e": "playwright test --config playwright.config.ts --project=chromium",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:all": "playwright test",
+    "install-playwright": "playwright install",
+    "setup": "npm install && npm run install-playwright"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^24.4.0",
+    "@types/supertest": "^6.0.0",
+    "supertest": "^6.3.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/testing": "^11.1.6",
+    "@prisma/client": "^6.16.1",
+    "bcryptjs": "^3.0.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "dotenv": "^17.2.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "prisma": "^6.16.1",
+    "reflect-metadata": "^0.2.2"
+  }
+}
