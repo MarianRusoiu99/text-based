@@ -27,7 +27,7 @@ let NodesService = class NodesService {
         if (story.authorId !== userId) {
             throw new common_1.ForbiddenException('You can only create nodes for your own stories');
         }
-        return this.prisma.node.create({
+        const node = await this.prisma.node.create({
             data: {
                 storyId: createNodeDto.storyId,
                 chapterId: createNodeDto.chapterId,
@@ -37,6 +37,11 @@ let NodesService = class NodesService {
                 position: createNodeDto.position,
             },
         });
+        return {
+            success: true,
+            message: 'Node created successfully',
+            data: node,
+        };
     }
     async findAll(storyId, userId) {
         const story = await this.prisma.story.findUnique({
@@ -48,7 +53,7 @@ let NodesService = class NodesService {
         if (story.authorId !== userId && story.visibility === 'private') {
             throw new common_1.ForbiddenException('Access denied');
         }
-        return this.prisma.node.findMany({
+        const nodes = await this.prisma.node.findMany({
             where: { storyId },
             include: {
                 fromChoices: {
@@ -63,6 +68,11 @@ let NodesService = class NodesService {
                 },
             },
         });
+        return {
+            success: true,
+            message: 'Nodes retrieved successfully',
+            data: nodes,
+        };
     }
     async findOne(id, userId) {
         const node = await this.prisma.node.findUnique({
@@ -87,7 +97,11 @@ let NodesService = class NodesService {
         if (node.story.authorId !== userId && node.story.visibility === 'private') {
             throw new common_1.ForbiddenException('Access denied');
         }
-        return node;
+        return {
+            success: true,
+            message: 'Node retrieved successfully',
+            data: node,
+        };
     }
     async update(id, updateNodeDto, userId) {
         const node = await this.prisma.node.findUnique({
@@ -100,7 +114,7 @@ let NodesService = class NodesService {
         if (node.story.authorId !== userId) {
             throw new common_1.ForbiddenException('You can only update nodes for your own stories');
         }
-        return this.prisma.node.update({
+        const updatedNode = await this.prisma.node.update({
             where: { id },
             data: {
                 chapterId: updateNodeDto.chapterId,
@@ -110,6 +124,11 @@ let NodesService = class NodesService {
                 position: updateNodeDto.position,
             },
         });
+        return {
+            success: true,
+            message: 'Node updated successfully',
+            data: updatedNode,
+        };
     }
     async remove(id, userId) {
         const node = await this.prisma.node.findUnique({
@@ -122,9 +141,14 @@ let NodesService = class NodesService {
         if (node.story.authorId !== userId) {
             throw new common_1.ForbiddenException('You can only delete nodes for your own stories');
         }
-        return this.prisma.node.delete({
+        const deletedNode = await this.prisma.node.delete({
             where: { id },
         });
+        return {
+            success: true,
+            message: 'Node deleted successfully',
+            data: deletedNode,
+        };
     }
 };
 exports.NodesService = NodesService;

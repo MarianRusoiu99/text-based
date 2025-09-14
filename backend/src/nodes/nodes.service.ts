@@ -29,7 +29,7 @@ export class NodesService {
       );
     }
 
-    return this.prisma.node.create({
+    const node = await this.prisma.node.create({
       data: {
         storyId: createNodeDto.storyId,
         chapterId: createNodeDto.chapterId,
@@ -39,6 +39,12 @@ export class NodesService {
         position: createNodeDto.position,
       },
     });
+
+    return {
+      success: true,
+      message: 'Node created successfully',
+      data: node,
+    };
   }
 
   async findAll(storyId: string, userId: string) {
@@ -55,7 +61,7 @@ export class NodesService {
       throw new ForbiddenException('Access denied');
     }
 
-    return this.prisma.node.findMany({
+    const nodes = await this.prisma.node.findMany({
       where: { storyId },
       include: {
         fromChoices: {
@@ -70,6 +76,12 @@ export class NodesService {
         },
       },
     });
+
+    return {
+      success: true,
+      message: 'Nodes retrieved successfully',
+      data: nodes,
+    };
   }
 
   async findOne(id: string, userId: string) {
@@ -98,7 +110,11 @@ export class NodesService {
       throw new ForbiddenException('Access denied');
     }
 
-    return node;
+    return {
+      success: true,
+      message: 'Node retrieved successfully',
+      data: node,
+    };
   }
 
   async update(id: string, updateNodeDto: UpdateNodeDto, userId: string) {
@@ -117,7 +133,7 @@ export class NodesService {
       );
     }
 
-    return this.prisma.node.update({
+    const updatedNode = await this.prisma.node.update({
       where: { id },
       data: {
         chapterId: updateNodeDto.chapterId,
@@ -127,6 +143,12 @@ export class NodesService {
         position: updateNodeDto.position,
       },
     });
+
+    return {
+      success: true,
+      message: 'Node updated successfully',
+      data: updatedNode,
+    };
   }
 
   async remove(id: string, userId: string) {
@@ -145,8 +167,14 @@ export class NodesService {
       );
     }
 
-    return this.prisma.node.delete({
+    const deletedNode = await this.prisma.node.delete({
       where: { id },
     });
+
+    return {
+      success: true,
+      message: 'Node deleted successfully',
+      data: deletedNode,
+    };
   }
 }

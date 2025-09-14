@@ -45,7 +45,7 @@ export class ChoicesService {
       );
     }
 
-    return this.prisma.choice.create({
+    const choice = await this.prisma.choice.create({
       data: {
         fromNodeId: createChoiceDto.fromNodeId,
         toNodeId: createChoiceDto.toNodeId,
@@ -54,6 +54,12 @@ export class ChoicesService {
         effects: createChoiceDto.effects,
       },
     });
+
+    return {
+      success: true,
+      message: 'Choice created successfully',
+      data: choice,
+    };
   }
 
   async findAll(storyId: string, userId: string) {
@@ -70,7 +76,7 @@ export class ChoicesService {
       throw new ForbiddenException('Access denied');
     }
 
-    return this.prisma.choice.findMany({
+    const choices = await this.prisma.choice.findMany({
       where: {
         fromNode: {
           storyId,
@@ -81,6 +87,12 @@ export class ChoicesService {
         toNode: true,
       },
     });
+
+    return {
+      success: true,
+      message: 'Choices retrieved successfully',
+      data: choices,
+    };
   }
 
   async findOne(id: string, userId: string) {
@@ -105,7 +117,11 @@ export class ChoicesService {
       throw new ForbiddenException('Access denied');
     }
 
-    return choice;
+    return {
+      success: true,
+      message: 'Choice retrieved successfully',
+      data: choice,
+    };
   }
 
   async update(id: string, updateChoiceDto: UpdateChoiceDto, userId: string) {
@@ -145,7 +161,7 @@ export class ChoicesService {
       }
     }
 
-    return this.prisma.choice.update({
+    const updatedChoice = await this.prisma.choice.update({
       where: { id },
       data: {
         toNodeId: updateChoiceDto.toNodeId,
@@ -154,6 +170,12 @@ export class ChoicesService {
         effects: updateChoiceDto.effects,
       },
     });
+
+    return {
+      success: true,
+      message: 'Choice updated successfully',
+      data: updatedChoice,
+    };
   }
 
   async remove(id: string, userId: string) {
@@ -176,8 +198,14 @@ export class ChoicesService {
       );
     }
 
-    return this.prisma.choice.delete({
+    const deletedChoice = await this.prisma.choice.delete({
       where: { id },
     });
+
+    return {
+      success: true,
+      message: 'Choice deleted successfully',
+      data: deletedChoice,
+    };
   }
 }

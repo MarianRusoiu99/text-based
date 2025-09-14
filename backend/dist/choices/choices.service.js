@@ -37,7 +37,7 @@ let ChoicesService = class ChoicesService {
         if (toNode.storyId !== fromNode.storyId) {
             throw new common_1.ForbiddenException('Choice nodes must belong to the same story');
         }
-        return this.prisma.choice.create({
+        const choice = await this.prisma.choice.create({
             data: {
                 fromNodeId: createChoiceDto.fromNodeId,
                 toNodeId: createChoiceDto.toNodeId,
@@ -46,6 +46,11 @@ let ChoicesService = class ChoicesService {
                 effects: createChoiceDto.effects,
             },
         });
+        return {
+            success: true,
+            message: 'Choice created successfully',
+            data: choice,
+        };
     }
     async findAll(storyId, userId) {
         const story = await this.prisma.story.findUnique({
@@ -57,7 +62,7 @@ let ChoicesService = class ChoicesService {
         if (story.authorId !== userId && story.visibility === 'private') {
             throw new common_1.ForbiddenException('Access denied');
         }
-        return this.prisma.choice.findMany({
+        const choices = await this.prisma.choice.findMany({
             where: {
                 fromNode: {
                     storyId,
@@ -68,6 +73,11 @@ let ChoicesService = class ChoicesService {
                 toNode: true,
             },
         });
+        return {
+            success: true,
+            message: 'Choices retrieved successfully',
+            data: choices,
+        };
     }
     async findOne(id, userId) {
         const choice = await this.prisma.choice.findUnique({
@@ -86,7 +96,11 @@ let ChoicesService = class ChoicesService {
             choice.fromNode.story.visibility === 'private') {
             throw new common_1.ForbiddenException('Access denied');
         }
-        return choice;
+        return {
+            success: true,
+            message: 'Choice retrieved successfully',
+            data: choice,
+        };
     }
     async update(id, updateChoiceDto, userId) {
         const choice = await this.prisma.choice.findUnique({
@@ -114,7 +128,7 @@ let ChoicesService = class ChoicesService {
                 throw new common_1.ForbiddenException('Choice nodes must belong to the same story');
             }
         }
-        return this.prisma.choice.update({
+        const updatedChoice = await this.prisma.choice.update({
             where: { id },
             data: {
                 toNodeId: updateChoiceDto.toNodeId,
@@ -123,6 +137,11 @@ let ChoicesService = class ChoicesService {
                 effects: updateChoiceDto.effects,
             },
         });
+        return {
+            success: true,
+            message: 'Choice updated successfully',
+            data: updatedChoice,
+        };
     }
     async remove(id, userId) {
         const choice = await this.prisma.choice.findUnique({
@@ -139,9 +158,14 @@ let ChoicesService = class ChoicesService {
         if (choice.fromNode.story.authorId !== userId) {
             throw new common_1.ForbiddenException('You can only delete choices for your own stories');
         }
-        return this.prisma.choice.delete({
+        const deletedChoice = await this.prisma.choice.delete({
             where: { id },
         });
+        return {
+            success: true,
+            message: 'Choice deleted successfully',
+            data: deletedChoice,
+        };
     }
 };
 exports.ChoicesService = ChoicesService;
