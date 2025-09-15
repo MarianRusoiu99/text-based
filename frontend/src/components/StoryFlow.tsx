@@ -88,32 +88,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
             return rfNode;
           });
 
-          // Add test nodes if none exist from API
-          if (rfNodes.length === 0) {
-            console.log('No nodes from API, adding test nodes');
-            rfNodes.push(
-              {
-                id: 'test-1',
-                type: 'default',
-                data: { label: 'Start Node' },
-                position: { x: 100, y: 100 }
-              },
-              {
-                id: 'test-2',
-                type: 'default',
-                data: { label: 'Middle Node' },
-                position: { x: 300, y: 200 }
-              },
-              {
-                id: 'test-3',
-                type: 'default',
-                data: { label: 'End Node' },
-                position: { x: 500, y: 100 }
-              }
-            );
-          }
-
-          console.log('Final RF nodes array:', rfNodes);
+         
           setNodes(rfNodes);
         } else {
           console.log('API call failed:', nodesRes);
@@ -272,7 +247,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
 
   return (
     <div className="flex flex-1 relative">
-      <div className="flex-1" style={{ width: '100%', height: '600px' }}>
+      <div className="flex-1 overflow-hidden" style={{ height: 'calc(100vh - 202px)' }}>
         <ReactFlow
           nodes={nodes}
           edges={edges}

@@ -27,7 +27,7 @@ const Editor: React.FC = () => {
   if (storyId) {
     // Show node editor - full width
     return (
-      <div className="h-screen flex flex-col">
+      <div className="h-full w-full flex flex-col">
         <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-white flex-shrink-0">
           <h1 className="text-3xl font-bold">Story Editor - {storyId}</h1>
           <div className="space-x-4">
@@ -37,7 +37,7 @@ const Editor: React.FC = () => {
             <Button onClick={() => handlePublish(storyId)}>Publish Story</Button>
           </div>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 h-full">
           <StoryFlow storyId={storyId} />
         </div>
       </div>
