@@ -87,6 +87,7 @@ export declare class ChoicesService {
                     estimatedDuration: number | null;
                     publishedAt: Date | null;
                     authorId: string;
+                    rpgTemplateId: string | null;
                 };
             } & {
                 id: string;

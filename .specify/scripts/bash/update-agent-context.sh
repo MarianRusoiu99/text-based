@@ -2,12 +2,26 @@
 set -e
 REPO_ROOT=$(git rev-parse --show-toplevel)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-FEATURE_DIR="$REPO_ROOT/specs/$CURRENT_BRANCH"
+FEATURE_OVERRIDE="${FEATURE:-${SPECIFY_FEATURE:-}}"
+
+# Resolve feature directory and plan path with sensible fallbacks
+if [ -n "$FEATURE_OVERRIDE" ] && [ -d "$REPO_ROOT/specs/$FEATURE_OVERRIDE" ]; then
+  FEATURE_DIR="$REPO_ROOT/specs/$FEATURE_OVERRIDE"
+elif [ -d "$REPO_ROOT/specs/$CURRENT_BRANCH" ]; then
+  FEATURE_DIR="$REPO_ROOT/specs/$CURRENT_BRANCH"
+else
+  # Pick highest-numbered specs folder that has a plan.md
+  CANDIDATE=$(ls -d "$REPO_ROOT"/specs/[0-9][0-9][0-9]-* 2>/dev/null | sort | tail -n 1)
+  if [ -n "$CANDIDATE" ] && [ -f "$CANDIDATE/plan.md" ]; then
+    FEATURE_DIR="$CANDIDATE"
+  fi
+fi
+
 NEW_PLAN="$FEATURE_DIR/plan.md"
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"; GEMINI_FILE="$REPO_ROOT/GEMINI.md"; COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"; CURSOR_FILE="$REPO_ROOT/.cursor/rules/specify-rules.mdc"; QWEN_FILE="$REPO_ROOT/QWEN.md"; AGENTS_FILE="$REPO_ROOT/AGENTS.md"
 AGENT_TYPE="$1"
-[ -f "$NEW_PLAN" ] || { echo "ERROR: No plan.md found at $NEW_PLAN"; exit 1; }
-echo "=== Updating agent context files for feature $CURRENT_BRANCH ==="
+[ -f "$NEW_PLAN" ] || { echo "ERROR: No plan.md found. Provide FEATURE env (e.g., export FEATURE=004-rpg) or run /plan first."; exit 1; }
+echo "=== Updating agent context files using plan: $NEW_PLAN ==="
 NEW_LANG=$(grep "^**Language/Version**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Language\/Version**: //' | grep -v "NEEDS CLARIFICATION" || echo "")
 NEW_FRAMEWORK=$(grep "^**Primary Dependencies**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Primary Dependencies**: //' | grep -v "NEEDS CLARIFICATION" || echo "")
 NEW_DB=$(grep "^**Storage**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Storage**: //' | grep -v "N/A" | grep -v "NEEDS CLARIFICATION" || echo "")

@@ -35,6 +35,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     findAll(query: any): Promise<{
@@ -62,6 +63,7 @@ export declare class StoriesController {
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
                 authorId: string;
+                rpgTemplateId: string | null;
             })[];
             pagination: {
                 page: any;
@@ -107,6 +109,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     update(id: string, updateData: any, req: {
@@ -130,6 +133,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     remove(id: string, req: {
@@ -159,6 +163,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     createChapter(storyId: string, createChapterDto: CreateChapterDto, req: {

@@ -13,6 +13,7 @@ import { ChoicesModule } from './choices/choices.module';
 import { CacheModule } from './cache/cache.module';
 import { UsersModule } from './users/users.module';
 import { LoggerModule } from './logger/logger.module';
+import { RpgModule } from './rpg/rpg.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LoggerModule } from './logger/logger.module';
     CacheModule,
     UsersModule,
     LoggerModule,
+    RpgModule,
   ],
   controllers: [AppController, NodesController, ChoicesController],
   providers: [AppService, NodesService, ChoicesService],

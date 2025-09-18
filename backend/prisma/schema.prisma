@@ -32,6 +32,7 @@ model User {
   followers    UserFollow[] @relation("UserFollows")
   following    UserFollow[] @relation("UserFollowing")
   bookmarks    StoryBookmark[]
+  rpgTemplates RpgTemplate[]
 
   @@map("users")
 }
@@ -50,6 +51,8 @@ model Story {
   visibility        String    @default("public") @db.VarChar(20)
   contentRating     String    @default("general") @map("content_rating") @db.VarChar(10)
   estimatedDuration Int?      @map("estimated_duration")
+  rpgTemplateId     String?   @map("rpg_template_id")
+  rpgTemplate       RpgTemplate? @relation(fields: [rpgTemplateId], references: [id])
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
   publishedAt       DateTime? @map("published_at") @db.Timestamptz()
@@ -65,6 +68,26 @@ model Story {
   bookmarks    StoryBookmark[]
 
   @@map("stories")
+}
+
+model RpgTemplate {
+  id          String   @id @default(uuid())
+  authorId    String   @map("author_id")
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  isPublic    Boolean  @default(false) @map("is_public")
+  version     Int      @default(1)
+  config      Json     @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  stories     Story[]
+
+  @@map("rpg_templates")
+  @@index([authorId])
+  @@index([isPublic])
 }
 
 model Chapter {

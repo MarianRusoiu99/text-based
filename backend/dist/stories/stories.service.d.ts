@@ -28,6 +28,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     findAll(query?: any): Promise<{
@@ -55,6 +56,7 @@ export declare class StoriesService {
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
                 authorId: string;
+                rpgTemplateId: string | null;
             })[];
             pagination: {
                 page: any;
@@ -98,6 +100,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     update(id: string, userId: string, updateData: any): Promise<{
@@ -119,6 +122,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     remove(id: string, userId: string): Promise<{
@@ -144,6 +148,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     createChapter(storyId: string, userId: string, createChapterDto: CreateChapterDto): Promise<{
