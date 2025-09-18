@@ -1,0 +1,242 @@
+openapi: 3.1.0
+info:
+  title: Community API
+  version: 0.1.0
+  description: Publish, browse, like, and comment on stories
+servers:
+  - url: http://localhost:3000
+paths:
+  /stories/{storyId}/publish:
+    patch:
+      summary: Toggle publish
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isPublic: { type: boolean }
+              required: [isPublic]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Story'
+  /stories/public:
+    get:
+      summary: List public stories
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: tags
+          schema:
+            type: array
+            items: { type: string }
+            style: form
+            explode: true
+        - in: query
+          name: sort
+          schema: { type: string, enum: ['recent','popular'] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PublicStories'
+  /stories/{storyId}/likes:
+    post:
+      summary: Like a story (idempotent)
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LikeCount'
+    delete:
+      summary: Unlike a story
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LikeCount'
+  /stories/{storyId}/comments:
+    get:
+      summary: List comments
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Comments'
+    post:
+      summary: Add comment
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Comment'
+  /stories/{storyId}/comments/{commentId}:
+    delete:
+      summary: Delete comment (author of comment or story)
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: commentId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Deleted'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ApiEnvelope:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+      required: [success, message]
+    Story:
+      type: object
+      properties:
+        id: { type: string }
+        authorId: { type: string }
+        title: { type: string }
+        isPublic: { type: boolean }
+        tags:
+          type: array
+          items: { type: string }
+      required: [id, authorId, title, isPublic]
+    Comment:
+      type: object
+      properties:
+        id: { type: string }
+        storyId: { type: string }
+        userId: { type: string }
+        content: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, storyId, userId, content, createdAt, updatedAt]
+    CreateCommentDto:
+      type: object
+      properties:
+        content: { type: string, minLength: 1, maxLength: 2000 }
+      required: [content]
+    ApiResponse_Story:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data: { $ref: '#/components/schemas/Story' }
+          required: [data]
+    ApiResponse_PublicStories:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items: { $ref: '#/components/schemas/Story' }
+                total: { type: integer }
+              required: [items, total]
+          required: [data]
+    ApiResponse_Comments:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/Comment' }
+          required: [data]
+    ApiResponse_Comment:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data: { $ref: '#/components/schemas/Comment' }
+          required: [data]
+    ApiResponse_LikeCount:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                likes: { type: integer }
+              required: [likes]
+          required: [data]
+    ApiResponse_Deleted:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                id: { type: string }
+              required: [id]
+          required: [data]

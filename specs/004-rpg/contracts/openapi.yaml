@@ -1,0 +1,277 @@
+openapi: 3.1.0
+info:
+  title: RPG Templates API
+  version: 0.1.0
+  description: CRUD for RPG templates and story attachment
+servers:
+  - url: http://localhost:3000
+paths:
+  /rpg/templates:
+    get:
+      summary: List templates
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_ListRpgTemplates'
+    post:
+      summary: Create template
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRpgTemplateDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RpgTemplate'
+  /rpg/templates/{id}:
+    get:
+      summary: Get template
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RpgTemplate'
+    patch:
+      summary: Update template
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRpgTemplateDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RpgTemplate'
+    delete:
+      summary: Delete template
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Deleted'
+  /stories/{storyId}/rpg-template:
+    put:
+      summary: Attach template to story
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [templateId]
+              properties:
+                templateId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Attached'
+    delete:
+      summary: Detach template from story
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Detached'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ApiEnvelope:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+      required: [success, message]
+    RpgTemplate:
+      type: object
+      properties:
+        id: { type: string }
+        authorId: { type: string }
+        name: { type: string }
+        description: { type: [ 'string', 'null' ] }
+        isPublic: { type: boolean }
+        version: { type: integer }
+        config: { $ref: '#/components/schemas/RpgTemplateConfig' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, authorId, name, isPublic, version, config, createdAt, updatedAt]
+    RpgTemplateConfig:
+      type: object
+      properties:
+        schemaVersion:
+          type: integer
+          enum: [1]
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              name: { type: string }
+              type: { type: string, enum: ['number','boolean','string'] }
+              min: { type: number }
+              max: { type: number }
+              default: {}
+              description: { type: string }
+            required: [id, name, type]
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              name: { type: string }
+              description: { type: string }
+              stackable: { type: boolean }
+              maxStack: { type: integer }
+            required: [id, name]
+        mechanics:
+          type: object
+          properties:
+            damage:
+              type: object
+              properties:
+                formula: { type: string }
+            skillCheck:
+              type: object
+              properties:
+                formula: { type: string }
+                successThreshold: { type: number }
+        calculations:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              expression: { type: string }
+              description: { type: string }
+            required: [id, expression]
+      required: [schemaVersion, stats]
+    CreateRpgTemplateDto:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        isPublic: { type: boolean }
+        config: { $ref: '#/components/schemas/RpgTemplateConfig' }
+      required: [name, config]
+    UpdateRpgTemplateDto:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: [ 'string', 'null' ] }
+        isPublic: { type: boolean }
+        version: { type: integer }
+        config: { $ref: '#/components/schemas/RpgTemplateConfig' }
+    ApiResponse_RpgTemplate:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data: { $ref: '#/components/schemas/RpgTemplate' }
+          required: [data]
+    ApiResponse_ListRpgTemplates:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items: { $ref: '#/components/schemas/RpgTemplate' }
+                total: { type: integer }
+              required: [items, total]
+          required: [data]
+    ApiResponse_Deleted:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                id: { type: string }
+              required: [id]
+          required: [data]
+    ApiResponse_Attached:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                storyId: { type: string }
+                templateId: { type: string }
+              required: [storyId, templateId]
+          required: [data]
+    ApiResponse_Detached:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                storyId: { type: string }
+              required: [storyId]
+          required: [data]

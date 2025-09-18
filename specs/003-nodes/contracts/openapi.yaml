@@ -1,0 +1,262 @@
+openapi: 3.1.0
+info:
+  title: Nodes & Choices API
+  version: 1.0.0
+servers:
+  - url: https://api.textadventure.com/v1
+paths:
+  /stories/{storyId}/nodes:
+    get:
+      summary: List nodes in a story
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNodes'
+    post:
+      summary: Create node
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNode'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNode'
+  /stories/{storyId}/nodes/{nodeId}:
+    put:
+      summary: Update node
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+        - in: path
+          name: nodeId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNode'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNode'
+    delete:
+      summary: Delete node
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+        - in: path
+          name: nodeId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNull'
+  /stories/{storyId}/nodes/positions:
+    put:
+      summary: Batch update node positions
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                positions:
+                  type: array
+                  items:
+                    type: object
+                    required: [nodeId, position]
+                    properties:
+                      nodeId: { type: string, format: uuid }
+                      position:
+                        type: object
+                        properties: { x: { type: number }, y: { type: number } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNodes'
+  /stories/{storyId}/choices:
+    post:
+      summary: Create choice between nodes
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChoice'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeChoice'
+  /stories/{storyId}/choices/{choiceId}:
+    put:
+      summary: Update choice
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+        - in: path
+          name: choiceId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChoice'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeChoice'
+    delete:
+      summary: Delete choice
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string, format: uuid }
+        - in: path
+          name: choiceId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvelopeNull'
+components:
+  schemas:
+    EnvelopeNull:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+        data: { type: 'null' }
+    EnvelopeNode:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+        data: { $ref: '#/components/schemas/Node' }
+    EnvelopeNodes:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Node' }
+    EnvelopeChoice:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+        data: { $ref: '#/components/schemas/Choice' }
+    Node:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        storyId: { type: string, format: uuid }
+        nodeType: { type: string }
+        content: { type: object }
+        position:
+          type: object
+          properties: { x: { type: number }, y: { type: number } }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    Choice:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        storyId: { type: string, format: uuid }
+        fromNodeId: { type: string, format: uuid }
+        toNodeId: { type: string, format: uuid }
+        choiceText: { type: string }
+        conditions: { type: array, items: { type: object } }
+        effects: { type: array, items: { type: object } }
+    CreateNode:
+      type: object
+      required: [content, position, nodeType]
+      properties:
+        content: { type: object }
+        position:
+          type: object
+          properties: { x: { type: number }, y: { type: number } }
+        nodeType: { type: string }
+    UpdateNode:
+      type: object
+      properties:
+        content: { type: object }
+        position:
+          type: object
+          properties: { x: { type: number }, y: { type: number } }
+    CreateChoice:
+      type: object
+      required: [fromNodeId, toNodeId, choiceText]
+      properties:
+        fromNodeId: { type: string, format: uuid }
+        toNodeId: { type: string, format: uuid }
+        choiceText: { type: string }
+        conditions: { type: array, items: { type: object } }
+        effects: { type: array, items: { type: object } }
+    UpdateChoice:
+      type: object
+      properties:
+        choiceText: { type: string }
+        conditions: { type: array, items: { type: object } }
+        effects: { type: array, items: { type: object } }

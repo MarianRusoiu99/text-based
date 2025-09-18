@@ -1,0 +1,122 @@
+openapi: 3.1.0
+info:
+  title: Player Sessions API
+  version: 0.1.0
+  description: Start/resume sessions, fetch state, and apply choices
+servers:
+  - url: http://localhost:3000
+paths:
+  /stories/{storyId}/sessions:
+    post:
+      summary: Create or resume a session for current user (or anonymous)
+      parameters:
+        - in: path
+          name: storyId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                anonymous: { type: boolean }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Session'
+  /sessions/{sessionId}:
+    get:
+      summary: Get session current state
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Session'
+  /sessions/{sessionId}/apply:
+    post:
+      summary: Apply a choice and advance
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string }
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyChoiceDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Session'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ApiEnvelope:
+      type: object
+      properties:
+        success: { type: boolean }
+        message: { type: string }
+      required: [success, message]
+    RuntimeState:
+      type: object
+      properties:
+        variables: { type: object, additionalProperties: {} }
+        stats: { type: object, additionalProperties: { oneOf: [{type:'number'},{type:'boolean'},{type:'string'}] } }
+        inventory:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              qty: { type: integer }
+            required: [id, qty]
+      required: [variables, stats, inventory]
+    Session:
+      type: object
+      properties:
+        id: { type: string }
+        storyId: { type: string }
+        userId: { type: [ 'string', 'null' ] }
+        templateVersion: { type: integer }
+        currentNodeId: { type: string }
+        state: { $ref: '#/components/schemas/RuntimeState' }
+        completedAt: { type: [ 'string', 'null' ], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, storyId, templateVersion, currentNodeId, state, createdAt, updatedAt]
+    ApplyChoiceDto:
+      type: object
+      properties:
+        choiceId: { type: string }
+      required: [choiceId]
+    ApiResponse_Session:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            data: { $ref: '#/components/schemas/Session' }
+          required: [data]
