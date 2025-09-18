@@ -8,6 +8,8 @@ import { CreateNodeDto } from './dto/create-node.dto';
 import { UpdateNodeDto } from './dto/create-node.dto';
 import { CreateChoiceDto } from './dto/create-choice.dto';
 import { UpdateChoiceDto } from './dto/create-choice.dto';
+import { CreateItemDto } from './dto/create-item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 export declare class StoriesService {
     private prisma;
     constructor(prisma: PrismaService);
@@ -30,6 +32,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     findAll(query?: any): Promise<{
@@ -57,6 +60,7 @@ export declare class StoriesService {
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
                 authorId: string;
+                rpgTemplateId: string | null;
             })[];
             pagination: {
                 page: any;
@@ -100,6 +104,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     update(id: string, userId: string, updateData: any): Promise<{
@@ -121,6 +126,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     remove(id: string, userId: string): Promise<{
@@ -146,6 +152,7 @@ export declare class StoriesService {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     createChapter(storyId: string, userId: string, createChapterDto: CreateChapterDto): Promise<{
@@ -255,9 +262,9 @@ export declare class StoriesService {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         };
     }>;
     findItems(storyId: string, userId?: string): Promise<{
@@ -265,9 +272,9 @@ export declare class StoriesService {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         }[];
     }>;
     updateItem(storyId: string, itemId: string, userId: string, updateItemDto: UpdateItemDto): Promise<{
@@ -276,9 +283,9 @@ export declare class StoriesService {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         };
     }>;
     deleteItem(storyId: string, itemId: string, userId: string): Promise<{

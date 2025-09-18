@@ -6,6 +6,8 @@ import { CreateStoryVariableDto } from './dto/create-story-variable.dto';
 import { UpdateStoryVariableDto } from './dto/update-story-variable.dto';
 import { CreateNodeDto, UpdateNodeDto } from './dto/create-node.dto';
 import { CreateChoiceDto, UpdateChoiceDto } from './dto/create-choice.dto';
+import { CreateItemDto } from './dto/create-item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 interface AuthenticatedUser {
     id: string;
     username: string;
@@ -35,6 +37,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     findAll(query: any): Promise<{
@@ -62,6 +65,7 @@ export declare class StoriesController {
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
                 authorId: string;
+                rpgTemplateId: string | null;
             })[];
             pagination: {
                 page: any;
@@ -107,6 +111,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     update(id: string, updateData: any, req: {
@@ -130,6 +135,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     remove(id: string, req: {
@@ -159,6 +165,7 @@ export declare class StoriesController {
             estimatedDuration: number | null;
             publishedAt: Date | null;
             authorId: string;
+            rpgTemplateId: string | null;
         };
     }>;
     createChapter(storyId: string, createChapterDto: CreateChapterDto, req: {
@@ -290,9 +297,9 @@ export declare class StoriesController {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         };
     }>;
     findItems(storyId: string, req: {
@@ -302,9 +309,9 @@ export declare class StoriesController {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         }[];
     }>;
     updateItem(storyId: string, itemId: string, updateItemDto: UpdateItemDto, req: {
@@ -315,9 +322,9 @@ export declare class StoriesController {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         };
     }>;
     deleteItem(storyId: string, itemId: string, req: {

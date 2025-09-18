@@ -23,6 +23,9 @@ const choices_module_1 = require("./choices/choices.module");
 const cache_module_1 = require("./cache/cache.module");
 const users_module_1 = require("./users/users.module");
 const logger_module_1 = require("./logger/logger.module");
+const rpg_templates_module_1 = require("./rpg-templates/rpg-templates.module");
+const player_module_1 = require("./player/player.module");
+const achievements_module_1 = require("./achievements/achievements.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,6 +57,9 @@ exports.AppModule = AppModule = __decorate([
             cache_module_1.CacheModule,
             users_module_1.UsersModule,
             logger_module_1.LoggerModule,
+            rpg_templates_module_1.RpgTemplatesModule,
+            player_module_1.PlayerModule,
+            achievements_module_1.AchievementsModule,
         ],
         controllers: [app_controller_1.AppController, nodes_controller_1.NodesController, choices_controller_1.ChoicesController],
         providers: [app_service_1.AppService, nodes_service_1.NodesService, choices_service_1.ChoicesService],

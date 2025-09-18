@@ -110,6 +110,7 @@ export declare class NodesController {
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
                 authorId: string;
+                rpgTemplateId: string | null;
             };
             fromChoices: ({
                 toNode: {

@@ -15,6 +15,8 @@ import { CacheModule } from './cache/cache.module';
 import { UsersModule } from './users/users.module';
 import { LoggerModule } from './logger/logger.module';
 import { RpgTemplatesModule } from './rpg-templates/rpg-templates.module';
+import { PlayerModule } from './player/player.module';
+import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { RpgTemplatesModule } from './rpg-templates/rpg-templates.module';
     UsersModule,
     LoggerModule,
     RpgTemplatesModule,
+    PlayerModule,
+    AchievementsModule,
   ],
   controllers: [AppController, NodesController, ChoicesController],
   providers: [AppService, NodesService, ChoicesService],

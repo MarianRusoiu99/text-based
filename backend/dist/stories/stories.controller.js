@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoriesController = void 0;
 const common_1 = require("@nestjs/common");
@@ -23,6 +22,8 @@ const create_story_variable_dto_1 = require("./dto/create-story-variable.dto");
 const update_story_variable_dto_1 = require("./dto/update-story-variable.dto");
 const create_node_dto_1 = require("./dto/create-node.dto");
 const create_choice_dto_1 = require("./dto/create-choice.dto");
+const create_item_dto_1 = require("./dto/create-item.dto");
+const update_item_dto_1 = require("./dto/update-item.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let StoriesController = class StoriesController {
     storiesService;
@@ -269,7 +270,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_a = typeof CreateItemDto !== "undefined" && CreateItemDto) === "function" ? _a : Object, Object]),
+    __metadata("design:paramtypes", [String, create_item_dto_1.CreateItemDto, Object]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "createItem", null);
 __decorate([
@@ -288,7 +289,7 @@ __decorate([
     __param(2, (0, common_1.Body)()),
     __param(3, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, typeof (_b = typeof UpdateItemDto !== "undefined" && UpdateItemDto) === "function" ? _b : Object, Object]),
+    __metadata("design:paramtypes", [String, String, update_item_dto_1.UpdateItemDto, Object]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "updateItem", null);
 __decorate([

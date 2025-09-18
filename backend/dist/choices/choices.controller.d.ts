@@ -98,6 +98,7 @@ export declare class ChoicesController {
                     estimatedDuration: number | null;
                     publishedAt: Date | null;
                     authorId: string;
+                    rpgTemplateId: string | null;
                 };
             } & {
                 id: string;

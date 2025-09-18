@@ -99,6 +99,7 @@ export declare class NodesService {
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
                 authorId: string;
+                rpgTemplateId: string | null;
             };
             fromChoices: ({
                 toNode: {

@@ -30,6 +30,8 @@ model User {
   ratings            Rating[]
   comments           Comment[]
   playSessions       PlaySession[]
+  savedGames         SavedGame[]
+  userAchievements   UserAchievement[]
   followers          UserFollow[] @relation("UserFollows")
   following          UserFollow[] @relation("UserFollowing")
   bookmarks          StoryBookmark[]
@@ -68,6 +70,7 @@ model Story {
   ratings      Rating[]
   comments     Comment[]
   playSessions PlaySession[]
+  savedGames   SavedGame[]
   bookmarks    StoryBookmark[]
 
   @@map("stories")
@@ -306,4 +309,53 @@ model PasswordResetToken {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
 
   @@map("password_reset_tokens")
+}
+
+model SavedGame {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId     String   @map("session_id")
+  storyId       String   @map("story_id")
+  story         Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  saveName      String   @map("save_name") @db.VarChar(255)
+  currentNodeId String?  @map("current_node_id")
+  gameState     Json     @map("game_state") @db.JsonB
+  isCompleted   Boolean  @default(false) @map("is_completed")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("saved_games")
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  iconUrl     String?  @map("icon_url") @db.Text
+  category    String   @db.VarChar(50) // 'story', 'player', 'creator'
+  triggerType String   @map("trigger_type") @db.VarChar(50) // 'story_completed', 'choices_made', 'stories_created', etc.
+  triggerData Json?    @map("trigger_data") @db.JsonB // Additional data for trigger conditions
+  points      Int      @default(0)
+  rarity      String   @default("common") @db.VarChar(20) // 'common', 'rare', 'epic', 'legendary'
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String    @map("achievement_id")
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime  @default(now()) @map("unlocked_at") @db.Timestamptz()
+  progress      Json?     @db.JsonB // For progress-tracking achievements
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
 }
