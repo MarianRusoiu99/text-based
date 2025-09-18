@@ -17,7 +17,7 @@ export declare class StoriesController {
     private readonly storiesService;
     constructor(storiesService: StoriesService);
     create(createStoryDto: CreateStoryDto, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
