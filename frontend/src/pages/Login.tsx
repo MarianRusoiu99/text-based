@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { authService } from '../services/authService';
 
 const Login: React.FC = () => {

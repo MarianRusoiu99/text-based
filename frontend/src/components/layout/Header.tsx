@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '../ui/Button';
+import { Button } from '../ui/button';
 import { useAuthStore } from '../../stores/authStore';
 
 export const Header: React.FC = () => {

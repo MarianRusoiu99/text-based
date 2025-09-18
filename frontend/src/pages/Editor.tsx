@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storiesService } from '../services/storiesService';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import StoryFlow from '../components/StoryFlow';
 
 const Editor: React.FC = () => {

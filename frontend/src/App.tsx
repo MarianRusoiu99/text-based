@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/sonner';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Header } from './components/layout/Header';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -13,24 +15,27 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Header />
-          <main className="mx-auto px-4 py-8">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/stories" element={<Stories />} />
-              <Route path="/editor/:storyId?" element={<Editor />} />
-              <Route path="/player/:storyId" element={<Player />} />
-              <Route path="/profile" element={<Profile />} />
-            </Routes>
-          </main>
-        </div>
-      </Router>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Header />
+            <main className="mx-auto px-4 py-8">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/stories" element={<Stories />} />
+                <Route path="/editor/:storyId?" element={<Editor />} />
+                <Route path="/player/:storyId" element={<Player />} />
+                <Route path="/profile" element={<Profile />} />
+              </Routes>
+            </main>
+            <Toaster />
+          </div>
+        </Router>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

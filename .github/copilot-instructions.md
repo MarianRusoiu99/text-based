@@ -289,6 +289,8 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 ```
+### Please prioritize adding schadcn/ui components where applicable
+
 
 ### State Management (Zustand)
 Use Zustand for complex state management:

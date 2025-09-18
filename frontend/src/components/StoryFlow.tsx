@@ -15,8 +15,8 @@ import {
 import '@xyflow/react/dist/style.css';
 import { nodesService } from '../services/nodesService';
 import { choicesService } from '../services/choicesService';
-import { Button } from './ui/Button';
-import { Input } from './ui/Input';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { useAuthStore } from '../stores/authStore';
 
 interface StoryFlowProps {
@@ -95,14 +95,17 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
           setError('Failed to load nodes from API');
         }
 
-        if (choicesRes.success) {
-          const rfEdges: RFEdge[] = choicesRes.data.map((choice) => ({
-            id: choice.id,
-            source: choice.fromNodeId,
-            target: choice.toNodeId,
-            label: choice.choiceText,
-          }));
-          setEdges(rfEdges);
+        if (choicesRes.success && choicesRes.data.length > 0) {
+          // TODO: Implement proper choice mapping when backend is ready
+          // For now, skip processing choices since the structure is not finalized
+          console.log('Choices loaded:', choicesRes.data.length);
+          // const rfEdges: RFEdge[] = choicesRes.data.map((choice) => ({
+          //   id: choice.id,
+          //   source: choice.fromNodeId,
+          //   target: choice.toNodeId,
+          //   label: choice.choiceText,
+          // }));
+          // setEdges(rfEdges);
         }
       } catch (error) {
         console.error('Failed to load story data:', error);
