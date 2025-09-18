@@ -246,7 +246,7 @@ export declare class StoriesController {
         message: string;
     }>;
     createStoryVariable(storyId: string, createVariableDto: CreateStoryVariableDto, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
@@ -258,9 +258,7 @@ export declare class StoriesController {
             storyId: string;
         };
     }>;
-    findStoryVariables(storyId: string, req: {
-        user?: AuthenticatedUser;
-    }): Promise<{
+    findStoryVariables(storyId: string): Promise<{
         success: boolean;
         data: {
             id: string;
@@ -270,9 +268,7 @@ export declare class StoriesController {
             storyId: string;
         }[];
     }>;
-    updateStoryVariable(storyId: string, variableId: string, updateVariableDto: UpdateStoryVariableDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    updateStoryVariable(storyId: string, variableId: string, updateVariableDto: UpdateStoryVariableDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -283,15 +279,11 @@ export declare class StoriesController {
             storyId: string;
         };
     }>;
-    deleteStoryVariable(storyId: string, variableId: string, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    deleteStoryVariable(storyId: string, variableId: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    createItem(storyId: string, createItemDto: CreateItemDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    createItem(storyId: string, createItemDto: CreateItemDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -302,9 +294,7 @@ export declare class StoriesController {
             storyId: string;
         };
     }>;
-    findItems(storyId: string, req: {
-        user?: AuthenticatedUser;
-    }): Promise<{
+    findItems(storyId: string): Promise<{
         success: boolean;
         data: {
             id: string;
@@ -314,9 +304,7 @@ export declare class StoriesController {
             storyId: string;
         }[];
     }>;
-    updateItem(storyId: string, itemId: string, updateItemDto: UpdateItemDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    updateItem(storyId: string, itemId: string, updateItemDto: UpdateItemDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -327,15 +315,11 @@ export declare class StoriesController {
             storyId: string;
         };
     }>;
-    deleteItem(storyId: string, itemId: string, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    deleteItem(storyId: string, itemId: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    createNode(storyId: string, createNodeDto: CreateNodeDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    createNode(storyId: string, createNodeDto: CreateNodeDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -350,9 +334,7 @@ export declare class StoriesController {
             storyId: string;
         };
     }>;
-    findNodes(storyId: string, req: {
-        user?: AuthenticatedUser;
-    }): Promise<{
+    findNodes(storyId: string): Promise<{
         success: boolean;
         data: ({
             fromChoices: ({
@@ -411,9 +393,7 @@ export declare class StoriesController {
             storyId: string;
         })[];
     }>;
-    updateNode(nodeId: string, updateNodeDto: UpdateNodeDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    updateNode(nodeId: string, updateNodeDto: UpdateNodeDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -428,15 +408,11 @@ export declare class StoriesController {
             storyId: string;
         };
     }>;
-    removeNode(nodeId: string, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    removeNode(nodeId: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    createChoice(fromNodeId: string, createChoiceDto: CreateChoiceDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    createChoice(fromNodeId: string, createChoiceDto: CreateChoiceDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -450,9 +426,7 @@ export declare class StoriesController {
             fromNodeId: string;
         };
     }>;
-    updateChoice(choiceId: string, updateChoiceDto: UpdateChoiceDto, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    updateChoice(choiceId: string, updateChoiceDto: UpdateChoiceDto): Promise<{
         success: boolean;
         message: string;
         data: {
@@ -466,9 +440,7 @@ export declare class StoriesController {
             fromNodeId: string;
         };
     }>;
-    removeChoice(choiceId: string, req: {
-        user: AuthenticatedUser;
-    }): Promise<{
+    removeChoice(choiceId: string): Promise<{
         success: boolean;
         message: string;
     }>;

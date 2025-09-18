@@ -30,12 +30,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<RFNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<RFEdge>([]);
   const [selectedNode, setSelectedNode] = useState<RFNode | null>(null);
+  const [selectedChoice, setSelectedChoice] = useState<{ id: string } | null>(null);
   const [nodeType, setNodeType] = useState<'story' | 'choice' | 'condition' | 'ending'>('story');
   const [isAddingNode, setIsAddingNode] = useState(false);
   const [nodeTitle, setNodeTitle] = useState('');
   const [nodeContent, setNodeContent] = useState('');
   const [nodeCharacter, setNodeCharacter] = useState('');
   const [nodeBackground, setNodeBackground] = useState('');
+  const [choiceText, setChoiceText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showVariablesPanel, setShowVariablesPanel] = useState(false);
@@ -233,6 +235,56 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
     }
   }, [storyId, setNodes, nodeType]);
 
+  const onEdgeClick = useCallback(async (_event: React.MouseEvent, edge: RFEdge) => {
+    // Deselect node if one is selected
+    setSelectedNode(null);
+    
+    // Load choice data
+    try {
+      // For now, we'll assume the edge id is the choice id
+      // In a real implementation, you might need to store choice id in edge data
+      const choiceId = edge.id;
+      
+      // Try to get choice data - this might need to be implemented differently
+      // since we don't have a getChoice endpoint yet
+      console.log('Selected choice:', choiceId);
+      
+      // For now, reset the choice data
+      setSelectedChoice({ id: choiceId });
+      setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
+      setChoiceConditions(null);
+      setChoiceEffects([]);
+      
+    } catch (error) {
+      console.error('Failed to load choice data:', error);
+    }
+  }, []);
+
+  const handleSaveChoice = useCallback(async () => {
+    if (!selectedChoice) return;
+
+    try {
+      const result = await choicesService.updateChoice(selectedChoice.id, {
+        choiceText,
+        conditions: choiceConditions || undefined,
+        effects: choiceEffects,
+      });
+
+      if (result.success) {
+        // Update the edge label
+        setEdges((eds) =>
+          eds.map((edge) =>
+            edge.id === selectedChoice.id
+              ? { ...edge, label: choiceText }
+              : edge
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to save choice:', error);
+    }
+  }, [selectedChoice, choiceText, choiceConditions, choiceEffects, setEdges]);
+
   const handleSaveNode = useCallback(async () => {
     if (!selectedNode) return;
 
@@ -288,6 +340,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
           nodeTypes={nodeTypes}
           fitView
         >
@@ -456,6 +509,52 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
 
             <Button onClick={handleSaveNode} className="w-full">
               Save Node
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {selectedChoice && (
+        <div className="w-80 p-4 border-l border-gray-300 bg-white">
+          <h3 className="text-lg font-semibold mb-4">Edit Choice</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Choice Text
+              </label>
+              <Input
+                value={choiceText}
+                onChange={(e) => setChoiceText(e.target.value)}
+                placeholder="Enter choice text..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Conditions
+              </label>
+              <ConditionsBuilder
+                conditions={choiceConditions}
+                onChange={setChoiceConditions}
+                variables={availableVariables}
+                items={availableItems}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Effects
+              </label>
+              <EffectsBuilder
+                effects={choiceEffects}
+                onChange={setChoiceEffects}
+                variables={availableVariables}
+                items={availableItems}
+              />
+            </div>
+
+            <Button onClick={handleSaveChoice} className="w-full">
+              Save Choice
             </Button>
           </div>
         </div>

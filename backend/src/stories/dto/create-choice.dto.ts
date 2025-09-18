@@ -3,6 +3,7 @@ import {
   IsOptional,
   IsObject,
   IsUUID,
+  IsArray,
 } from 'class-validator';
 
 export class CreateChoiceDto {
@@ -17,8 +18,8 @@ export class CreateChoiceDto {
   conditions?: any;
 
   @IsOptional()
-  @IsObject()
-  effects?: any;
+  @IsArray()
+  effects?: any[];
 }
 
 export class UpdateChoiceDto {
@@ -35,6 +36,6 @@ export class UpdateChoiceDto {
   conditions?: any;
 
   @IsOptional()
-  @IsObject()
-  effects?: any;
+  @IsArray()
+  effects?: any[];
 }

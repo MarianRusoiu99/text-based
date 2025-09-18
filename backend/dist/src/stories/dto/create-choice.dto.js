@@ -33,8 +33,8 @@ __decorate([
 ], CreateChoiceDto.prototype, "conditions", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsObject)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
 ], CreateChoiceDto.prototype, "effects", void 0);
 class UpdateChoiceDto {
     toNodeId;
@@ -60,7 +60,7 @@ __decorate([
 ], UpdateChoiceDto.prototype, "conditions", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsObject)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
 ], UpdateChoiceDto.prototype, "effects", void 0);
 //# sourceMappingURL=create-choice.dto.js.map

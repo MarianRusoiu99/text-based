@@ -1,30 +1,22 @@
 import { useAuthStore } from '../stores/authStore';
+import type { Condition } from '../components/ConditionsBuilder';
+import type { Effect } from '../components/EffectsBuilder';
 
 const API_BASE_URL = 'http://localhost:3000';
-
-interface ChoiceCondition {
-  type: string;
-  value: string | number | boolean;
-}
-
-interface ChoiceEffect {
-  type: string;
-  value: string | number | boolean;
-}
 
 interface CreateChoiceData {
   fromNodeId: string;
   toNodeId: string;
   choiceText: string;
-  conditions?: ChoiceCondition[];
-  effects?: ChoiceEffect[];
+  conditions?: Condition | null;
+  effects?: Effect[];
 }
 
 interface UpdateChoiceData {
   toNodeId?: string;
   choiceText?: string;
-  conditions?: ChoiceCondition[];
-  effects?: ChoiceEffect[];
+  conditions?: Condition | null;
+  effects?: Effect[];
 }
 
 class ChoicesService {

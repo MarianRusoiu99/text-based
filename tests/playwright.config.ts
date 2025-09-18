@@ -13,7 +13,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: 'line',
 
   /* Configure projects for major browsers and API tests */
   projects: [
@@ -80,16 +80,16 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: [
-    {
-      command: 'cd ../backend && npm run start:dev',
-      port: 3000,
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'cd ../frontend && npm run dev',
-      port: 5173,
-      reuseExistingServer: !process.env.CI,
-    },
-  ],
+  // webServer: [
+  //   {
+  //     command: 'cd ../backend && npm run start:dev',
+  //     port: 3000,
+  //     reuseExistingServer: !process.env.CI,
+  //   },
+  //   {
+  //     command: 'cd ../frontend && npm run dev',
+  //     port: 5173,
+  //     reuseExistingServer: !process.env.CI,
+  //   },
+  // ],
 });

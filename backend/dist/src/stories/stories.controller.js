@@ -68,49 +68,49 @@ let StoriesController = class StoriesController {
         return this.storiesService.reorderChapters(storyId, req.user.id, chapterOrders);
     }
     createStoryVariable(storyId, createVariableDto, req) {
-        return this.storiesService.createStoryVariable(storyId, req.user.id, createVariableDto);
+        return this.storiesService.createStoryVariable(storyId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', createVariableDto);
     }
-    findStoryVariables(storyId, req) {
-        return this.storiesService.findStoryVariables(storyId, req.user?.id);
+    findStoryVariables(storyId) {
+        return this.storiesService.findStoryVariables(storyId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
-    updateStoryVariable(storyId, variableId, updateVariableDto, req) {
-        return this.storiesService.updateStoryVariable(storyId, variableId, req.user.id, updateVariableDto);
+    updateStoryVariable(storyId, variableId, updateVariableDto) {
+        return this.storiesService.updateStoryVariable(storyId, variableId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', updateVariableDto);
     }
-    deleteStoryVariable(storyId, variableId, req) {
-        return this.storiesService.deleteStoryVariable(storyId, variableId, req.user.id);
+    deleteStoryVariable(storyId, variableId) {
+        return this.storiesService.deleteStoryVariable(storyId, variableId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
-    createItem(storyId, createItemDto, req) {
-        return this.storiesService.createItem(storyId, req.user.id, createItemDto);
+    createItem(storyId, createItemDto) {
+        return this.storiesService.createItem(storyId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', createItemDto);
     }
-    findItems(storyId, req) {
-        return this.storiesService.findItems(storyId, req.user?.id);
+    findItems(storyId) {
+        return this.storiesService.findItems(storyId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
-    updateItem(storyId, itemId, updateItemDto, req) {
-        return this.storiesService.updateItem(storyId, itemId, req.user.id, updateItemDto);
+    updateItem(storyId, itemId, updateItemDto) {
+        return this.storiesService.updateItem(storyId, itemId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', updateItemDto);
     }
-    deleteItem(storyId, itemId, req) {
-        return this.storiesService.deleteItem(storyId, itemId, req.user.id);
+    deleteItem(storyId, itemId) {
+        return this.storiesService.deleteItem(storyId, itemId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
-    createNode(storyId, createNodeDto, req) {
-        return this.storiesService.createNode(storyId, req.user.id, createNodeDto);
+    createNode(storyId, createNodeDto) {
+        return this.storiesService.createNode(storyId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', createNodeDto);
     }
-    findNodes(storyId, req) {
-        return this.storiesService.findNodes(storyId, req.user?.id);
+    findNodes(storyId) {
+        return this.storiesService.findNodes(storyId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
-    updateNode(nodeId, updateNodeDto, req) {
-        return this.storiesService.updateNode(nodeId, req.user.id, updateNodeDto);
+    updateNode(nodeId, updateNodeDto) {
+        return this.storiesService.updateNode(nodeId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', updateNodeDto);
     }
-    removeNode(nodeId, req) {
-        return this.storiesService.removeNode(nodeId, req.user.id);
+    removeNode(nodeId) {
+        return this.storiesService.removeNode(nodeId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
-    createChoice(fromNodeId, createChoiceDto, req) {
-        return this.storiesService.createChoice(fromNodeId, req.user.id, createChoiceDto);
+    createChoice(fromNodeId, createChoiceDto) {
+        return this.storiesService.createChoice(fromNodeId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', createChoiceDto);
     }
-    updateChoice(choiceId, updateChoiceDto, req) {
-        return this.storiesService.updateChoice(choiceId, req.user.id, updateChoiceDto);
+    updateChoice(choiceId, updateChoiceDto) {
+        return this.storiesService.updateChoice(choiceId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', updateChoiceDto);
     }
-    removeChoice(choiceId, req) {
-        return this.storiesService.removeChoice(choiceId, req.user.id);
+    removeChoice(choiceId) {
+        return this.storiesService.removeChoice(choiceId, '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9');
     }
 };
 exports.StoriesController = StoriesController;
@@ -226,7 +226,6 @@ __decorate([
 ], StoriesController.prototype, "reorderChapters", null);
 __decorate([
     (0, common_1.Post)(':storyId/variables'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),
@@ -237,135 +236,110 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':storyId/variables'),
     __param(0, (0, common_1.Param)('storyId')),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "findStoryVariables", null);
 __decorate([
     (0, common_1.Put)(':storyId/variables/:variableId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Param)('variableId')),
     __param(2, (0, common_1.Body)()),
-    __param(3, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, update_story_variable_dto_1.UpdateStoryVariableDto, Object]),
+    __metadata("design:paramtypes", [String, String, update_story_variable_dto_1.UpdateStoryVariableDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "updateStoryVariable", null);
 __decorate([
     (0, common_1.Delete)(':storyId/variables/:variableId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Param)('variableId')),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "deleteStoryVariable", null);
 __decorate([
     (0, common_1.Post)(':storyId/items'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_item_dto_1.CreateItemDto, Object]),
+    __metadata("design:paramtypes", [String, create_item_dto_1.CreateItemDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "createItem", null);
 __decorate([
     (0, common_1.Get)(':storyId/items'),
     __param(0, (0, common_1.Param)('storyId')),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "findItems", null);
 __decorate([
     (0, common_1.Put)(':storyId/items/:itemId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Param)('itemId')),
     __param(2, (0, common_1.Body)()),
-    __param(3, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, update_item_dto_1.UpdateItemDto, Object]),
+    __metadata("design:paramtypes", [String, String, update_item_dto_1.UpdateItemDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "updateItem", null);
 __decorate([
     (0, common_1.Delete)(':storyId/items/:itemId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Param)('itemId')),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "deleteItem", null);
 __decorate([
     (0, common_1.Post)(':storyId/nodes'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('storyId')),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_node_dto_1.CreateNodeDto, Object]),
+    __metadata("design:paramtypes", [String, create_node_dto_1.CreateNodeDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "createNode", null);
 __decorate([
     (0, common_1.Get)(':storyId/nodes'),
     __param(0, (0, common_1.Param)('storyId')),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "findNodes", null);
 __decorate([
     (0, common_1.Put)('nodes/:nodeId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('nodeId')),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_node_dto_1.UpdateNodeDto, Object]),
+    __metadata("design:paramtypes", [String, create_node_dto_1.UpdateNodeDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "updateNode", null);
 __decorate([
     (0, common_1.Delete)('nodes/:nodeId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('nodeId')),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "removeNode", null);
 __decorate([
     (0, common_1.Post)('nodes/:fromNodeId/choices'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('fromNodeId')),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_choice_dto_1.CreateChoiceDto, Object]),
+    __metadata("design:paramtypes", [String, create_choice_dto_1.CreateChoiceDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "createChoice", null);
 __decorate([
     (0, common_1.Put)('choices/:choiceId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('choiceId')),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_choice_dto_1.UpdateChoiceDto, Object]),
+    __metadata("design:paramtypes", [String, create_choice_dto_1.UpdateChoiceDto]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "updateChoice", null);
 __decorate([
     (0, common_1.Delete)('choices/:choiceId'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('choiceId')),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "removeChoice", null);
 exports.StoriesController = StoriesController = __decorate([

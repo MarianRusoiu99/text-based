@@ -10,7 +10,7 @@ export declare class ChoicesController {
     private readonly choicesService;
     constructor(choicesService: ChoicesService);
     create(createChoiceDto: CreateChoiceDto, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
@@ -26,7 +26,7 @@ export declare class ChoicesController {
         };
     }>;
     findAll(storyId: string, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
@@ -65,7 +65,7 @@ export declare class ChoicesController {
         })[];
     }>;
     findOne(id: string, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
@@ -123,7 +123,7 @@ export declare class ChoicesController {
         };
     }>;
     update(id: string, updateChoiceDto: UpdateChoiceDto, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
@@ -139,7 +139,7 @@ export declare class ChoicesController {
         };
     }>;
     remove(id: string, req: {
-        user: AuthenticatedUser;
+        user?: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;

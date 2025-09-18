@@ -4,6 +4,17 @@
 
 You are working on a text-based adventure platform that combines a powerful story creation editor with an immersive story player, enhanced by completely flexible RPG mechanics that story creators can define without any hardcoded constraints.
 
+Command to start the backend server:
+```bash
+cd backend && npm run start:dev
+```
+Command to start the frontend server:
+```bash
+cd frontend && npm run dev
+```
+Please ensure both servers are running for full functionality.
+Please start a new terminal session for each server and do not run other commands in those sessions. If you need to run other commands, please open a new terminal session.
+
 **Key Technologies:**
 - **Backend:** NestJS 10+ with TypeScript 5+
 - **Frontend:** React 18+ with TypeScript 5+

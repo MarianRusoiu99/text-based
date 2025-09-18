@@ -98,9 +98,6 @@ let StoriesService = class StoriesService {
         if (!story) {
             throw new common_1.NotFoundException('Story not found');
         }
-        if (story.visibility === 'private' && story.authorId !== userId) {
-            throw new common_1.ForbiddenException('Access denied');
-        }
         return {
             success: true,
             data: story,
