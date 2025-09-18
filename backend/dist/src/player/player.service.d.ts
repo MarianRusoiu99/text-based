@@ -16,19 +16,19 @@ export declare class PlayerService {
             session: {
                 story: {
                     id: string;
+                    title: string;
                     description: string | null;
                     rpgTemplate: {
                         id: string;
-                        name: string;
-                        description: string | null;
                         createdAt: Date;
                         updatedAt: Date;
+                        name: string;
+                        description: string | null;
                         version: string;
                         isPublic: boolean;
                         config: import("@prisma/client/runtime/library").JsonValue;
                         creatorId: string;
                     } | null;
-                    title: string;
                 };
             } & {
                 id: string;
@@ -167,8 +167,8 @@ export declare class PlayerService {
         data: {
             story: {
                 id: string;
-                description: string | null;
                 title: string;
+                description: string | null;
                 isPublished: boolean;
             };
         } & {
@@ -206,19 +206,19 @@ export declare class PlayerService {
             session: {
                 story: {
                     id: string;
+                    title: string;
                     description: string | null;
                     rpgTemplate: {
                         id: string;
-                        name: string;
-                        description: string | null;
                         createdAt: Date;
                         updatedAt: Date;
+                        name: string;
+                        description: string | null;
                         version: string;
                         isPublic: boolean;
                         config: import("@prisma/client/runtime/library").JsonValue;
                         creatorId: string;
                     } | null;
-                    title: string;
                 };
             } & {
                 id: string;
@@ -234,8 +234,8 @@ export declare class PlayerService {
             savedGame: {
                 story: {
                     id: string;
-                    description: string | null;
                     title: string;
+                    description: string | null;
                     isPublished: boolean;
                 };
             } & {

@@ -4,8 +4,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { discoveryService, type Story, type StoryFilters } from '../services/discoveryService';
+import { useAuthStore } from '../stores/authStore';
+import { useQuery } from '@tanstack/react-query';
 
 const Stories: React.FC = () => {
+  const { user } = useAuthStore();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,6 +24,18 @@ const Stories: React.FC = () => {
 
   const categories = ['Adventure', 'Fantasy', 'Sci-Fi', 'Mystery', 'Romance', 'Horror', 'Comedy', 'Drama'];
   const popularTags = ['interactive', 'choose-your-own-adventure', 'rpg', 'short-story', 'long-form', 'experimental'];
+
+  // Social discovery queries
+  const { data: trendingStories } = useQuery({
+    queryKey: ['trending-stories'],
+    queryFn: () => discoveryService.getTrendingStories(6),
+  });
+
+  const { data: recommendedStories } = useQuery({
+    queryKey: ['recommended-stories', user?.id],
+    queryFn: () => discoveryService.getRecommendedStories(6),
+    enabled: !!user,
+  });
 
   const fetchStories = useCallback(async () => {
     try {
@@ -110,6 +125,68 @@ const Stories: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-6">Discover Stories</h1>
+
+        {/* Trending Stories */}
+        {trendingStories?.data && trendingStories.data.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">🔥 Trending Now</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSortBy('trending')}
+                className="text-blue-600 hover:text-blue-800"
+              >
+                View All
+              </Button>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              {trendingStories.data.map((story) => (
+                <div key={story.id} className="transform hover:scale-105 transition-transform">
+                  <StoryCard
+                    story={story}
+                    showAuthor={false}
+                    showStats={false}
+                    onRatingUpdate={handleRatingUpdate}
+                    onBookmarkToggle={handleBookmarkToggle}
+                    onFollowToggle={handleFollowToggle}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recommended Stories */}
+        {recommendedStories?.data && recommendedStories.data.length > 0 && user && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">✨ Recommended for You</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSortBy('rating')}
+                className="text-green-600 hover:text-green-800"
+              >
+                View Similar
+              </Button>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              {recommendedStories.data.map((story) => (
+                <div key={story.id} className="transform hover:scale-105 transition-transform">
+                  <StoryCard
+                    story={story}
+                    showAuthor={false}
+                    showStats={false}
+                    onRatingUpdate={handleRatingUpdate}
+                    onBookmarkToggle={handleBookmarkToggle}
+                    onFollowToggle={handleFollowToggle}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">

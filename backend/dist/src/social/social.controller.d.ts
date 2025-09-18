@@ -86,8 +86,8 @@ export declare class SocialController {
         } & {
             id: string;
             createdAt: Date;
-            rating: number;
             updatedAt: Date;
+            rating: number;
             userId: string;
             storyId: string;
             review: string | null;
@@ -98,8 +98,8 @@ export declare class SocialController {
         data: {
             id: string;
             createdAt: Date;
-            rating: number;
             updatedAt: Date;
+            rating: number;
             userId: string;
             storyId: string;
             review: string | null;
@@ -118,8 +118,8 @@ export declare class SocialController {
             } & {
                 id: string;
                 createdAt: Date;
-                rating: number;
                 updatedAt: Date;
+                rating: number;
                 userId: string;
                 storyId: string;
                 review: string | null;
@@ -228,8 +228,8 @@ export declare class SocialController {
         data: {
             story: {
                 id: string;
-                description: string | null;
                 title: string;
+                description: string | null;
                 coverImageUrl: string | null;
             };
         } & {
@@ -252,20 +252,20 @@ export declare class SocialController {
                     totalRatings: number;
                     totalPlays: number;
                     id: string;
-                    description: string | null;
                     ratings: {
                         rating: number;
                     }[];
-                    _count: {
-                        ratings: number;
-                        playSessions: number;
-                    };
                     title: string;
+                    description: string | null;
                     coverImageUrl: string | null;
                     author: {
                         id: string;
                         username: string;
                         displayName: string | null;
+                    };
+                    _count: {
+                        ratings: number;
+                        playSessions: number;
                     };
                 };
                 id: string;

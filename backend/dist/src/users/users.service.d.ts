@@ -15,13 +15,13 @@ export declare class UsersService {
                 totalPlaySessions: number;
             };
             id: string;
-            createdAt: Date;
             username: string;
             email: string;
             displayName: string | null;
             bio: string | null;
             avatarUrl: string | null;
             isVerified: boolean;
+            createdAt: Date;
             updatedAt: Date;
             _count: {
                 stories: number;
@@ -38,13 +38,13 @@ export declare class UsersService {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
             username: string;
             email: string;
             displayName: string | null;
             bio: string | null;
             avatarUrl: string | null;
             isVerified: boolean;
+            createdAt: Date;
             updatedAt: Date;
         };
     }>;
@@ -57,11 +57,11 @@ export declare class UsersService {
                 totalFollowing: number;
             };
             id: string;
-            createdAt: Date;
             username: string;
             displayName: string | null;
             bio: string | null;
             avatarUrl: string | null;
+            createdAt: Date;
             _count: {
                 stories: number;
                 followers: number;

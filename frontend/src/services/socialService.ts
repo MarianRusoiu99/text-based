@@ -113,6 +113,25 @@ export interface FollowersResponse {
   };
 }
 
+export interface FollowingResponse {
+  success: boolean;
+  data: {
+    following: {
+      id: string;
+      username: string;
+      displayName?: string;
+      avatarUrl?: string;
+      bio?: string;
+    }[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+}
+
 export interface RatingsResponse {
   success: boolean;
   data: {
@@ -210,7 +229,7 @@ class SocialService {
   async getFollowing(
     userId: string,
     params: { page?: number; limit?: number } = {}
-  ): Promise<FollowersResponse> {
+  ): Promise<FollowingResponse> {
     const query = new URLSearchParams();
     if (params.page) query.append('page', params.page.toString());
     if (params.limit) query.append('limit', params.limit.toString());
@@ -223,7 +242,7 @@ class SocialService {
       throw new Error(`Failed to get following: ${response.statusText}`);
     }
 
-    const result: FollowersResponse = await response.json();
+    const result: FollowingResponse = await response.json();
     return result;
   }
 

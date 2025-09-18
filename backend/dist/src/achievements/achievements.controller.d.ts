@@ -11,16 +11,16 @@ export declare class AchievementsController {
         success: boolean;
         data: {
             id: string;
+            isActive: boolean;
+            createdAt: Date;
             name: string;
             description: string | null;
-            iconUrl: string | null;
             category: string;
+            iconUrl: string | null;
             triggerType: string;
             triggerData: import("@prisma/client/runtime/library").JsonValue | null;
             points: number;
             rarity: string;
-            isActive: boolean;
-            createdAt: Date;
         }[];
     }>;
     getUserAchievements(req: AuthenticatedRequest): Promise<{
@@ -28,16 +28,16 @@ export declare class AchievementsController {
         data: ({
             achievement: {
                 id: string;
+                isActive: boolean;
+                createdAt: Date;
                 name: string;
                 description: string | null;
-                iconUrl: string | null;
                 category: string;
+                iconUrl: string | null;
                 triggerType: string;
                 triggerData: import("@prisma/client/runtime/library").JsonValue | null;
                 points: number;
                 rarity: string;
-                isActive: boolean;
-                createdAt: Date;
             };
         } & {
             id: string;

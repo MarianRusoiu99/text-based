@@ -18,16 +18,16 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -46,16 +46,16 @@ export declare class StoriesService {
                 };
             } & {
                 id: string;
-                description: string | null;
-                category: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                visibility: string;
-                isPublished: boolean;
+                description: string | null;
                 coverImageUrl: string | null;
+                category: string | null;
                 tags: string[];
+                isPublished: boolean;
                 isFeatured: boolean;
+                visibility: string;
                 contentRating: string;
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
@@ -80,26 +80,26 @@ export declare class StoriesService {
             };
             chapters: {
                 id: string;
-                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                chapterOrder: number;
+                description: string | null;
                 isPublished: boolean;
+                chapterOrder: number;
                 storyId: string;
             }[];
         } & {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -112,16 +112,16 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -138,16 +138,16 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -160,12 +160,12 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         };
     }>;
@@ -173,12 +173,12 @@ export declare class StoriesService {
         success: boolean;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         }[];
     }>;
@@ -186,12 +186,12 @@ export declare class StoriesService {
         success: boolean;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         };
     }>;
@@ -200,12 +200,12 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         };
     }>;

@@ -19,10 +19,10 @@ export declare class RpgTemplatesController {
             };
         } & {
             id: string;
-            name: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            description: string | null;
             version: string;
             isPublic: boolean;
             config: import("@prisma/client/runtime/library").JsonValue;
@@ -40,10 +40,10 @@ export declare class RpgTemplatesController {
                 };
             } & {
                 id: string;
-                name: string;
-                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
+                name: string;
+                description: string | null;
                 version: string;
                 isPublic: boolean;
                 config: import("@prisma/client/runtime/library").JsonValue;
@@ -67,10 +67,10 @@ export declare class RpgTemplatesController {
             };
         } & {
             id: string;
-            name: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            description: string | null;
             version: string;
             isPublic: boolean;
             config: import("@prisma/client/runtime/library").JsonValue;
@@ -88,10 +88,10 @@ export declare class RpgTemplatesController {
             };
         } & {
             id: string;
-            name: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            description: string | null;
             version: string;
             isPublic: boolean;
             config: import("@prisma/client/runtime/library").JsonValue;

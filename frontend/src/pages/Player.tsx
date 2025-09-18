@@ -73,6 +73,38 @@ const Player: React.FC = () => {
     }
   }, [session?.id]);
 
+  const formatText = (text: string) => {
+    // Split by double newlines to create paragraphs
+    return text.split('\n\n').map((paragraph, index) => {
+      // Handle horizontal rules
+      if (paragraph.trim() === '---') {
+        return <hr key={index} className="my-4 border-gray-300" />;
+      }
+
+      // Handle dialogue (lines starting with quotes)
+      if (paragraph.trim().startsWith('"') && paragraph.includes(':')) {
+        const colonIndex = paragraph.indexOf(':');
+        const speaker = paragraph.substring(1, colonIndex).trim();
+        const dialogue = paragraph.substring(colonIndex + 1).replace(/"/g, '').trim();
+        return (
+          <div key={index} className="my-2">
+            <div className="font-semibold text-blue-600">{speaker}:</div>
+            <div className="ml-4 italic text-gray-700">"{dialogue}"</div>
+          </div>
+        );
+      }
+
+      // Handle bold and italic formatting
+      const formattedParagraph = paragraph
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      return (
+        <p key={index} className="mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formattedParagraph }} />
+      );
+    });
+  };
+
   useEffect(() => {
     if (currentNode) {
       const text = typeof currentNode.content === 'object' && currentNode.content && typeof currentNode.content.text === 'string'
@@ -235,9 +267,15 @@ const Player: React.FC = () => {
                       Background: {currentNode.content.background}
                     </div>
                   )}
-                  <div className="text-lg leading-relaxed whitespace-pre-wrap min-h-[200px]">
-                    {displayedText}
-                    {isTyping && <span className="animate-pulse">|</span>}
+                  <div className="text-lg leading-relaxed min-h-[200px]">
+                    {isTyping ? (
+                      <>
+                        {displayedText}
+                        <span className="animate-pulse">|</span>
+                      </>
+                    ) : (
+                      formatText(displayedText)
+                    )}
                   </div>
                 </div>
               )}

@@ -19,28 +19,28 @@ export declare class DiscoveryController {
                 ratings: {
                     rating: number;
                 }[];
-                _count: {
-                    ratings: number;
-                    comments: number;
-                    playSessions: number;
-                };
                 author: {
                     id: string;
                     username: string;
                     displayName: string | null;
                     avatarUrl: string | null;
                 };
+                _count: {
+                    ratings: number;
+                    comments: number;
+                    playSessions: number;
+                };
                 id: string;
-                description: string | null;
-                category: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                visibility: string;
-                isPublished: boolean;
+                description: string | null;
                 coverImageUrl: string | null;
+                category: string | null;
                 tags: string[];
+                isPublished: boolean;
                 isFeatured: boolean;
+                visibility: string;
                 contentRating: string;
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
@@ -76,28 +76,28 @@ export declare class DiscoveryController {
             ratings: {
                 rating: number;
             }[];
-            _count: {
-                ratings: number;
-                comments: number;
-                playSessions: number;
-            };
             author: {
                 id: string;
                 username: string;
                 displayName: string | null;
                 avatarUrl: string | null;
             };
+            _count: {
+                ratings: number;
+                comments: number;
+                playSessions: number;
+            };
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -115,28 +115,28 @@ export declare class DiscoveryController {
             ratings: {
                 rating: number;
             }[];
-            _count: {
-                ratings: number;
-                comments: number;
-                playSessions: number;
-            };
             author: {
                 id: string;
                 username: string;
                 displayName: string | null;
                 avatarUrl: string | null;
             };
+            _count: {
+                ratings: number;
+                comments: number;
+                playSessions: number;
+            };
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -154,28 +154,28 @@ export declare class DiscoveryController {
             ratings: {
                 rating: number;
             }[];
-            _count: {
-                ratings: number;
-                comments: number;
-                playSessions: number;
-            };
             author: {
                 id: string;
                 username: string;
                 displayName: string | null;
                 avatarUrl: string | null;
             };
+            _count: {
+                ratings: number;
+                comments: number;
+                playSessions: number;
+            };
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;

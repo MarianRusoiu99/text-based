@@ -96,16 +96,16 @@ export declare class NodesController {
         data: {
             story: {
                 id: string;
-                description: string | null;
-                category: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                visibility: string;
-                isPublished: boolean;
+                description: string | null;
                 coverImageUrl: string | null;
+                category: string | null;
                 tags: string[];
+                isPublished: boolean;
                 isFeatured: boolean;
+                visibility: string;
                 contentRating: string;
                 estimatedDuration: number | null;
                 publishedAt: Date | null;

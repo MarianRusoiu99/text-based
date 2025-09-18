@@ -23,16 +23,16 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -51,16 +51,16 @@ export declare class StoriesController {
                 };
             } & {
                 id: string;
-                description: string | null;
-                category: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                visibility: string;
-                isPublished: boolean;
+                description: string | null;
                 coverImageUrl: string | null;
+                category: string | null;
                 tags: string[];
+                isPublished: boolean;
                 isFeatured: boolean;
+                visibility: string;
                 contentRating: string;
                 estimatedDuration: number | null;
                 publishedAt: Date | null;
@@ -87,26 +87,26 @@ export declare class StoriesController {
             };
             chapters: {
                 id: string;
-                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                chapterOrder: number;
+                description: string | null;
                 isPublished: boolean;
+                chapterOrder: number;
                 storyId: string;
             }[];
         } & {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -121,16 +121,16 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -151,16 +151,16 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            description: string | null;
-            category: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            visibility: string;
-            isPublished: boolean;
+            description: string | null;
             coverImageUrl: string | null;
+            category: string | null;
             tags: string[];
+            isPublished: boolean;
             isFeatured: boolean;
+            visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
             publishedAt: Date | null;
@@ -175,12 +175,12 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         };
     }>;
@@ -190,12 +190,12 @@ export declare class StoriesController {
         success: boolean;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         }[];
     }>;
@@ -205,12 +205,12 @@ export declare class StoriesController {
         success: boolean;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         };
     }>;
@@ -221,12 +221,12 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            description: string | null;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            chapterOrder: number;
+            description: string | null;
             isPublished: boolean;
+            chapterOrder: number;
             storyId: string;
         };
     }>;
