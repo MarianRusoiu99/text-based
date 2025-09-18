@@ -2,7 +2,7 @@
 
 ## Overview
 
-The frontend architecture is designed to support a dual-purpose platform combining a sophisticated story editor with an immersive story player. The application uses React with TypeScript for type safety and maintainability, implementing a modular component-based architecture that ensures reusability and scalability.
+The frontend architecture is designed to support a dual-purpose platform combining a sophisticated story editor with an immersive story player, enhanced with flexible RPG mechanics that can be defined by story creators. The application uses React with TypeScript for type safety and maintainability, implementing a modular component-based architecture that ensures reusability and scalability. The design emphasizes an intuitive, N8N-like interface for the story editor with quality-of-life features and keyboard shortcuts for efficient story creation.
 
 ## Technology Stack
 
@@ -22,6 +22,7 @@ The frontend architecture is designed to support a dual-purpose platform combini
 - **Framer Motion** for smooth animations and transitions
 - **React Flow** for the node-based story editor interface
 - **Lucide React** for consistent iconography
+- **React DnD** for drag-and-drop functionality in the editor
 
 ### Development Tools
 - **ESLint** and **Prettier** for code quality and formatting
@@ -40,705 +41,312 @@ src/
 ├── components/           # Reusable UI components
 │   ├── ui/              # Basic UI components (buttons, inputs, etc.)
 │   ├── layout/          # Layout components (header, sidebar, etc.)
+│   ├── rpg/             # RPG-specific components (stat displays, check interfaces, etc.)
 │   └── common/          # Common components used across features
 ├── features/            # Feature-based modules
 │   ├── auth/           # Authentication and user management
 │   ├── editor/         # Story editor functionality
+│   │   ├── nodes/      # Node-specific components
+│   │   ├── panels/     # Editor panels and toolbars
+│   │   ├── canvas/     # Canvas and flow management
+│   │   └── templates/  # RPG template management
 │   ├── player/         # Story player functionality
-│   ├── library/        # Story browsing and library
-│   ├── profile/        # User profiles and settings
-│   └── analytics/      # Analytics and statistics
+│   │   ├── interface/  # Player UI components
+│   │   ├── mechanics/  # RPG mechanics integration
+│   │   └── saves/      # Save/load functionality
+│   ├── social/         # Social features (ratings, comments, etc.)
+│   └── analytics/      # Analytics and dashboard
 ├── hooks/              # Custom React hooks
-├── services/           # API services and external integrations
-├── stores/             # Zustand stores for state management
+├── services/           # API services and utilities
+├── stores/             # Zustand stores
 ├── types/              # TypeScript type definitions
-├── utils/              # Utility functions and helpers
-├── assets/             # Static assets (images, fonts, etc.)
-└── styles/             # Global styles and Tailwind configuration
+├── utils/              # Utility functions
+└── styles/             # Global styles and themes
 ```
 
-### Component Architecture
+### Component Design Principles
 
-The component architecture follows atomic design principles, organizing components into atoms, molecules, organisms, and templates. This approach ensures consistent design patterns and promotes reusability across the application.
+The frontend follows atomic design principles with a clear hierarchy of components:
 
-**Atomic Components (atoms/)**
-These are the smallest building blocks of the interface, including basic elements like buttons, inputs, labels, and icons. Each atomic component is designed to be highly reusable and follows consistent design tokens.
+**Atoms**: Basic UI elements like buttons, inputs, and icons that cannot be broken down further.
 
-```typescript
-// Example: Button component
-interface ButtonProps {
-  variant: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  loading?: boolean;
-  children: React.ReactNode;
-  onClick?: () => void;
-}
+**Molecules**: Simple combinations of atoms that function together as a unit, such as form fields with labels and validation messages.
 
-export const Button: React.FC<ButtonProps> = ({
-  variant,
-  size,
-  disabled,
-  loading,
-  children,
-  onClick
-}) => {
-  const baseClasses = 'font-medium rounded-lg transition-all duration-200';
-  const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
-    secondary: 'bg-gray-600 text-white hover:bg-gray-700',
-    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
-    ghost: 'text-gray-600 hover:bg-gray-100'
-  };
-  const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg'
-  };
+**Organisms**: Complex UI components that combine molecules and atoms to form distinct sections of an interface, like navigation bars or story node editors.
 
-  return (
-    <button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`}
-      disabled={disabled || loading}
-      onClick={onClick}
-    >
-      {loading ? <Spinner /> : children}
-    </button>
-  );
-};
-```
+**Templates**: Page-level objects that place components into a layout and articulate the design's underlying content structure.
 
-**Molecular Components (molecules/)**
-These components combine atoms to create more complex UI elements like form fields, cards, navigation items, and modal dialogs. They handle specific pieces of functionality while remaining reusable.
+**Pages**: Specific instances of templates that show what a UI looks like with real representative content.
 
-**Organism Components (organisms/)**
-These are complex components that combine molecules and atoms to create distinct sections of the interface, such as headers, sidebars, story cards, and editor panels.
+## Story Editor Interface
 
-**Template Components (templates/)**
-These components define the overall page layout and structure, providing consistent positioning and spacing for different sections of the application.
+### Node-Based Canvas
 
-## Feature-Specific Architecture
+The story editor features a visual, node-based interface inspired by workflow tools like N8N, providing an intuitive way for authors to create complex branching narratives.
 
-### Story Editor Architecture
+**Canvas Component**: The main editing area uses React Flow to provide a zoomable, pannable canvas where story nodes can be placed and connected. The canvas supports:
+- Infinite scrolling and zooming
+- Grid snapping for precise node placement
+- Multi-selection and bulk operations
+- Keyboard shortcuts for common operations
+- Undo/redo functionality
+- Auto-save with visual indicators
 
-The story editor is the most complex part of the frontend, requiring a sophisticated node-based interface for creating interactive narratives. The architecture is designed to handle complex story structures while providing an intuitive user experience.
+**Node Types**: The editor supports various node types, each with specialized interfaces:
+- **Start Node**: Entry point for the story
+- **Story Node**: Contains narrative text and character interactions
+- **Choice Node**: Presents options to the player
+- **Check Node**: Performs stat checks or conditional logic
+- **End Node**: Story conclusion points
+- **Custom Node**: User-defined node types for specific mechanics
 
-**Editor State Management**
-The editor uses a dedicated Zustand store to manage the complex state of stories, nodes, and connections. The state is structured to support undo/redo functionality, real-time collaboration, and efficient rendering of large story graphs.
+**Node Editor Panel**: When a node is selected, a detailed editor panel appears, allowing authors to:
+- Edit text content with rich text formatting
+- Configure character appearances and positions
+- Set background images or videos
+- Define custom variables and flags
+- Configure RPG mechanics and checks
+- Set conditional logic for branching
 
-```typescript
-interface EditorState {
-  // Current story being edited
-  currentStory: Story | null;
-  
-  // Node and connection data
-  nodes: Node[];
-  connections: Connection[];
-  
-  // Editor UI state
-  selectedNodes: string[];
-  selectedConnections: string[];
-  viewportPosition: { x: number; y: number };
-  zoomLevel: number;
-  
-  // Editor modes and tools
-  currentTool: 'select' | 'add-node' | 'add-connection' | 'delete';
-  isPreviewMode: boolean;
-  
-  // History for undo/redo
-  history: EditorSnapshot[];
-  historyIndex: number;
-  
-  // Actions
-  addNode: (node: Partial<Node>) => void;
-  updateNode: (id: string, updates: Partial<Node>) => void;
-  deleteNode: (id: string) => void;
-  addConnection: (connection: Partial<Connection>) => void;
-  updateConnection: (id: string, updates: Partial<Connection>) => void;
-  deleteConnection: (id: string) => void;
-  selectNodes: (nodeIds: string[]) => void;
-  setTool: (tool: EditorTool) => void;
-  undo: () => void;
-  redo: () => void;
-  saveSnapshot: () => void;
-}
-```
+### RPG Template System
 
-**Node Editor Components**
-The node editor uses React Flow as the foundation, with custom node types for different story elements. Each node type has its own component and configuration:
+The editor includes a comprehensive system for defining and managing RPG mechanics:
 
-```typescript
-// Story Node Component
-export const StoryNode: React.FC<NodeProps<StoryNodeData>> = ({ data, selected }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const updateNode = useEditorStore(state => state.updateNode);
+**Template Editor**: A dedicated interface for creating RPG templates that define:
+- Custom stat definitions with types (numeric, boolean, string, object)
+- Proficiency systems linked to stats
+- Item categories and properties
+- Custom formulas and calculations
+- Conditional logic systems
 
-  const handleContentUpdate = (content: StoryContent) => {
-    updateNode(data.id, { content });
-  };
+**Template Library**: A browsable collection of RPG templates that can be:
+- Created from scratch
+- Duplicated and modified
+- Shared publicly or kept private
+- Imported from other creators
+- Versioned for updates and changes
 
-  return (
-    <div className={`story-node ${selected ? 'selected' : ''}`}>
-      <div className="node-header">
-        <h3>{data.title}</h3>
-        <NodeActions nodeId={data.id} />
-      </div>
-      
-      <div className="node-content">
-        {isEditing ? (
-          <StoryContentEditor
-            content={data.content}
-            onSave={handleContentUpdate}
-            onCancel={() => setIsEditing(false)}
-          />
-        ) : (
-          <StoryContentPreview
-            content={data.content}
-            onClick={() => setIsEditing(true)}
-          />
-        )}
-      </div>
-      
-      <div className="node-connections">
-        <Handle type="target" position={Position.Top} />
-        <Handle type="source" position={Position.Bottom} />
-      </div>
-    </div>
-  );
-};
-```
+**Mechanics Integration**: RPG mechanics are seamlessly integrated into the story editor:
+- Stat checks can be configured within story nodes
+- Character progression can be defined at story milestones
+- Inventory management is built into choice outcomes
+- Custom flags and variables support complex logic
 
-**Content Editing Interface**
-The content editing interface provides rich text editing capabilities with support for character management, background selection, and choice creation. The interface is designed to be intuitive while providing access to advanced features.
+### Quality of Life Features
 
-```typescript
-interface StoryContentEditorProps {
-  content: StoryContent;
-  onSave: (content: StoryContent) => void;
-  onCancel: () => void;
-}
+The editor includes numerous features to enhance the authoring experience:
 
-export const StoryContentEditor: React.FC<StoryContentEditorProps> = ({
-  content,
-  onSave,
-  onCancel
-}) => {
-  const [paragraphs, setParagraphs] = useState(content.paragraphs || []);
-  const [characters, setCharacters] = useState(content.characters || []);
-  const [background, setBackground] = useState(content.background || '');
+**Keyboard Shortcuts**: Comprehensive keyboard shortcuts for all common operations including node creation, connection, deletion, and navigation.
 
-  return (
-    <div className="content-editor">
-      <TabGroup>
-        <TabList>
-          <Tab>Text</Tab>
-          <Tab>Characters</Tab>
-          <Tab>Background</Tab>
-          <Tab>Audio</Tab>
-        </TabList>
-        
-        <TabPanels>
-          <TabPanel>
-            <ParagraphEditor
-              paragraphs={paragraphs}
-              onChange={setParagraphs}
-            />
-          </TabPanel>
-          
-          <TabPanel>
-            <CharacterManager
-              characters={characters}
-              onChange={setCharacters}
-            />
-          </TabPanel>
-          
-          <TabPanel>
-            <BackgroundSelector
-              selected={background}
-              onChange={setBackground}
-            />
-          </TabPanel>
-          
-          <TabPanel>
-            <AudioManager
-              audio={content.audio}
-              onChange={(audio) => setContent({...content, audio})}
-            />
-          </TabPanel>
-        </TabPanels>
-      </TabGroup>
-      
-      <div className="editor-actions">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={() => onSave({
-          paragraphs,
-          characters,
-          background,
-          audio: content.audio
-        })}>
-          Save
-        </Button>
-      </div>
-    </div>
-  );
-};
-```
+**Auto-Layout**: Intelligent node positioning algorithms that can automatically organize story structures for better readability.
 
-### Story Player Architecture
+**Story Outline**: A hierarchical view of the story structure that allows for quick navigation and organization.
 
-The story player provides an immersive reading experience that brings stories to life through visual and interactive elements. The architecture focuses on smooth transitions, responsive design, and engaging user interactions.
+**Live Preview**: Real-time preview of story content as it would appear to players, including RPG mechanics testing.
 
-**Player State Management**
-The player uses a dedicated state management system to track game progress, inventory, flags, and user choices. The state is designed to support save/load functionality and analytics tracking.
+**Collaboration Tools**: Real-time collaborative editing with conflict resolution and change tracking.
 
-```typescript
-interface PlayerState {
-  // Current game session
-  sessionId: string | null;
-  currentStory: Story | null;
-  currentNode: Node | null;
-  
-  // Game state
-  gameState: {
-    flags: Record<string, boolean>;
-    inventory: string[];
-    variables: Record<string, any>;
-  };
-  
-  // Player progress
-  progress: {
-    nodesVisited: string[];
-    totalNodes: number;
-    completionPercentage: number;
-    playTime: number;
-  };
-  
-  // UI state
-  isLoading: boolean;
-  showInventory: boolean;
-  showSettings: boolean;
-  textSpeed: number;
-  autoAdvance: boolean;
-  
-  // Actions
-  startStory: (storyId: string) => Promise<void>;
-  makeChoice: (choiceId: string) => Promise<void>;
-  saveProgress: () => Promise<void>;
-  loadProgress: () => Promise<void>;
-  toggleInventory: () => void;
-  updateSettings: (settings: Partial<PlayerSettings>) => void;
-}
-```
+**Version Control**: Built-in versioning system with branching, merging, and rollback capabilities.
 
-**Player Interface Components**
-The player interface is designed to be immersive and distraction-free, with careful attention to typography, spacing, and visual hierarchy.
+## Story Player Interface
 
-```typescript
-export const StoryPlayer: React.FC = () => {
-  const {
-    currentNode,
-    gameState,
-    progress,
-    isLoading,
-    makeChoice,
-    toggleInventory
-  } = usePlayerStore();
+### Immersive Reading Experience
 
-  const [currentParagraphIndex, setCurrentParagraphIndex] = useState(0);
-  const [showChoices, setShowChoices] = useState(false);
+The story player provides a rich, immersive interface for experiencing interactive narratives:
 
-  if (isLoading || !currentNode) {
-    return <PlayerLoadingScreen />;
-  }
+**Text Display**: Clean, readable typography with customizable font sizes, themes, and spacing. Text appears with smooth transitions and can be configured for different reading speeds.
 
-  return (
-    <div className="story-player">
-      <PlayerHeader
-        storyTitle={currentNode.story.title}
-        progress={progress}
-        onMenuClick={() => setShowMenu(true)}
-      />
-      
-      <div className="player-content">
-        <BackgroundLayer background={currentNode.content.background} />
-        
-        <CharacterLayer characters={currentNode.content.characters} />
-        
-        <TextLayer
-          paragraphs={currentNode.content.paragraphs}
-          currentIndex={currentParagraphIndex}
-          onAdvance={() => {
-            if (currentParagraphIndex < currentNode.content.paragraphs.length - 1) {
-              setCurrentParagraphIndex(prev => prev + 1);
-            } else {
-              setShowChoices(true);
-            }
-          }}
-        />
-        
-        {showChoices && (
-          <ChoiceLayer
-            choices={currentNode.availableChoices}
-            onSelect={makeChoice}
-          />
-        )}
-      </div>
-      
-      <PlayerControls
-        onInventoryClick={toggleInventory}
-        onSettingsClick={() => setShowSettings(true)}
-        onSaveClick={saveProgress}
-      />
-    </div>
-  );
-};
-```
+**Character System**: Visual character representations with:
+- Sprite-based character display
+- Expression and pose changes
+- Smooth animations and transitions
+- Positioning and layering support
 
-**Visual Effects and Animations**
-The player uses Framer Motion for smooth transitions and engaging visual effects. Character animations, background transitions, and text reveals are carefully orchestrated to create an immersive experience.
+**Background Integration**: Dynamic background changes with:
+- Image and video support
+- Smooth transitions between scenes
+- Parallax effects for depth
+- Ambient audio integration
 
-```typescript
-export const CharacterLayer: React.FC<{ characters: Character[] }> = ({ characters }) => {
-  return (
-    <div className="character-layer">
-      <AnimatePresence>
-        {characters.map((character) => (
-          <motion.div
-            key={character.name}
-            className={`character character-${character.position}`}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-          >
-            <motion.img
-              src={character.spriteUrl}
-              alt={character.name}
-              animate={{ scale: character.expression === 'excited' ? 1.05 : 1 }}
-              transition={{ duration: 0.3 }}
-            />
-            
-            {character.dialogue && (
-              <motion.div
-                className="character-dialogue"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                {character.dialogue}
-              </motion.div>
-            )}
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </div>
-  );
-};
-```
+### RPG Mechanics Interface
 
-### Library and Discovery Architecture
+The player interface seamlessly integrates RPG mechanics without disrupting the narrative flow:
 
-The library interface provides users with powerful tools to discover, organize, and manage stories. The architecture emphasizes performance, search functionality, and social features.
+**Stat Display**: Accessible character sheet showing:
+- Current character stats and values
+- Proficiencies and bonuses
+- Inventory items and equipment
+- Custom flags and variables
 
-**Library State Management**
-The library uses React Query for efficient data fetching and caching, with Zustand handling UI state and user preferences.
+**Check Interface**: When stat checks are required, an intuitive interface appears showing:
+- The type of check being performed
+- Required difficulty or target numbers
+- Character bonuses and modifiers
+- Visual feedback for success or failure
 
-```typescript
-interface LibraryState {
-  // Filters and search
-  searchQuery: string;
-  selectedCategory: string | null;
-  selectedTags: string[];
-  sortBy: 'created_at' | 'updated_at' | 'rating' | 'reads';
-  sortOrder: 'asc' | 'desc';
-  contentRating: string[];
-  
-  // View preferences
-  viewMode: 'grid' | 'list';
-  itemsPerPage: number;
-  
-  // User collections
-  bookmarks: string[];
-  readingHistory: string[];
-  
-  // Actions
-  setSearchQuery: (query: string) => void;
-  setFilters: (filters: Partial<LibraryFilters>) => void;
-  toggleBookmark: (storyId: string) => void;
-  addToHistory: (storyId: string) => void;
-}
-```
+**Choice System**: Enhanced choice presentation that:
+- Shows available options based on character capabilities
+- Indicates when choices require specific stats or items
+- Provides clear feedback on choice outcomes
+- Supports complex conditional logic
 
-**Story Discovery Components**
-The discovery interface includes sophisticated filtering, search, and recommendation features to help users find stories they'll enjoy.
+**Progress Tracking**: Comprehensive tracking of:
+- Story progress and chapter completion
+- Character advancement and changes
+- Choice history and consequences
+- Achievement and milestone tracking
 
-```typescript
-export const StoryLibrary: React.FC = () => {
-  const {
-    searchQuery,
-    selectedCategory,
-    selectedTags,
-    sortBy,
-    sortOrder,
-    viewMode,
-    setSearchQuery,
-    setFilters
-  } = useLibraryStore();
+### Customization and Accessibility
 
-  const { data: stories, isLoading } = useQuery({
-    queryKey: ['stories', { searchQuery, selectedCategory, selectedTags, sortBy, sortOrder }],
-    queryFn: () => fetchStories({
-      search: searchQuery,
-      category: selectedCategory,
-      tags: selectedTags,
-      sortBy,
-      sortOrder
-    })
-  });
+The player interface prioritizes accessibility and customization:
 
-  return (
-    <div className="story-library">
-      <LibraryHeader>
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search stories..."
-        />
-        
-        <ViewToggle
-          mode={viewMode}
-          onChange={(mode) => setFilters({ viewMode: mode })}
-        />
-      </LibraryHeader>
-      
-      <div className="library-content">
-        <LibrarySidebar>
-          <CategoryFilter
-            selected={selectedCategory}
-            onChange={(category) => setFilters({ selectedCategory: category })}
-          />
-          
-          <TagFilter
-            selected={selectedTags}
-            onChange={(tags) => setFilters({ selectedTags: tags })}
-          />
-          
-          <SortOptions
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onChange={(sort) => setFilters(sort)}
-          />
-        </LibrarySidebar>
-        
-        <div className="library-main">
-          {isLoading ? (
-            <StoryGridSkeleton />
-          ) : (
-            <StoryGrid
-              stories={stories}
-              viewMode={viewMode}
-              onStoryClick={(story) => navigate(`/play/${story.id}`)}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-```
+**Theme System**: Multiple visual themes including light, dark, and high-contrast modes with customizable color schemes.
+
+**Typography Options**: Adjustable font sizes, line spacing, and font families to accommodate different reading preferences.
+
+**Accessibility Features**: Full keyboard navigation, screen reader support, and compliance with WCAG 2.1 AA guidelines.
+
+**Reading Preferences**: Customizable reading speed, auto-advance options, and text display preferences.
+
+## Social Features Interface
+
+### Community Integration
+
+The platform includes comprehensive social features integrated throughout the interface:
+
+**Story Discovery**: Advanced search and filtering capabilities with:
+- Category and tag-based browsing
+- Rating and popularity sorting
+- Author following and recommendations
+- Personalized content suggestions
+
+**Rating and Review System**: Integrated rating interface allowing:
+- Five-star rating system
+- Written reviews and comments
+- Helpful/unhelpful voting
+- Moderation and reporting tools
+
+**User Profiles**: Comprehensive user profiles featuring:
+- Author portfolios with story collections
+- Reading history and achievements
+- Social connections and followers
+- Customizable profile information
+
+### Creator Dashboard
+
+Story creators have access to a comprehensive dashboard providing:
+
+**Analytics Overview**: Visual analytics showing story performance, reader engagement, and choice statistics.
+
+**Community Feedback**: Centralized view of ratings, reviews, and comments with response capabilities.
+
+**Story Management**: Tools for organizing, updating, and promoting published stories.
+
+**Template Sharing**: Interface for sharing and managing RPG templates with the community.
 
 ## Responsive Design and Mobile Support
 
-The application is designed with a mobile-first approach, ensuring optimal experiences across all device sizes. The responsive design uses Tailwind's responsive utilities and custom breakpoints to adapt layouts and interactions for different screen sizes.
+The application is designed with a mobile-first approach, ensuring excellent experiences across all device types:
 
-**Breakpoint Strategy**
-- **Mobile (sm)**: 640px and below - Single column layouts, touch-optimized controls
-- **Tablet (md)**: 768px to 1024px - Adaptive layouts with collapsible sidebars
-- **Desktop (lg)**: 1024px and above - Full feature layouts with multiple panels
+**Adaptive Layouts**: Responsive layouts that adapt to different screen sizes while maintaining functionality and usability.
 
-**Mobile-Specific Optimizations**
-The mobile experience includes touch-optimized controls, gesture support, and adaptive layouts that make the most of limited screen space.
+**Touch Optimization**: Touch-friendly interfaces with appropriate sizing and spacing for mobile interactions.
 
-```typescript
-export const MobileStoryPlayer: React.FC = () => {
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { currentNode, makeChoice } = usePlayerStore();
+**Progressive Web App**: PWA capabilities including offline reading, push notifications, and native app-like experiences.
 
-  return (
-    <div className="mobile-player">
-      <div className="mobile-header">
-        <button
-          className="menu-toggle"
-          onClick={() => setShowMobileMenu(true)}
-        >
-          <MenuIcon />
-        </button>
-        
-        <h1 className="story-title">{currentNode.story.title}</h1>
-        
-        <ProgressIndicator progress={progress} />
-      </div>
-      
-      <SwipeableViews
-        onSwipeLeft={() => advanceText()}
-        onSwipeRight={() => showPreviousText()}
-      >
-        <div className="text-content">
-          {currentNode.content.paragraphs.map((paragraph, index) => (
-            <motion.p
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              {paragraph}
-            </motion.p>
-          ))}
-        </div>
-      </SwipeableViews>
-      
-      <div className="mobile-choices">
-        {currentNode.availableChoices.map((choice) => (
-          <TouchableChoice
-            key={choice.id}
-            choice={choice}
-            onSelect={() => makeChoice(choice.id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-```
+**Performance Optimization**: Optimized loading and rendering for mobile networks and devices.
+
+## State Management Architecture
+
+### Global State Management
+
+The application uses Zustand for lightweight, flexible state management:
+
+**Auth Store**: Manages user authentication state, profile information, and session management.
+
+**Editor Store**: Handles story editing state, including current story, nodes, connections, and editor preferences.
+
+**Player Store**: Manages gameplay state, character data, progress tracking, and save/load functionality.
+
+**UI Store**: Controls global UI state including themes, modals, notifications, and user preferences.
+
+### Server State Management
+
+React Query handles all server-side state management:
+
+**Caching Strategy**: Intelligent caching of API responses with automatic invalidation and background updates.
+
+**Optimistic Updates**: Immediate UI updates with rollback capabilities for failed operations.
+
+**Error Handling**: Comprehensive error handling with retry logic and user-friendly error messages.
+
+**Background Sync**: Automatic synchronization of data when connectivity is restored.
 
 ## Performance Optimization
 
-The frontend architecture includes several performance optimization strategies to ensure smooth user experiences, especially when handling large stories or complex editor operations.
+### Code Splitting and Lazy Loading
 
-**Code Splitting and Lazy Loading**
-The application uses React's lazy loading and Suspense to split code by features and routes, reducing initial bundle size and improving load times.
+The application implements comprehensive code splitting:
 
-```typescript
-// Route-based code splitting
-const StoryEditor = lazy(() => import('../features/editor/StoryEditor'));
-const StoryPlayer = lazy(() => import('../features/player/StoryPlayer'));
-const StoryLibrary = lazy(() => import('../features/library/StoryLibrary'));
+**Route-Based Splitting**: Each major route is loaded on-demand to reduce initial bundle size.
 
-export const AppRouter: React.FC = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={
-          <Suspense fallback={<PageLoadingSpinner />}>
-            <StoryLibrary />
-          </Suspense>
-        } />
-        
-        <Route path="/editor/:storyId?" element={
-          <Suspense fallback={<EditorLoadingScreen />}>
-            <StoryEditor />
-          </Suspense>
-        } />
-        
-        <Route path="/play/:storyId" element={
-          <Suspense fallback={<PlayerLoadingScreen />}>
-            <StoryPlayer />
-          </Suspense>
-        } />
-      </Routes>
-    </Router>
-  );
-};
-```
+**Component-Based Splitting**: Large components and features are lazy-loaded when needed.
 
-**Virtual Scrolling and Pagination**
-For large lists of stories or nodes, the application implements virtual scrolling and intelligent pagination to maintain performance.
+**Dynamic Imports**: Third-party libraries and heavy features are loaded dynamically.
 
-**Memoization and Optimization**
-Critical components use React.memo, useMemo, and useCallback to prevent unnecessary re-renders and optimize performance.
+### Asset Optimization
 
-```typescript
-export const StoryCard = React.memo<StoryCardProps>(({ story, onSelect }) => {
-  const handleClick = useCallback(() => {
-    onSelect(story.id);
-  }, [story.id, onSelect]);
+**Image Optimization**: Automatic image compression, format conversion, and responsive image loading.
 
-  const formattedStats = useMemo(() => ({
-    rating: story.rating.toFixed(1),
-    reads: formatNumber(story.reads),
-    duration: formatDuration(story.estimatedDuration)
-  }), [story.rating, story.reads, story.estimatedDuration]);
+**Bundle Optimization**: Tree shaking, minification, and compression for optimal bundle sizes.
 
-  return (
-    <motion.div
-      className="story-card"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={handleClick}
-    >
-      <div className="card-image">
-        <img src={story.coverImageUrl} alt={story.title} loading="lazy" />
-      </div>
-      
-      <div className="card-content">
-        <h3>{story.title}</h3>
-        <p>{story.description}</p>
-        
-        <div className="card-stats">
-          <span>⭐ {formattedStats.rating}</span>
-          <span>👁 {formattedStats.reads}</span>
-          <span>⏱ {formattedStats.duration}</span>
-        </div>
-      </div>
-    </motion.div>
-  );
-});
-```
+**Caching Strategy**: Aggressive caching of static assets with proper cache invalidation.
 
-## Accessibility and Internationalization
+### Runtime Performance
 
-The frontend architecture prioritizes accessibility and internationalization to ensure the platform is usable by diverse audiences worldwide.
+**Virtual Scrolling**: Efficient rendering of large lists and story content.
 
-**Accessibility Features**
-- Semantic HTML structure with proper ARIA labels
-- Keyboard navigation support throughout the application
-- Screen reader compatibility with descriptive text
-- High contrast mode support
-- Focus management for modal dialogs and complex interactions
+**Memoization**: Strategic use of React.memo and useMemo for expensive computations.
 
-**Internationalization Support**
-The application uses react-i18next for comprehensive internationalization support, with dynamic language switching and RTL layout support.
+**Debouncing**: Input debouncing for search and real-time features to reduce API calls.
 
-```typescript
-// i18n configuration
-export const i18nConfig = {
-  lng: 'en',
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false
-  },
-  resources: {
-    en: {
-      translation: {
-        'story.title': 'Story Title',
-        'story.description': 'Story Description',
-        'editor.addNode': 'Add Node',
-        'player.nextChoice': 'Next Choice'
-      }
-    },
-    es: {
-      translation: {
-        'story.title': 'Título de la Historia',
-        'story.description': 'Descripción de la Historia',
-        'editor.addNode': 'Agregar Nodo',
-        'player.nextChoice': 'Siguiente Opción'
-      }
-    }
-  }
-};
-```
+## Testing Strategy
 
-This comprehensive frontend architecture provides a solid foundation for building a sophisticated text-based adventure platform that delivers exceptional user experiences across all devices and use cases. The modular design ensures maintainability and scalability as the platform grows and evolves.
+### Component Testing
+
+**Unit Tests**: Comprehensive testing of individual components using React Testing Library.
+
+**Integration Tests**: Testing of component interactions and feature workflows.
+
+**Visual Regression Tests**: Automated screenshot testing to catch visual changes.
+
+### End-to-End Testing
+
+**User Journey Tests**: Complete user workflows from registration through story creation and playing.
+
+**Cross-Browser Testing**: Ensuring compatibility across different browsers and devices.
+
+**Performance Testing**: Monitoring and testing of application performance under various conditions.
+
+## Security Considerations
+
+### Client-Side Security
+
+**Input Validation**: Comprehensive validation of all user inputs with sanitization.
+
+**XSS Prevention**: Protection against cross-site scripting attacks through proper output encoding.
+
+**CSRF Protection**: Implementation of CSRF tokens for state-changing operations.
+
+**Content Security Policy**: Strict CSP headers to prevent unauthorized script execution.
+
+### Data Protection
+
+**Sensitive Data Handling**: Proper handling of authentication tokens and user data.
+
+**Local Storage Security**: Secure storage of user preferences and temporary data.
+
+**API Security**: Secure communication with backend services using HTTPS and proper authentication.
+
+This frontend architecture provides a solid foundation for building an engaging, accessible, and maintainable text-based adventure platform that can adapt to various RPG mechanics while providing excellent user experiences across all device types and use cases.
 
