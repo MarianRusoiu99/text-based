@@ -19,6 +19,16 @@ export class UsersService {
         isVerified: true,
         createdAt: true,
         updatedAt: true,
+        _count: {
+          select: {
+            stories: true,
+            followers: true,
+            following: true,
+            ratings: true,
+            comments: true,
+            playSessions: true,
+          },
+        },
       },
     });
 
@@ -28,7 +38,17 @@ export class UsersService {
 
     return {
       success: true,
-      data: user,
+      data: {
+        ...user,
+        stats: {
+          totalStories: user._count.stories,
+          totalFollowers: user._count.followers,
+          totalFollowing: user._count.following,
+          totalRatings: user._count.ratings,
+          totalComments: user._count.comments,
+          totalPlaySessions: user._count.playSessions,
+        },
+      },
     };
   }
 
@@ -71,6 +91,13 @@ export class UsersService {
         bio: true,
         avatarUrl: true,
         createdAt: true,
+        _count: {
+          select: {
+            stories: true,
+            followers: true,
+            following: true,
+          },
+        },
       },
     });
 
@@ -80,7 +107,14 @@ export class UsersService {
 
     return {
       success: true,
-      data: user,
+      data: {
+        ...user,
+        stats: {
+          totalStories: user._count.stories,
+          totalFollowers: user._count.followers,
+          totalFollowing: user._count.following,
+        },
+      },
     };
   }
 }

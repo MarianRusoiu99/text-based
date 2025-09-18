@@ -17,6 +17,8 @@ import { LoggerModule } from './logger/logger.module';
 import { RpgTemplatesModule } from './rpg-templates/rpg-templates.module';
 import { PlayerModule } from './player/player.module';
 import { AchievementsModule } from './achievements/achievements.module';
+import { SocialModule } from './social/social.module';
+import { DiscoveryModule } from './discovery/discovery.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { AchievementsModule } from './achievements/achievements.module';
     RpgTemplatesModule,
     PlayerModule,
     AchievementsModule,
+    SocialModule,
+    DiscoveryModule,
   ],
   controllers: [AppController, NodesController, ChoicesController],
   providers: [AppService, NodesService, ChoicesService],
