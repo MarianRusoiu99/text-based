@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoriesController = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,8 +21,8 @@ const create_chapter_dto_1 = require("./dto/create-chapter.dto");
 const update_chapter_dto_1 = require("./dto/update-chapter.dto");
 const create_story_variable_dto_1 = require("./dto/create-story-variable.dto");
 const update_story_variable_dto_1 = require("./dto/update-story-variable.dto");
-const create_item_dto_1 = require("./dto/create-item.dto");
-const update_item_dto_1 = require("./dto/update-item.dto");
+const create_node_dto_1 = require("./dto/create-node.dto");
+const create_choice_dto_1 = require("./dto/create-choice.dto");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let StoriesController = class StoriesController {
     storiesService;
@@ -87,6 +88,27 @@ let StoriesController = class StoriesController {
     }
     deleteItem(storyId, itemId, req) {
         return this.storiesService.deleteItem(storyId, itemId, req.user.id);
+    }
+    createNode(storyId, createNodeDto, req) {
+        return this.storiesService.createNode(storyId, req.user.id, createNodeDto);
+    }
+    findNodes(storyId, req) {
+        return this.storiesService.findNodes(storyId, req.user?.id);
+    }
+    updateNode(nodeId, updateNodeDto, req) {
+        return this.storiesService.updateNode(nodeId, req.user.id, updateNodeDto);
+    }
+    removeNode(nodeId, req) {
+        return this.storiesService.removeNode(nodeId, req.user.id);
+    }
+    createChoice(fromNodeId, createChoiceDto, req) {
+        return this.storiesService.createChoice(fromNodeId, req.user.id, createChoiceDto);
+    }
+    updateChoice(choiceId, updateChoiceDto, req) {
+        return this.storiesService.updateChoice(choiceId, req.user.id, updateChoiceDto);
+    }
+    removeChoice(choiceId, req) {
+        return this.storiesService.removeChoice(choiceId, req.user.id);
     }
 };
 exports.StoriesController = StoriesController;
@@ -247,7 +269,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_item_dto_1.CreateItemDto, Object]),
+    __metadata("design:paramtypes", [String, typeof (_a = typeof CreateItemDto !== "undefined" && CreateItemDto) === "function" ? _a : Object, Object]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "createItem", null);
 __decorate([
@@ -266,7 +288,7 @@ __decorate([
     __param(2, (0, common_1.Body)()),
     __param(3, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, update_item_dto_1.UpdateItemDto, Object]),
+    __metadata("design:paramtypes", [String, String, typeof (_b = typeof UpdateItemDto !== "undefined" && UpdateItemDto) === "function" ? _b : Object, Object]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "updateItem", null);
 __decorate([
@@ -279,6 +301,72 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], StoriesController.prototype, "deleteItem", null);
+__decorate([
+    (0, common_1.Post)(':storyId/nodes'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('storyId')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_node_dto_1.CreateNodeDto, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "createNode", null);
+__decorate([
+    (0, common_1.Get)(':storyId/nodes'),
+    __param(0, (0, common_1.Param)('storyId')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "findNodes", null);
+__decorate([
+    (0, common_1.Put)('nodes/:nodeId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('nodeId')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_node_dto_1.UpdateNodeDto, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "updateNode", null);
+__decorate([
+    (0, common_1.Delete)('nodes/:nodeId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('nodeId')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "removeNode", null);
+__decorate([
+    (0, common_1.Post)('nodes/:fromNodeId/choices'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('fromNodeId')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_choice_dto_1.CreateChoiceDto, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "createChoice", null);
+__decorate([
+    (0, common_1.Put)('choices/:choiceId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('choiceId')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_choice_dto_1.UpdateChoiceDto, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "updateChoice", null);
+__decorate([
+    (0, common_1.Delete)('choices/:choiceId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('choiceId')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], StoriesController.prototype, "removeChoice", null);
 exports.StoriesController = StoriesController = __decorate([
     (0, common_1.Controller)('stories'),
     __metadata("design:paramtypes", [stories_service_1.StoriesService])

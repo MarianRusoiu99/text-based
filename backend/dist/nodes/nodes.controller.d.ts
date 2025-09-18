@@ -19,11 +19,11 @@ export declare class NodesController {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            storyId: string;
-            chapterId: string | null;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
+            chapterId: string | null;
+            storyId: string;
         };
     }>;
     findAll(storyId: string, req: {
@@ -38,21 +38,21 @@ export declare class NodesController {
                     createdAt: Date;
                     updatedAt: Date;
                     title: string;
-                    storyId: string;
-                    chapterId: string | null;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
+                    chapterId: string | null;
+                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             })[];
             toChoices: ({
                 fromNode: {
@@ -60,32 +60,32 @@ export declare class NodesController {
                     createdAt: Date;
                     updatedAt: Date;
                     title: string;
-                    storyId: string;
-                    chapterId: string | null;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
+                    chapterId: string | null;
+                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             })[];
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            storyId: string;
-            chapterId: string | null;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
+            chapterId: string | null;
+            storyId: string;
         })[];
     }>;
     findOne(id: string, req: {
@@ -117,21 +117,21 @@ export declare class NodesController {
                     createdAt: Date;
                     updatedAt: Date;
                     title: string;
-                    storyId: string;
-                    chapterId: string | null;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
+                    chapterId: string | null;
+                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             })[];
             toChoices: ({
                 fromNode: {
@@ -139,32 +139,32 @@ export declare class NodesController {
                     createdAt: Date;
                     updatedAt: Date;
                     title: string;
-                    storyId: string;
-                    chapterId: string | null;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
+                    chapterId: string | null;
+                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             })[];
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            storyId: string;
-            chapterId: string | null;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
+            chapterId: string | null;
+            storyId: string;
         };
     }>;
     update(id: string, updateNodeDto: UpdateNodeDto, req: {
@@ -177,11 +177,11 @@ export declare class NodesController {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            storyId: string;
-            chapterId: string | null;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
+            chapterId: string | null;
+            storyId: string;
         };
     }>;
     remove(id: string, req: {
@@ -194,11 +194,11 @@ export declare class NodesController {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            storyId: string;
-            chapterId: string | null;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
+            chapterId: string | null;
+            storyId: string;
         };
     }>;
 }

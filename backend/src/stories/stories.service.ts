@@ -9,6 +9,10 @@ import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
 import { CreateStoryVariableDto } from './dto/create-story-variable.dto';
 import { UpdateStoryVariableDto } from './dto/update-story-variable.dto';
+import { CreateNodeDto } from './dto/create-node.dto';
+import { UpdateNodeDto } from './dto/create-node.dto';
+import { CreateChoiceDto } from './dto/create-choice.dto';
+import { UpdateChoiceDto } from './dto/create-choice.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 
@@ -683,6 +687,244 @@ export class StoriesService {
     return {
       success: true,
       message: 'Item deleted successfully',
+    };
+  }
+
+  // Node CRUD operations
+  async createNode(storyId: string, userId: string, createNodeDto: CreateNodeDto) {
+    // Verify story ownership
+    const story = await this.prisma.story.findUnique({
+      where: { id: storyId },
+    });
+
+    if (!story) {
+      throw new NotFoundException('Story not found');
+    }
+
+    if (story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const node = await this.prisma.node.create({
+      data: {
+        ...createNodeDto,
+        storyId,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Node created successfully',
+      data: node,
+    };
+  }
+
+  async findNodes(storyId: string, userId?: string) {
+    // Verify story access
+    const story = await this.prisma.story.findUnique({
+      where: { id: storyId },
+    });
+
+    if (!story) {
+      throw new NotFoundException('Story not found');
+    }
+
+    if (story.visibility === 'private' && story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const nodes = await this.prisma.node.findMany({
+      where: { storyId },
+      include: {
+        fromChoices: {
+          include: {
+            toNode: true,
+          },
+        },
+        toChoices: {
+          include: {
+            fromNode: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return {
+      success: true,
+      data: nodes,
+    };
+  }
+
+  async updateNode(nodeId: string, userId: string, updateNodeDto: UpdateNodeDto) {
+    // Find node and verify ownership through story
+    const node = await this.prisma.node.findUnique({
+      where: { id: nodeId },
+      include: {
+        story: true,
+      },
+    });
+
+    if (!node) {
+      throw new NotFoundException('Node not found');
+    }
+
+    if (node.story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const updatedNode = await this.prisma.node.update({
+      where: { id: nodeId },
+      data: updateNodeDto,
+    });
+
+    return {
+      success: true,
+      message: 'Node updated successfully',
+      data: updatedNode,
+    };
+  }
+
+  async removeNode(nodeId: string, userId: string) {
+    // Find node and verify ownership through story
+    const node = await this.prisma.node.findUnique({
+      where: { id: nodeId },
+      include: {
+        story: true,
+      },
+    });
+
+    if (!node) {
+      throw new NotFoundException('Node not found');
+    }
+
+    if (node.story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    await this.prisma.node.delete({
+      where: { id: nodeId },
+    });
+
+    return {
+      success: true,
+      message: 'Node deleted successfully',
+    };
+  }
+
+  // Choice CRUD operations
+  async createChoice(fromNodeId: string, userId: string, createChoiceDto: CreateChoiceDto) {
+    // Find from node and verify ownership through story
+    const fromNode = await this.prisma.node.findUnique({
+      where: { id: fromNodeId },
+      include: {
+        story: true,
+      },
+    });
+
+    if (!fromNode) {
+      throw new NotFoundException('From node not found');
+    }
+
+    if (fromNode.story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    // Verify to node exists and belongs to same story
+    const toNode = await this.prisma.node.findUnique({
+      where: { id: createChoiceDto.toNodeId },
+    });
+
+    if (!toNode || toNode.storyId !== fromNode.storyId) {
+      throw new NotFoundException('Invalid to node');
+    }
+
+    const choice = await this.prisma.choice.create({
+      data: {
+        fromNodeId,
+        ...createChoiceDto,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Choice created successfully',
+      data: choice,
+    };
+  }
+
+  async updateChoice(choiceId: string, userId: string, updateChoiceDto: UpdateChoiceDto) {
+    // Find choice and verify ownership through story
+    const choice = await this.prisma.choice.findUnique({
+      where: { id: choiceId },
+      include: {
+        fromNode: {
+          include: {
+            story: true,
+          },
+        },
+      },
+    });
+
+    if (!choice) {
+      throw new NotFoundException('Choice not found');
+    }
+
+    if (choice.fromNode.story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    // If updating toNodeId, verify it exists and belongs to same story
+    if (updateChoiceDto.toNodeId) {
+      const toNode = await this.prisma.node.findUnique({
+        where: { id: updateChoiceDto.toNodeId },
+      });
+
+      if (!toNode || toNode.storyId !== choice.fromNode.storyId) {
+        throw new NotFoundException('Invalid to node');
+      }
+    }
+
+    const updatedChoice = await this.prisma.choice.update({
+      where: { id: choiceId },
+      data: updateChoiceDto,
+    });
+
+    return {
+      success: true,
+      message: 'Choice updated successfully',
+      data: updatedChoice,
+    };
+  }
+
+  async removeChoice(choiceId: string, userId: string) {
+    // Find choice and verify ownership through story
+    const choice = await this.prisma.choice.findUnique({
+      where: { id: choiceId },
+      include: {
+        fromNode: {
+          include: {
+            story: true,
+          },
+        },
+      },
+    });
+
+    if (!choice) {
+      throw new NotFoundException('Choice not found');
+    }
+
+    if (choice.fromNode.story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    await this.prisma.choice.delete({
+      where: { id: choiceId },
+    });
+
+    return {
+      success: true,
+      message: 'Choice deleted successfully',
     };
   }
 }

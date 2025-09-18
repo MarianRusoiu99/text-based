@@ -16,6 +16,8 @@ import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
 import { CreateStoryVariableDto } from './dto/create-story-variable.dto';
 import { UpdateStoryVariableDto } from './dto/update-story-variable.dto';
+import { CreateNodeDto, UpdateNodeDto } from './dto/create-node.dto';
+import { CreateChoiceDto, UpdateChoiceDto } from './dto/create-choice.dto';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -246,5 +248,73 @@ export class StoriesController {
     @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.deleteItem(storyId, itemId, req.user.id);
+  }
+
+  // Node endpoints
+  @Post(':storyId/nodes')
+  @UseGuards(JwtAuthGuard)
+  createNode(
+    @Param('storyId') storyId: string,
+    @Body() createNodeDto: CreateNodeDto,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.createNode(storyId, req.user.id, createNodeDto);
+  }
+
+  @Get(':storyId/nodes')
+  findNodes(
+    @Param('storyId') storyId: string,
+    @Request() req: { user?: AuthenticatedUser },
+  ) {
+    return this.storiesService.findNodes(storyId, req.user?.id);
+  }
+
+  @Put('nodes/:nodeId')
+  @UseGuards(JwtAuthGuard)
+  updateNode(
+    @Param('nodeId') nodeId: string,
+    @Body() updateNodeDto: UpdateNodeDto,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.updateNode(nodeId, req.user.id, updateNodeDto);
+  }
+
+  @Delete('nodes/:nodeId')
+  @UseGuards(JwtAuthGuard)
+  removeNode(
+    @Param('nodeId') nodeId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.removeNode(nodeId, req.user.id);
+  }
+
+  // Choice endpoints
+  @Post('nodes/:fromNodeId/choices')
+  @UseGuards(JwtAuthGuard)
+  createChoice(
+    @Param('fromNodeId') fromNodeId: string,
+    @Body() createChoiceDto: CreateChoiceDto,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.createChoice(fromNodeId, req.user.id, createChoiceDto);
+  }
+
+  @Put('choices/:choiceId')
+  @UseGuards(JwtAuthGuard)
+  updateChoice(
+    @Param('choiceId') choiceId: string,
+    @Body() updateChoiceDto: UpdateChoiceDto,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.updateChoice(choiceId, req.user.id, updateChoiceDto);
+  }
+
+  @Delete('choices/:choiceId')
+  @UseGuards(JwtAuthGuard)
+  removeChoice(
+    @Param('choiceId') choiceId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.removeChoice(choiceId, req.user.id);
   }
 }

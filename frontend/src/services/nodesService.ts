@@ -59,7 +59,7 @@ class NodesService {
   }
 
   async getNodes(storyId: string) {
-    const response = await fetch(`${API_BASE_URL}/nodes/story/${storyId}`, {
+    const response = await fetch(`${API_BASE_URL}/stories/${storyId}/nodes`, {
       headers: this.getAuthHeaders(),
     });
 
@@ -68,22 +68,28 @@ class NodesService {
   }
 
   async getNode(id: string) {
-    const response = await fetch(`${API_BASE_URL}/nodes/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
-
-    const result: NodeResponse = await response.json();
-    return result;
+    // For now, we'll get all nodes and find the one we want
+    // TODO: Add a single node endpoint if needed
+    const nodeId = id;
+    // This is a temporary solution - we need to get the storyId first
+    // For now, we'll assume the node exists and return it
+    throw new Error('Single node fetching not implemented yet');
   }
 
   async createNode(data: CreateNodeData) {
-    const response = await fetch(`${API_BASE_URL}/nodes`, {
+    const response = await fetch(`${API_BASE_URL}/stories/${data.storyId}/nodes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...this.getAuthHeaders(),
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        title: data.title,
+        content: data.content,
+        position: data.position,
+        nodeType: data.nodeType,
+        chapterId: data.chapterId,
+      }),
     });
 
     const result = await response.json();
@@ -91,8 +97,8 @@ class NodesService {
   }
 
   async updateNode(id: string, data: UpdateNodeData) {
-    const response = await fetch(`${API_BASE_URL}/nodes/${id}`, {
-      method: 'PATCH',
+    const response = await fetch(`${API_BASE_URL}/stories/nodes/${id}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         ...this.getAuthHeaders(),
@@ -105,7 +111,7 @@ class NodesService {
   }
 
   async deleteNode(id: string) {
-    const response = await fetch(`${API_BASE_URL}/nodes/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/stories/nodes/${id}`, {
       method: 'DELETE',
       headers: this.getAuthHeaders(),
     });

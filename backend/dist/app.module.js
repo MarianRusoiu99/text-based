@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const throttler_1 = require("@nestjs/throttler");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
@@ -28,6 +29,23 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            throttler_1.ThrottlerModule.forRoot([
+                {
+                    name: 'short',
+                    ttl: 1000,
+                    limit: 3,
+                },
+                {
+                    name: 'medium',
+                    ttl: 60000,
+                    limit: 10,
+                },
+                {
+                    name: 'long',
+                    ttl: 3600000,
+                    limit: 100,
+                },
+            ]),
             auth_module_1.AuthModule,
             prisma_module_1.PrismaModule,
             stories_module_1.StoriesModule,

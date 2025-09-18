@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -13,9 +14,27 @@ import { ChoicesModule } from './choices/choices.module';
 import { CacheModule } from './cache/cache.module';
 import { UsersModule } from './users/users.module';
 import { LoggerModule } from './logger/logger.module';
+import { RpgTemplatesModule } from './rpg-templates/rpg-templates.module';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 60000,
+        limit: 10,
+      },
+      {
+        name: 'long',
+        ttl: 3600000,
+        limit: 100,
+      },
+    ]),
     AuthModule,
     PrismaModule,
     StoriesModule,
@@ -24,6 +43,7 @@ import { LoggerModule } from './logger/logger.module';
     CacheModule,
     UsersModule,
     LoggerModule,
+    RpgTemplatesModule,
   ],
   controllers: [AppController, NodesController, ChoicesController],
   providers: [AppService, NodesService, ChoicesService],

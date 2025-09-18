@@ -57,22 +57,45 @@ class ChoicesService {
   }
 
   async getChoices(storyId: string) {
-    const response = await fetch(`${API_BASE_URL}/choices/story/${storyId}`, {
+    // For now, we'll get all nodes with their choices included
+    // TODO: Add a dedicated choices endpoint if needed
+    const response = await fetch(`${API_BASE_URL}/stories/${storyId}/nodes`, {
       headers: this.getAuthHeaders(),
     });
 
-    const result: ChoicesResponse = await response.json();
+    const result: { success: boolean; data: any[] } = await response.json();
+    if (result.success) {
+      // Extract choices from nodes
+      const choices: Choice[] = [];
+      result.data.forEach(node => {
+        if (node.fromChoices) {
+          node.fromChoices.forEach((choice: any) => {
+            choices.push({
+              ...choice,
+              fromNode: { id: node.id, title: node.title },
+              toNode: choice.toNode ? { id: choice.toNode.id, title: choice.toNode.title } : undefined,
+            });
+          });
+        }
+      });
+      return { success: true, data: choices };
+    }
     return result;
   }
 
   async createChoice(data: CreateChoiceData) {
-    const response = await fetch(`${API_BASE_URL}/choices`, {
+    const response = await fetch(`${API_BASE_URL}/stories/nodes/${data.fromNodeId}/choices`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...this.getAuthHeaders(),
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        toNodeId: data.toNodeId,
+        choiceText: data.choiceText,
+        conditions: data.conditions,
+        effects: data.effects,
+      }),
     });
 
     const result = await response.json();
@@ -80,8 +103,8 @@ class ChoicesService {
   }
 
   async updateChoice(id: string, data: UpdateChoiceData) {
-    const response = await fetch(`${API_BASE_URL}/choices/${id}`, {
-      method: 'PATCH',
+    const response = await fetch(`${API_BASE_URL}/stories/choices/${id}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         ...this.getAuthHeaders(),
@@ -94,7 +117,7 @@ class ChoicesService {
   }
 
   async deleteChoice(id: string) {
-    const response = await fetch(`${API_BASE_URL}/choices/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/stories/choices/${id}`, {
       method: 'DELETE',
       headers: this.getAuthHeaders(),
     });

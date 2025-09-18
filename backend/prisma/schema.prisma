@@ -25,13 +25,17 @@ model User {
   lastLogin    DateTime? @map("last_login") @db.Timestamptz()
 
   // Relations
-  stories      Story[]
-  ratings      Rating[]
-  comments     Comment[]
-  playSessions PlaySession[]
-  followers    UserFollow[] @relation("UserFollows")
-  following    UserFollow[] @relation("UserFollowing")
-  bookmarks    StoryBookmark[]
+  stories            Story[]
+  rpgTemplates       RpgTemplate[]
+  ratings            Rating[]
+  comments           Comment[]
+  playSessions       PlaySession[]
+  followers          UserFollow[] @relation("UserFollows")
+  following          UserFollow[] @relation("UserFollowing")
+  bookmarks          StoryBookmark[]
+  refreshTokens      RefreshToken[]
+  verificationTokens VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -50,6 +54,8 @@ model Story {
   visibility        String    @default("public") @db.VarChar(20)
   contentRating     String    @default("general") @map("content_rating") @db.VarChar(10)
   estimatedDuration Int?      @map("estimated_duration")
+  rpgTemplateId     String?   @map("rpg_template_id")
+  rpgTemplate       RpgTemplate? @relation(fields: [rpgTemplateId], references: [id])
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
   publishedAt       DateTime? @map("published_at") @db.Timestamptz()
@@ -145,6 +151,24 @@ model Item {
 
   @@unique([storyId, itemName])
   @@map("items")
+}
+
+model RpgTemplate {
+  id         String   @id @default(uuid())
+  creatorId  String   @map("creator_id")
+  creator    User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  name       String   @db.VarChar(255)
+  description String? @db.Text
+  version    String   @default("1.0.0") @db.VarChar(20)
+  isPublic   Boolean  @default(false) @map("is_public")
+  config     Json     @db.JsonB
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // Relations
+  stories Story[]
+
+  @@map("rpg_templates")
 }
 
 model PlaySession {
@@ -244,4 +268,42 @@ model Asset {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
 
   @@map("assets")
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String   @unique @db.Text
+  expiresAt   DateTime @map("expires_at") @db.Timestamptz()
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz()
+  replacedBy  String?  @map("replaced_by")
+
+  @@map("refresh_tokens")
+}
+
+model VerificationToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique @db.Text
+  type      String   @db.VarChar(20) // 'email_verification', 'email_change'
+  expiresAt DateTime @map("expires_at") @db.Timestamptz()
+  usedAt    DateTime? @map("used_at") @db.Timestamptz()
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique @db.Text
+  expiresAt DateTime @map("expires_at") @db.Timestamptz()
+  usedAt    DateTime? @map("used_at") @db.Timestamptz()
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("password_reset_tokens")
 }

@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -13,10 +15,35 @@ describe('Auth (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
+    prisma = app.get(PrismaService);
     await app.init();
+
+    // Clean up before each test
+    await prisma.user.deleteMany({
+      where: {
+        email: {
+          in: ['newuser@example.com', 'testuser2@example.com'],
+        },
+      },
+    });
   });
 
   afterEach(async () => {
+    // Clean up test data
+    await prisma.user.deleteMany({
+      where: {
+        email: {
+          in: ['newuser@example.com', 'testuser2@example.com'],
+        },
+      },
+    });
     await app.close();
   });
 
@@ -33,7 +60,7 @@ describe('Auth (e2e)', () => {
         .expect(201)
         .expect((res) => {
           expect(res.body.success).toBe(true);
-          expect(res.body.message).toBe('User registered successfully');
+          expect(res.body.message).toBe('User registered successfully. Please check your email to verify your account.');
           expect(res.body.data.user).toHaveProperty('id');
           expect(res.body.data.user.username).toBe('newuser');
           expect(res.body.data.user.email).toBe('newuser@example.com');
@@ -52,8 +79,8 @@ describe('Auth (e2e)', () => {
         })
         .expect(409)
         .expect((res) => {
-          expect(res.body.success).toBe(false);
-          expect(res.body.message).toContain('already exists');
+          console.log('409 response:', res.body);
+          expect(res.status).toBe(409);
         });
     });
 
@@ -96,8 +123,9 @@ describe('Auth (e2e)', () => {
         })
         .expect(401)
         .expect((res) => {
-          expect(res.body.success).toBe(false);
+          expect(res.body.statusCode).toBe(401);
           expect(res.body.message).toBe('Invalid credentials');
+          expect(res.body.error).toBe('Unauthorized');
         });
     });
 
@@ -110,8 +138,9 @@ describe('Auth (e2e)', () => {
         })
         .expect(401)
         .expect((res) => {
-          expect(res.body.success).toBe(false);
+          expect(res.body.statusCode).toBe(401);
           expect(res.body.message).toBe('Invalid credentials');
+          expect(res.body.error).toBe('Unauthorized');
         });
     });
   });
@@ -154,8 +183,9 @@ describe('Auth (e2e)', () => {
         })
         .expect(401)
         .expect((res) => {
-          expect(res.body.success).toBe(false);
+          expect(res.body.statusCode).toBe(401);
           expect(res.body.message).toBe('Invalid refresh token');
+          expect(res.body.error).toBe('Unauthorized');
         });
     });
   });

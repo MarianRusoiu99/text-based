@@ -14,6 +14,8 @@ const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
 const jwt_strategy_1 = require("./jwt.strategy");
+const console_email_provider_1 = require("./providers/console-email.provider");
+const console_logger_provider_1 = require("./providers/console-logger.provider");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -27,7 +29,18 @@ exports.AuthModule = AuthModule = __decorate([
                 signOptions: { expiresIn: '24h' },
             }),
         ],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
+        providers: [
+            auth_service_1.AuthService,
+            jwt_strategy_1.JwtStrategy,
+            {
+                provide: 'IEmailProvider',
+                useClass: console_email_provider_1.ConsoleEmailProvider,
+            },
+            {
+                provide: 'ILoggerProvider',
+                useClass: console_logger_provider_1.ConsoleLoggerProvider,
+            },
+        ],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService],
     })
