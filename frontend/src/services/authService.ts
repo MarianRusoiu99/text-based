@@ -1,7 +1,7 @@
 import { useAuthStore } from '../stores/authStore';
 import { mockApi, isMockMode } from './mockApi';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 interface RegisterData {
   username: string;

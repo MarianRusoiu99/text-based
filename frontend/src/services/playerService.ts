@@ -1,6 +1,6 @@
 import { useAuthStore } from '../stores/authStore';
 
-const API_BASE = '/api/player';
+const API_BASE = 'http://localhost:3000/api/player';
 
 interface StartPlaySessionRequest {
   storyId: string;

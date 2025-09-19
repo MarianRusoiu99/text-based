@@ -2,7 +2,7 @@ import { useAuthStore } from '../stores/authStore';
 import type { Condition } from '../components/ConditionsBuilder';
 import type { Effect } from '../components/EffectsBuilder';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 interface CreateChoiceData {
   fromNodeId: string;
