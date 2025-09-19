@@ -16,15 +16,11 @@ import '@xyflow/react/dist/style.css';
 import { nodesService } from '../services/nodesService';
 import { choicesService } from '../services/choicesService';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { VariablesPanel } from './VariablesPanel';
 import { ItemsPanel } from './ItemsPanel';
-import { ConditionsBuilder, type Condition } from './ConditionsBuilder';
-import { EffectsBuilder, type Effect } from './EffectsBuilder';
-import { RpgCheckBuilder, type RpgCheck } from './RpgCheckBuilder';
+import { NodePreviewModal } from './NodePreviewModal';
 import type { StoryVariable } from '../services/variablesService';
 import type { StoryItem } from '../services/itemsService';
-
 
 interface StoryFlowProps {
   storyId: string;
@@ -34,24 +30,15 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<RFNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<RFEdge>([]);
   const [selectedNode, setSelectedNode] = useState<RFNode | null>(null);
-  const [selectedChoice, setSelectedChoice] = useState<{ id: string } | null>(null);
+  const [isNodeModalOpen, setIsNodeModalOpen] = useState(false);
   const [nodeType, setNodeType] = useState<'story' | 'choice' | 'condition' | 'ending'>('story');
   const [isAddingNode, setIsAddingNode] = useState(false);
-  const [nodeTitle, setNodeTitle] = useState('');
-  const [nodeContent, setNodeContent] = useState('');
-  const [nodeCharacter, setNodeCharacter] = useState('');
-  const [nodeBackground, setNodeBackground] = useState('');
-  const [choiceText, setChoiceText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showVariablesPanel, setShowVariablesPanel] = useState(false);
   const [showItemsPanel, setShowItemsPanel] = useState(false);
-  const [choiceConditions, setChoiceConditions] = useState<Condition | null>(null);
-  const [choiceEffects, setChoiceEffects] = useState<Effect[]>([]);
   const [availableVariables, setAvailableVariables] = useState<StoryVariable[]>([]);
   const [availableItems, setAvailableItems] = useState<StoryItem[]>([]);
-  const [showRpgCheckBuilder, setShowRpgCheckBuilder] = useState(false);
-  const [currentRpgCheck, setCurrentRpgCheck] = useState<RpgCheck | null>(null);
 
   const handleVariablesUpdated = useCallback((variables: StoryVariable[]) => {
     setAvailableVariables(variables);
@@ -81,15 +68,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
       setIsLoading(false);
       return;
     }
-
-    // Temporarily skip auth check for testing
-    // const { isAuthenticated } = useAuthStore.getState();
-    // if (!isAuthenticated) {
-    //   console.log('User not authenticated');
-    //   setError('You must be logged in to edit stories');
-    //   setIsLoading(false);
-    //   return;
-    // }
 
     const loadData = async () => {
       try {
@@ -132,28 +110,28 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
             console.log('Created RF node:', rfNode);
             return rfNode;
           });
-
-         
+          console.log('Setting nodes:', rfNodes);
           setNodes(rfNodes);
         } else {
-          console.log('API call failed:', nodesRes);
-          setError('Failed to load nodes from API');
+          console.error('Failed to load nodes:', nodesRes);
+          setError('Failed to load story nodes');
         }
 
-        if (choicesRes.success && choicesRes.data.length > 0) {
-          // TODO: Implement proper choice mapping when backend is ready
-          // For now, skip processing choices since the structure is not finalized
-          console.log('Choices loaded:', choicesRes.data.length);
-          // const rfEdges: RFEdge[] = choicesRes.data.map((choice) => ({
-          //   id: choice.id,
-          //   source: choice.fromNodeId,
-          //   target: choice.toNodeId,
-          //   label: choice.choiceText,
-          // }));
-          // setEdges(rfEdges);
+        if (choicesRes.success) {
+          const rfEdges: RFEdge[] = choicesRes.data.map((choice) => ({
+            id: choice.id,
+            source: choice.fromNodeId,
+            target: choice.toNodeId,
+            label: choice.choiceText,
+          }));
+          console.log('Setting edges:', rfEdges);
+          setEdges(rfEdges);
+        } else {
+          console.error('Failed to load choices:', choicesRes);
+          // Don't set error for choices since they might not exist yet
         }
       } catch (error) {
-        console.error('Failed to load story data:', error);
+        console.error('Failed to load data:', error);
         setError('Failed to load story data');
       } finally {
         setIsLoading(false);
@@ -162,28 +140,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
 
     loadData();
   }, [storyId, setNodes, setEdges]);
-
-  const onNodeClick: NodeMouseHandler = useCallback(async (_, node) => {
-    setSelectedNode(node);
-    try {
-      const result = await nodesService.getNode(node.id);
-      if (result.success) {
-        const nodeData = result.data;
-        setNodeTitle(nodeData.title);
-        if (typeof nodeData.content === 'object' && nodeData.content) {
-          setNodeContent(nodeData.content.text || '');
-          setNodeCharacter(nodeData.content.character || '');
-          setNodeBackground(nodeData.content.background || '');
-        } else {
-          setNodeContent(typeof nodeData.content === 'string' ? nodeData.content : '');
-          setNodeCharacter('');
-          setNodeBackground('');
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load node data:', error);
-    }
-  }, []);
 
   const onConnect = useCallback(
     async (params: Connection) => {
@@ -233,15 +189,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
           id: result.data.id,
           type: 'default',
           data: {
-            label: `New ${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)} Node`,
+            label: result.data.title,
             type: nodeType
           },
           position,
         };
-        console.log('Created new RF node:', newNode);
+        console.log('Adding node to state:', newNode);
         setNodes((nds) => [...nds, newNode]);
       } else {
-        console.log('Failed to create node, setting error');
         setError('Failed to create node');
         console.error('Failed to create node:', result);
       }
@@ -253,101 +208,44 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
     }
   }, [storyId, setNodes, nodeType]);
 
-  const onEdgeClick = useCallback(async (_event: React.MouseEvent, edge: RFEdge) => {
-    // Deselect node if one is selected
-    setSelectedNode(null);
-    
-    // Load choice data
-    try {
-      // For now, we'll assume the edge id is the choice id
-      // In a real implementation, you might need to store choice id in edge data
-      const choiceId = edge.id;
-      
-      const result = await choicesService.getChoice(choiceId);
-      
-      if (result.success) {
-        const choice = result.data;
-        setSelectedChoice({ id: choiceId });
-        setChoiceText(choice.choiceText || '');
-        setChoiceConditions(choice.conditions || null);
-        setChoiceEffects(choice.effects || []);
-      } else {
-        // If choice doesn't exist yet, create a new one
-        setSelectedChoice({ id: choiceId });
-        setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
-        setChoiceConditions(null);
-        setChoiceEffects([]);
-      }
-    } catch (error) {
-      console.error('Failed to load choice data:', error);
-      // Fallback to placeholder data
-      setSelectedChoice({ id: edge.id });
-      setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
-      setChoiceConditions(null);
-      setChoiceEffects([]);
-    }
+  const onNodeClick: NodeMouseHandler = useCallback(async (_, node) => {
+    setSelectedNode(node);
+    setIsNodeModalOpen(true);
   }, []);
 
-  const handleSaveChoice = useCallback(async () => {
-    if (!selectedChoice) return;
-
+  const handleNodeSave = useCallback(async (node: RFNode, updatedData: any) => {
     try {
-      const result = await choicesService.updateChoice(selectedChoice.id, {
-        choiceText,
-        conditions: choiceConditions || undefined,
-        effects: choiceEffects,
-      });
-
-      if (result.success) {
-        // Update the edge label
-        setEdges((eds) =>
-          eds.map((edge) =>
-            edge.id === selectedChoice.id
-              ? { ...edge, label: choiceText }
-              : edge
-          )
-        );
-      }
-    } catch (error) {
-      console.error('Failed to save choice:', error);
-    }
-  }, [selectedChoice, choiceText, choiceConditions, choiceEffects, setEdges]);
-
-  const handleSaveNode = useCallback(async () => {
-    if (!selectedNode) return;
-
-    try {
-      await nodesService.updateNode(selectedNode.id, {
-        title: nodeTitle,
-        content: {
-          character: nodeCharacter || undefined,
-          background: nodeBackground || undefined,
-          text: nodeContent
-        },
-        position: selectedNode.position,
-      });
+      await nodesService.updateNode(node.id, updatedData);
 
       // Update the node in the flow
       setNodes((nds) =>
-        nds.map((node) =>
-          node.id === selectedNode.id
-            ? { ...node, data: { ...node.data, label: nodeTitle } }
-            : node
+        nds.map((n) =>
+          n.id === node.id
+            ? { 
+                ...n, 
+                data: { 
+                  ...n.data, 
+                  label: updatedData.title,
+                  ...updatedData 
+                } 
+              }
+            : n
         )
       );
     } catch (error) {
       console.error('Failed to save node:', error);
     }
-  }, [selectedNode, nodeTitle, nodeContent, nodeCharacter, nodeBackground, setNodes]);
+  }, [setNodes]);
 
-  const handleSaveRpgCheck = useCallback((rpgCheck: RpgCheck) => {
-    setCurrentRpgCheck(rpgCheck);
-    setShowRpgCheckBuilder(false);
-  }, []);
-
-  const handleCancelRpgCheck = useCallback(() => {
-    setShowRpgCheckBuilder(false);
-  }, []);
+  const handleNodeDelete = useCallback(async (nodeId: string) => {
+    try {
+      await nodesService.deleteNode(nodeId);
+      setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+      setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
+    } catch (error) {
+      console.error('Failed to delete node:', error);
+    }
+  }, [setNodes, setEdges]);
 
   if (isLoading) {
     return (
@@ -377,7 +275,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
-          onEdgeClick={onEdgeClick}
           nodeTypes={nodeTypes}
           fitView
         >
@@ -386,261 +283,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
           <Background gap={12} size={1} />
         </ReactFlow>
       </div>
-
-      {selectedNode && (
-        <div className="w-80 p-4 border-l border-gray-300 bg-white">
-          <h3 className="text-lg font-semibold mb-4">Edit Node</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Node Type
-              </label>
-              <select
-                value={(selectedNode.data as Record<string, unknown>)?.type as string || 'story'}
-                onChange={(e) => {
-                  // Update node type in the data
-                  setNodes((nds) =>
-                    nds.map((node) =>
-                      node.id === selectedNode.id
-                        ? { ...node, data: { ...node.data, type: e.target.value } }
-                        : node
-                    )
-                  );
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="story">Story Node</option>
-                <option value="choice">Choice Node</option>
-                <option value="condition">Condition Node</option>
-                <option value="ending">Ending Node</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
-              </label>
-              <Input
-                data-testid="node-title-input"
-                value={nodeTitle}
-                onChange={(e) => setNodeTitle(e.target.value)}
-                placeholder="Node title"
-              />
-            </div>
-
-            {(((selectedNode.data as Record<string, unknown>)?.type === 'story' || !(selectedNode.data as Record<string, unknown>)?.type)) && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Character (optional)
-                  </label>
-                  <Input
-                    value={nodeCharacter}
-                    onChange={(e) => setNodeCharacter(e.target.value)}
-                    placeholder="Character name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Background (optional)
-                  </label>
-                  <Input
-                    value={nodeBackground}
-                    onChange={(e) => setNodeBackground(e.target.value)}
-                    placeholder="Background description or URL"
-                  />
-                </div>
-              </>
-            )}
-
-            {(selectedNode.data as Record<string, unknown>)?.type === 'choice' && (
-              <div className="space-y-4 border-t pt-4">
-                <ConditionsBuilder
-                  conditions={choiceConditions}
-                  onChange={setChoiceConditions}
-                  variables={transformedVariables}
-                  items={transformedItems}
-                />
-                <EffectsBuilder
-                  effects={choiceEffects}
-                  onChange={setChoiceEffects}
-                  variables={transformedVariables}
-                  items={transformedItems}
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Content
-              </label>
-              <div className="mb-2 flex flex-wrap gap-1">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const textarea = document.querySelector('textarea[placeholder="Node content"]') as HTMLTextAreaElement;
-                    if (textarea) {
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const selectedText = nodeContent.substring(start, end);
-                      const newText = nodeContent.substring(0, start) + `**${selectedText}**` + nodeContent.substring(end);
-                      setNodeContent(newText);
-                    }
-                  }}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  <strong>B</strong>
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const textarea = document.querySelector('textarea[placeholder="Node content"]') as HTMLTextAreaElement;
-                    if (textarea) {
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const selectedText = nodeContent.substring(start, end);
-                      const newText = nodeContent.substring(0, start) + `*${selectedText}*` + nodeContent.substring(end);
-                      setNodeContent(newText);
-                    }
-                  }}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  <em>I</em>
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setNodeContent(prev => prev + '\n\n---\n\n')}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  ―
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const characterName = nodeCharacter || 'Character';
-                    setNodeContent(prev => prev + `\n\n"${characterName}: "`);
-                  }}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  💬
-                </Button>
-              </div>
-              <textarea
-                data-testid="node-content-input"
-                value={nodeContent}
-                onChange={(e) => setNodeContent(e.target.value)}
-                placeholder="Node content - use **bold** and *italic* formatting"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
-                rows={8}
-              />
-              <div className="text-xs text-gray-500 mt-1">
-                Use **text** for bold, *text* for italic, or 💬 for dialogue
-              </div>
-            </div>
-
-            {/* RPG Check Section */}
-            <div className="border-t pt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                RPG Mechanics
-              </label>
-              {currentRpgCheck ? (
-                <div className="p-3 bg-gray-50 rounded-md">
-                  <div className="text-sm">
-                    <strong>RPG Check:</strong> {currentRpgCheck.type} (Difficulty: {currentRpgCheck.difficulty})
-                  </div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Success: {currentRpgCheck.successText.substring(0, 50)}...
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowRpgCheckBuilder(true)}
-                    >
-                      Edit RPG Check
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setCurrentRpgCheck(null)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  data-testid="add-rpg-check-btn"
-                  onClick={() => setShowRpgCheckBuilder(true)}
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                >
-                  Add RPG Check
-                </Button>
-              )}
-            </div>
-
-            <Button onClick={handleSaveNode} className="w-full" data-testid="save-node-btn">
-              Save Node
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {selectedChoice && (
-        <div className="w-80 p-4 border-l border-gray-300 bg-white">
-          <h3 className="text-lg font-semibold mb-4">Edit Choice</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Choice Text
-              </label>
-              <Input
-                value={choiceText}
-                onChange={(e) => setChoiceText(e.target.value)}
-                placeholder="Enter choice text..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Conditions
-              </label>
-              <ConditionsBuilder
-                conditions={choiceConditions}
-                onChange={setChoiceConditions}
-                variables={transformedVariables}
-                items={transformedItems}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Effects
-              </label>
-              <EffectsBuilder
-                effects={choiceEffects}
-                onChange={setChoiceEffects}
-                variables={transformedVariables}
-                items={transformedItems}
-              />
-            </div>
-
-            <Button onClick={handleSaveChoice} className="w-full">
-              Save Choice
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Floating Add Node Controls */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
@@ -686,22 +328,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
             >
               Items
             </Button>
-            <Button 
-              data-testid="conditions-toggle-btn"
-              onClick={() => {/* TODO: Add conditions panel */}}
-              variant="outline"
-              size="sm"
-            >
-              Conditions
-            </Button>
-            <Button 
-              data-testid="effects-toggle-btn"
-              onClick={() => {/* TODO: Add effects panel */}}
-              variant="outline"
-              size="sm"
-            >
-              Effects
-            </Button>
           </div>
         </div>
       </div>
@@ -720,11 +346,18 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
         onItemsChange={handleItemsUpdated}
       />
 
-      <RpgCheckBuilder
-        isOpen={showRpgCheckBuilder}
-        onSave={handleSaveRpgCheck}
-        onCancel={handleCancelRpgCheck}
-        initialData={currentRpgCheck || undefined}
+      {/* Node Preview Modal */}
+      <NodePreviewModal
+        node={selectedNode}
+        isOpen={isNodeModalOpen}
+        onClose={() => {
+          setIsNodeModalOpen(false);
+          setSelectedNode(null);
+        }}
+        onSave={handleNodeSave}
+        onDelete={handleNodeDelete}
+        variables={transformedVariables}
+        items={transformedItems}
       />
 
       {error && (

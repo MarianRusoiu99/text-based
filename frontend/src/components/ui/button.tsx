@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Spinner } from './Spinner';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   children: React.ReactNode;
@@ -25,6 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
     secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus-visible:ring-gray-500',
     outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-500',
     ghost: 'text-gray-700 hover:bg-gray-100 focus-visible:ring-gray-500',
+    destructive: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500',
   };
 
   const sizeClasses = {

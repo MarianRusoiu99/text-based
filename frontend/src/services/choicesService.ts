@@ -2,7 +2,7 @@ import { useAuthStore } from '../stores/authStore';
 import type { Condition } from '../components/ConditionsBuilder';
 import type { Effect } from '../components/EffectsBuilder';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 interface CreateChoiceData {
   fromNodeId: string;
@@ -29,7 +29,7 @@ class ChoicesService {
   async getChoices(_storyId: string) {
     // TODO: Implement proper choices fetching when backend endpoint is ready
     // For now, return empty array to prevent compilation errors
-    return { success: true, data: [] };
+    return { success: true, data: [] as any[] };
   }
 
   async createChoice(data: CreateChoiceData) {

@@ -1,7 +1,7 @@
 import { useAuthStore } from '../stores/authStore';
-import { mockApi, isMockMode } from './mockApi';
+import { mockApi } from './mockApi';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 interface RegisterData {
   username: string;
@@ -71,6 +71,12 @@ interface UpdateProfileResponse {
   };
 }
 
+interface UpdateProfileData {
+  displayName?: string;
+  bio?: string;
+  avatarUrl?: string;
+}
+
 class AuthService {
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
@@ -98,7 +104,15 @@ class AuthService {
         const result = await mockApi.register(data);
         const authStore = useAuthStore.getState();
         authStore.login(result.data.user, result.data.token, 'mock-refresh-token');
-        return { success: true, message: 'Registration successful', data: result.data };
+        return { 
+          success: true, 
+          message: 'Registration successful', 
+          data: {
+            user: result.data.user,
+            accessToken: result.data.token,
+            refreshToken: 'mock-refresh-token'
+          }
+        };
       } catch (mockError) {
         console.error('Mock API registration failed:', mockError);
         return { success: false, message: 'Registration failed' };
@@ -134,7 +148,15 @@ class AuthService {
         const result = await mockApi.login(data);
         const authStore = useAuthStore.getState();
         authStore.login(result.data.user, result.data.token, 'mock-refresh-token');
-        return { success: true, message: 'Login successful', data: result.data };
+        return { 
+          success: true, 
+          message: 'Login successful', 
+          data: {
+            user: result.data.user,
+            accessToken: result.data.token,
+            refreshToken: 'mock-refresh-token'
+          }
+        };
       } catch (mockError) {
         console.error('Mock API login failed:', mockError);
         return { success: false, message: 'Login failed' };
