@@ -1,23 +1,23 @@
 import { test, expect } from '@playwright/test';
+import { 
+  E2ETestDataFactory, 
+  E2EAuthHelper, 
+  E2EStoryHelper,
+  E2EAssertions, 
+  E2ETestUtils
+} from '../utils/e2e-test-utilities';
 
-test.describe('RPG Mechanics E2E', () => {
+/**
+ * RPG Mechanics E2E Tests
+ * Testing flexible RPG system that supports completely customizable mechanics
+ */
+test.describe('RPG Mechanics and Templates', () => {
+  let authenticatedUser: any;
+
   test.beforeEach(async ({ page }) => {
-    // Register and login a test user
-    const timestamp = Date.now();
-    await page.goto('/register');
-
-    await page.fill('input[name="username"]', `rpgtest${timestamp}`);
-    await page.fill('input[name="email"]', `rpgtest${timestamp}@example.com`);
-    await page.fill('input[name="displayName"]', 'RPG Test User');
-    await page.fill('input[name="password"]', 'password123');
-
-    await page.click('button[type="submit"]');
-    
-    // Wait for redirect
-    await page.waitForURL(/\/(|stories)$/);
-    
-    // Check if user is logged in by checking the header
-    await expect(page.locator('text=Welcome, RPG Test User')).toBeVisible();
+    // Setup authenticated user for all RPG tests
+    const { user, authData } = await E2EAuthHelper.setupAuthenticatedUser(page);
+    authenticatedUser = { user, authData };
     
     // Check if auth data is in localStorage
     const authData = await page.evaluate(() => localStorage.getItem('auth-storage'));
