@@ -21,6 +21,7 @@ import { VariablesPanel } from './VariablesPanel';
 import { ItemsPanel } from './ItemsPanel';
 import { ConditionsBuilder, type Condition } from './ConditionsBuilder';
 import { EffectsBuilder, type Effect } from './EffectsBuilder';
+import { RpgCheckBuilder, type RpgCheck } from './RpgCheckBuilder';
 import type { StoryVariable } from '../services/variablesService';
 import type { StoryItem } from '../services/itemsService';
 
@@ -49,6 +50,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const [choiceEffects, setChoiceEffects] = useState<Effect[]>([]);
   const [availableVariables, setAvailableVariables] = useState<StoryVariable[]>([]);
   const [availableItems, setAvailableItems] = useState<StoryItem[]>([]);
+  const [showRpgCheckBuilder, setShowRpgCheckBuilder] = useState(false);
+  const [currentRpgCheck, setCurrentRpgCheck] = useState<RpgCheck | null>(null);
 
   const handleVariablesUpdated = useCallback((variables: StoryVariable[]) => {
     setAvailableVariables(variables);
@@ -337,6 +340,15 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
     }
   }, [selectedNode, nodeTitle, nodeContent, nodeCharacter, nodeBackground, setNodes]);
 
+  const handleSaveRpgCheck = useCallback((rpgCheck: RpgCheck) => {
+    setCurrentRpgCheck(rpgCheck);
+    setShowRpgCheckBuilder(false);
+  }, []);
+
+  const handleCancelRpgCheck = useCallback(() => {
+    setShowRpgCheckBuilder(false);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -409,6 +421,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
                 Title
               </label>
               <Input
+                data-testid="node-title-input"
                 value={nodeTitle}
                 onChange={(e) => setNodeTitle(e.target.value)}
                 placeholder="Node title"
@@ -521,6 +534,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
                 </Button>
               </div>
               <textarea
+                data-testid="node-content-input"
                 value={nodeContent}
                 onChange={(e) => setNodeContent(e.target.value)}
                 placeholder="Node content - use **bold** and *italic* formatting"
@@ -532,7 +546,50 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
               </div>
             </div>
 
-            <Button onClick={handleSaveNode} className="w-full">
+            {/* RPG Check Section */}
+            <div className="border-t pt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                RPG Mechanics
+              </label>
+              {currentRpgCheck ? (
+                <div className="p-3 bg-gray-50 rounded-md">
+                  <div className="text-sm">
+                    <strong>RPG Check:</strong> {currentRpgCheck.type} (Difficulty: {currentRpgCheck.difficulty})
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    Success: {currentRpgCheck.successText.substring(0, 50)}...
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowRpgCheckBuilder(true)}
+                    >
+                      Edit RPG Check
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setCurrentRpgCheck(null)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  data-testid="add-rpg-check-btn"
+                  onClick={() => setShowRpgCheckBuilder(true)}
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                >
+                  Add RPG Check
+                </Button>
+              )}
+            </div>
+
+            <Button onClick={handleSaveNode} className="w-full" data-testid="save-node-btn">
               Save Node
             </Button>
           </div>
@@ -603,7 +660,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
               <option value="ending">Ending Node</option>
             </select>
           </div>
-          <Button onClick={handleAddNode} disabled={isAddingNode} size="sm" className="w-full">
+          <Button onClick={handleAddNode} disabled={isAddingNode} size="sm" className="w-full" data-testid="add-node-btn">
             {isAddingNode ? 'Adding...' : 'Add Node'}
           </Button>
         </div>
@@ -661,6 +718,13 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
         isOpen={showItemsPanel}
         onToggle={() => setShowItemsPanel(!showItemsPanel)}
         onItemsChange={handleItemsUpdated}
+      />
+
+      <RpgCheckBuilder
+        isOpen={showRpgCheckBuilder}
+        onSave={handleSaveRpgCheck}
+        onCancel={handleCancelRpgCheck}
+        initialData={currentRpgCheck || undefined}
       />
 
       {error && (
