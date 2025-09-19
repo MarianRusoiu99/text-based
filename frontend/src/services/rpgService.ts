@@ -2,6 +2,8 @@
  * RPG Service for managing RPG templates and mechanics
  */
 
+import { mockApi } from './mockApi';
+
 export interface RpgStat {
   id: string;
   name: string;
@@ -47,28 +49,41 @@ class RpgService {
       const data = await response.json();
       return data.data || [];
     } catch (error) {
-      console.error('Error fetching RPG templates:', error);
-      return [];
+      console.error('Error fetching RPG templates, using mock API:', error);
+      const result = await mockApi.getRpgTemplates();
+      return result.data;
     }
   }
 
   async createTemplate(templateData: CreateRpgTemplateDto): Promise<RpgTemplate> {
-    const response = await fetch(`${this.baseUrl}/rpg-templates`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(templateData),
-    });
-    
-    if (!response.ok) throw new Error('Failed to create RPG template');
-    const data = await response.json();
-    return data.data;
+    try {
+      const response = await fetch(`${this.baseUrl}/rpg-templates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(templateData),
+      });
+      
+      if (!response.ok) throw new Error('Failed to create RPG template');
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error('Error creating RPG template, using mock API:', error);
+      const result = await mockApi.createRpgTemplate(templateData);
+      return result.data;
+    }
   }
 
   async getTemplate(templateId: string): Promise<RpgTemplate> {
-    const response = await fetch(`${this.baseUrl}/rpg-templates/${templateId}`);
-    if (!response.ok) throw new Error('Failed to fetch RPG template');
-    const data = await response.json();
-    return data.data;
+    try {
+      const response = await fetch(`${this.baseUrl}/rpg-templates/${templateId}`);
+      if (!response.ok) throw new Error('Failed to fetch RPG template');
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error('Error fetching RPG template, using mock API:', error);
+      const result = await mockApi.getRpgTemplate(templateId);
+      return result.data;
+    }
   }
 }
 

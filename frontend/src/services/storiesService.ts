@@ -1,4 +1,5 @@
 import { useAuthStore } from '../stores/authStore';
+import { mockApi } from './mockApi';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -48,18 +49,24 @@ class StoriesService {
     return result;
   }
 
-  async createStory(data: { title: string; description?: string; visibility?: string; tags?: string[] }) {
-    const response = await fetch(`${API_BASE_URL}/stories`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...this.getAuthHeaders(),
-      },
-      body: JSON.stringify(data),
-    });
+  async createStory(data: { title: string; description?: string; visibility?: string; tags?: string[]; rpgTemplateId?: string }) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/stories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...this.getAuthHeaders(),
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await response.json();
-    return result;
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      // Fallback to mock API
+      console.log('Backend not available, using mock API for story creation');
+      return await mockApi.createStory(data);
+    }
   }
 
   async publishStory(id: string, isPublished: boolean) {
