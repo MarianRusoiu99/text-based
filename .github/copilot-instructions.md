@@ -16,10 +16,60 @@ Please ensure both servers are running for full functionality.
 Please start a new terminal session for each server and do not run other commands in those sessions. If you need to run other commands, please open a new terminal session.
 Always check if frontend and backend are running before running tests
 
+## Development Setup
+
+### Database & Infrastructure
+```bash
+# Start PostgreSQL and Redis
+cd docker && docker-compose up -d
+
+# Run database migrations
+cd backend && npx prisma migrate dev
+
+# Generate Prisma client
+cd backend && npx prisma generate
+
+# Seed database with sample data
+cd backend && npx prisma db seed
+
+# View database in Prisma Studio
+cd backend && npx prisma studio
+```
+
+### Full Development Environment
+```bash
+# Terminal 1: Start backend
+cd backend && npm run start:dev
+
+# Terminal 2: Start frontend
+cd frontend && npm run dev
+
+# Terminal 3: Run tests (optional)
+cd tests && npm run test:api
+```
+
+### Testing Commands
+```bash
+# Run all tests
+cd tests && npm run test:all
+
+# Run API tests only
+cd tests && npm run test:api
+
+# Run E2E tests in browser
+cd tests && npm run test:e2e:ui
+
+# Run E2E tests headlessly
+cd tests && npm run test:e2e
+```
+
 **Key Technologies:**
-- **Backend:** NestJS 10+ with TypeScript 5+
-- **Frontend:** React 18+ with TypeScript 5+
-- **Database:** PostgreSQL 15+ with Prisma 5+ ORM
+- **Backend:** NestJS 11+ with TypeScript 5+
+- **Frontend:** React 19+ with TypeScript 5+, Vite
+- **Database:** PostgreSQL 15+ with Prisma 6+ ORM
+- **UI Framework:** shadcn/ui with Radix UI primitives, Tailwind CSS 4+
+- **State Management:** Zustand + TanStack Query (React Query)
+- **Story Editor:** React Flow for node-based editing
 - **Caching:** Redis 7+
 - **Testing:** Jest, Playwright, Supertest
 - **Deployment:** Docker, GitHub Actions
@@ -211,22 +261,31 @@ export class FindStoriesDto {
 Use Prisma with proper relations and type safety:
 
 ```typescript
-// Schema patterns
+// Schema patterns from prisma/schema.prisma
 model Story {
-  id              String   @id @default(cuid())
-  title           String
-  description     String?
-  authorId        String
-  rpgTemplateId   String?
+  id                String          @id @default(uuid())
+  authorId          String          @map("author_id")
+  title             String
+  description       String?
+  coverImageUrl     String?         @map("cover_image_url")
+  category          String?
+  tags              String[]        @default([])
+  isPublished       Boolean         @default(false) @map("is_published")
+  visibility        String          @default("public")
+  rpgTemplateId     String?         @map("rpg_template_id")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
 
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  rpgTemplate     RpgTemplate? @relation(fields: [rpgTemplateId], references: [id])
-  nodes           StoryNode[]
+  author            User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  rpgTemplate       RpgTemplate?    @relation(fields: [rpgTemplateId], references: [id])
+  chapters          Chapter[]
+  nodes             Node[]
+  playSessions      PlaySession[]
 
   @@map("stories")
 }
 
-// Service usage
+// Complex queries with relations
 const story = await this.prisma.story.findUnique({
   where: { id },
   include: {
@@ -234,8 +293,15 @@ const story = await this.prisma.story.findUnique({
       select: { id: true, username: true, displayName: true },
     },
     rpgTemplate: true,
+    chapters: {
+      include: {
+        nodes: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    },
     nodes: {
-      orderBy: { order: 'asc' },
+      where: { chapterId: null }, // Root level nodes
     },
   },
 });
@@ -264,7 +330,7 @@ src/
 ```
 
 ### Component Patterns
-Use functional components with proper TypeScript typing:
+Use functional components with proper TypeScript typing and shadcn/ui components:
 
 ```typescript
 interface ButtonProps {
@@ -301,7 +367,52 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 ```
-### Please prioritize adding schadcn/ui components where applicable
+
+### UI Component Library (shadcn/ui)
+Prioritize shadcn/ui components for consistent design:
+
+```typescript
+// Use shadcn/ui components from src/components/ui/
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+// Example usage
+export const StoryCard: React.FC<{ story: Story }> = ({ story }) => {
+  return (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle>{story.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-muted-foreground">{story.description}</p>
+        <Button className="mt-4">Read Story</Button>
+      </CardContent>
+    </Card>
+  );
+};
+```
+
+### Utility Functions
+Use the `cn` utility for conditional class names:
+
+```typescript
+// src/lib/utils.ts
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+// Usage in components
+<div className={cn(
+  "base-classes",
+  variant === 'primary' && "primary-classes",
+  disabled && "disabled-classes"
+)} />
+```
 
 
 ### State Management (Zustand)
@@ -382,9 +493,10 @@ export const useCreateStory = () => {
 ```
 
 ### Story Editor (React Flow)
-Use React Flow for node-based editing:
+Use React Flow for node-based story editing with custom node types:
 
 ```typescript
+// From frontend/src/components/StoryFlow.tsx
 export const StoryEditor: React.FC = () => {
   const { nodes, edges, onNodesChange, onEdgesChange } = useStoryStore();
 
@@ -415,7 +527,87 @@ export const StoryEditor: React.FC = () => {
 };
 ```
 
+### Flexible RPG Mechanics
+The platform supports completely customizable RPG mechanics through templates and variables:
+
+```typescript
+// RPG Template structure
+interface RpgTemplate {
+  id: string;
+  name: string;
+  config: {
+    stats: string[];           // e.g., ["strength", "intelligence", "charisma"]
+    skills: string[];          // e.g., ["combat", "stealth", "persuasion"]
+    attributes: string[];      // Custom attributes
+    diceSystem: string;        // e.g., "d20", "d6"
+  };
+}
+
+// Story Variables for dynamic content
+interface StoryVariable {
+  variableName: string;
+  variableType: "boolean" | "number" | "string";
+  defaultValue?: any;
+}
+
+// RPG Checks in story nodes
+interface RpgCheck {
+  stat: string;
+  skill?: string;
+  difficulty: number;
+  successNodeId: string;
+  failureNodeId: string;
+}
+```
+
 ## Testing Patterns
+
+### Playwright E2E and API Testing
+The project uses a dedicated test suite with Playwright for comprehensive testing:
+
+```typescript
+// playwright.config.ts - Multi-project setup
+export default defineConfig({
+  projects: [
+    {
+      name: 'api',
+      testDir: './api',
+      use: {
+        baseURL: 'http://localhost:3000',
+      },
+      workers: 1, // API tests run sequentially
+    },
+    {
+      name: 'chromium',
+      testDir: './e2e',
+      use: {
+        baseURL: 'http://localhost:5173',
+        browserName: 'chromium',
+        viewport: { width: 1280, height: 720 },
+      },
+    },
+  ],
+});
+
+// API Test Example (tests/api/stories.spec.ts)
+test('should create and retrieve story', async ({ request }) => {
+  // Create story
+  const createResponse = await request.post('/stories', {
+    data: {
+      title: 'Test Adventure',
+      description: 'A test story',
+    },
+  });
+  expect(createResponse.ok()).toBeTruthy();
+  
+  const story = await createResponse.json();
+  expect(story.success).toBe(true);
+  
+  // Retrieve story
+  const getResponse = await request.get(`/stories/${story.data.id}`);
+  expect(getResponse.ok()).toBeTruthy();
+});
+```
 
 ### Backend Unit Tests
 Use Jest with proper mocking:
@@ -684,6 +876,50 @@ throw new ApiException(
   validationErrors
 );
 ```
+
+## Troubleshooting & Common Issues
+
+### Database Connection Issues
+```bash
+# Check if PostgreSQL is running
+cd docker && docker-compose ps
+
+# Reset database if needed
+cd backend && npx prisma migrate reset --force
+
+# Re-seed database
+cd backend && npx prisma db seed
+```
+
+### Frontend Build Issues
+```bash
+# Clear node_modules and reinstall
+cd frontend && rm -rf node_modules && npm install
+
+# Clear Vite cache
+cd frontend && rm -rf dist && npm run build
+```
+
+### Test Failures
+```bash
+# Run tests with debug output
+cd tests && npm run test:api -- --reporter=verbose
+
+# Run E2E tests in headed mode for debugging
+cd tests && npm run test:e2e:headed
+```
+
+### Common Development Errors
+- **"Prisma client not generated"**: Run `cd backend && npx prisma generate`
+- **"Module not found"**: Check import paths and ensure all dependencies are installed
+- **"Database connection timeout"**: Ensure Docker containers are running with `docker-compose ps`
+- **"Port already in use"**: Kill process using port 3000 or 5173, or use different ports
+
+### Performance Issues
+- Use React.memo for expensive components
+- Implement proper loading states with Suspense
+- Use React Query for caching API responses
+- Optimize Prisma queries with select/include to fetch only needed data
 
 Follow these guidelines to maintain consistency, quality, and maintainability across the codebase. When in doubt, refer to existing patterns in the codebase or ask for clarification.</content>
 <parameter name="filePath">/home/vali/Apps/text-based/copilot-instructions.md
