@@ -710,7 +710,11 @@ export class StoriesService {
   }
 
   // Node CRUD operations
-  async createNode(storyId: string, userId: string, createNodeDto: CreateNodeDto) {
+  async createNode(
+    storyId: string,
+    userId: string,
+    createNodeDto: CreateNodeDto,
+  ) {
     // Verify story ownership
     const story = await this.prisma.story.findUnique({
       where: { id: storyId },
@@ -775,7 +779,11 @@ export class StoriesService {
     };
   }
 
-  async updateNode(nodeId: string, userId: string, updateNodeDto: UpdateNodeDto) {
+  async updateNode(
+    nodeId: string,
+    userId: string,
+    updateNodeDto: UpdateNodeDto,
+  ) {
     // Find node and verify ownership through story
     const node = await this.prisma.node.findUnique({
       where: { id: nodeId },
@@ -832,7 +840,11 @@ export class StoriesService {
   }
 
   // Choice CRUD operations
-  async createChoice(fromNodeId: string, userId: string, createChoiceDto: CreateChoiceDto) {
+  async createChoice(
+    fromNodeId: string,
+    userId: string,
+    createChoiceDto: CreateChoiceDto,
+  ) {
     // Find from node and verify ownership through story
     const fromNode = await this.prisma.node.findUnique({
       where: { id: fromNodeId },
@@ -872,7 +884,11 @@ export class StoriesService {
     };
   }
 
-  async updateChoice(choiceId: string, userId: string, updateChoiceDto: UpdateChoiceDto) {
+  async updateChoice(
+    choiceId: string,
+    userId: string,
+    updateChoiceDto: UpdateChoiceDto,
+  ) {
     // Find choice and verify ownership through story
     const choice = await this.prisma.choice.findUnique({
       where: { id: choiceId },

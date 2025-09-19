@@ -50,14 +50,14 @@ let PlayerService = class PlayerService {
         let gameState = {};
         if (story.rpgTemplate) {
             const characterState = this.rpgMechanicsService.initializeCharacterState(story.rpgTemplate.id, story.rpgTemplate.config);
-            gameState = characterState;
+            gameState = JSON.parse(JSON.stringify(characterState));
         }
         const playSession = await this.prisma.playSession.create({
             data: {
                 userId,
                 storyId: startDto.storyId,
                 currentNodeId: startingNodeId,
-                gameState,
+                gameState: gameState,
             },
             include: {
                 story: {
@@ -70,7 +70,7 @@ let PlayerService = class PlayerService {
                 },
             },
         });
-        const currentNode = story.nodes.find(n => n.id === startingNodeId);
+        const currentNode = story.nodes.find((n) => n.id === startingNodeId);
         const unlockedAchievements = await this.achievementsService.checkAndUnlockAchievements(userId, 'play_sessions_started', { storyId: startDto.storyId });
         return {
             success: true,
@@ -166,9 +166,11 @@ let PlayerService = class PlayerService {
                 sessionId: session.id,
             },
         });
-        const isEnding = choice.toNode ? (await this.prisma.choice.count({
-            where: { fromNodeId: choice.toNodeId },
-        })) === 0 : true;
+        const isEnding = choice.toNode
+            ? (await this.prisma.choice.count({
+                where: { fromNodeId: choice.toNodeId },
+            })) === 0
+            : true;
         const updatedSession = await this.prisma.playSession.update({
             where: { id: sessionId },
             data: {
@@ -180,7 +182,8 @@ let PlayerService = class PlayerService {
         });
         let unlockedAchievements = [];
         if (isEnding) {
-            unlockedAchievements = await this.achievementsService.checkAndUnlockAchievements(userId, 'story_completed', { storyId: session.storyId, completed: true });
+            unlockedAchievements =
+                await this.achievementsService.checkAndUnlockAchievements(userId, 'story_completed', { storyId: session.storyId, completed: true });
         }
         const choiceAchievements = await this.achievementsService.checkAndUnlockAchievements(userId, 'choices_made', { choiceId: choice.id, sessionId });
         unlockedAchievements = [...unlockedAchievements, ...choiceAchievements];

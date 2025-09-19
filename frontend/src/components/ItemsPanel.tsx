@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { itemsService } from '../services/itemsService';
-import type { StoryItem, CreateItemDto, UpdateItemDto } from '../services/itemsService';
+import type { StoryItem, UpdateItemDto } from '../services/itemsService';
 
 interface ItemsPanelProps {
   storyId: string;

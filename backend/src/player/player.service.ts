@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StoriesService } from '../stories/stories.service';
 import { RpgMechanicsService } from '../rpg-templates/rpg-mechanics.service';
 import { AchievementsService } from '../achievements/achievements.service';
-import { StartPlaySessionDto, UpdateGameStateDto, MakeChoiceDto } from './dto/player.dto';
-import { RpgCharacterState } from '../rpg-templates/types/rpg-mechanics.types';
+import {
+  StartPlaySessionDto,
+  UpdateGameStateDto,
+  MakeChoiceDto,
+} from './dto/player.dto';
 
 @Injectable()
 export class PlayerService {
@@ -40,17 +47,19 @@ export class PlayerService {
     }
 
     if (!startingNodeId) {
-      throw new BadRequestException('No starting node available for this story');
+      throw new BadRequestException(
+        'No starting node available for this story',
+      );
     }
 
     // Initialize game state
-    let gameState: any = {};
+    let gameState: Record<string, unknown> = {};
     if (story.rpgTemplate) {
       const characterState = this.rpgMechanicsService.initializeCharacterState(
         story.rpgTemplate.id,
         story.rpgTemplate.config as any,
       );
-      gameState = characterState;
+      gameState = JSON.parse(JSON.stringify(characterState));
     }
 
     // Create play session
@@ -59,7 +68,7 @@ export class PlayerService {
         userId,
         storyId: startDto.storyId,
         currentNodeId: startingNodeId,
-        gameState,
+        gameState: gameState as any,
       },
       include: {
         story: {
@@ -73,14 +82,15 @@ export class PlayerService {
       },
     });
 
-    const currentNode = story.nodes.find(n => n.id === startingNodeId);
+    const currentNode = story.nodes.find((n) => n.id === startingNodeId);
 
     // Check for play session achievements
-    const unlockedAchievements = await this.achievementsService.checkAndUnlockAchievements(
-      userId,
-      'play_sessions_started',
-      { storyId: startDto.storyId }
-    );
+    const unlockedAchievements =
+      await this.achievementsService.checkAndUnlockAchievements(
+        userId,
+        'play_sessions_started',
+        { storyId: startDto.storyId },
+      );
 
     return {
       success: true,
@@ -88,7 +98,8 @@ export class PlayerService {
       data: {
         session: playSession,
         currentNode,
-        unlockedAchievements: unlockedAchievements.length > 0 ? unlockedAchievements : undefined,
+        unlockedAchievements:
+          unlockedAchievements.length > 0 ? unlockedAchievements : undefined,
       },
     };
   }
@@ -116,7 +127,9 @@ export class PlayerService {
       throw new NotFoundException('Play session not found');
     }
 
-    const currentNode = session.story.nodes.find((n) => n.id === session.currentNodeId);
+    const currentNode = session.story.nodes.find(
+      (n) => n.id === session.currentNodeId,
+    );
 
     if (!currentNode) {
       throw new NotFoundException('Current node not found in story');
@@ -137,7 +150,11 @@ export class PlayerService {
     };
   }
 
-  async makeChoice(userId: string, sessionId: string, choiceDto: MakeChoiceDto) {
+  async makeChoice(
+    userId: string,
+    sessionId: string,
+    choiceDto: MakeChoiceDto,
+  ) {
     const session = await this.prisma.playSession.findFirst({
       where: {
         id: sessionId,
@@ -176,10 +193,13 @@ export class PlayerService {
     }
 
     // Update game state if provided
-    let updatedGameState = session.gameState as any;
+    let updatedGameState: Record<string, unknown> = session.gameState as Record<
+      string,
+      unknown
+    >;
     if (choiceDto.gameStateUpdate) {
       updatedGameState = {
-        ...updatedGameState,
+        ...(updatedGameState as Record<string, any>),
         ...choiceDto.gameStateUpdate,
       };
     }
@@ -193,16 +213,18 @@ export class PlayerService {
     });
 
     // Check if this is an ending node (no outgoing choices)
-    const isEnding = choice.toNode ? (await this.prisma.choice.count({
-      where: { fromNodeId: choice.toNodeId },
-    })) === 0 : true;
+    const isEnding = choice.toNode
+      ? (await this.prisma.choice.count({
+          where: { fromNodeId: choice.toNodeId },
+        })) === 0
+      : true;
 
     // Update session
     const updatedSession = await this.prisma.playSession.update({
       where: { id: sessionId },
       data: {
         currentNodeId: choice.toNodeId,
-        gameState: updatedGameState,
+        gameState: updatedGameState as any,
         isCompleted: isEnding,
         completedAt: isEnding ? new Date() : null,
       },
@@ -211,19 +233,21 @@ export class PlayerService {
     // Check for achievements if story was completed
     let unlockedAchievements: any[] = [];
     if (isEnding) {
-      unlockedAchievements = await this.achievementsService.checkAndUnlockAchievements(
-        userId,
-        'story_completed',
-        { storyId: session.storyId, completed: true }
-      );
+      unlockedAchievements =
+        await this.achievementsService.checkAndUnlockAchievements(
+          userId,
+          'story_completed',
+          { storyId: session.storyId, completed: true },
+        );
     }
 
     // Check for choice-related achievements
-    const choiceAchievements = await this.achievementsService.checkAndUnlockAchievements(
-      userId,
-      'choices_made',
-      { choiceId: choice.id, sessionId }
-    );
+    const choiceAchievements =
+      await this.achievementsService.checkAndUnlockAchievements(
+        userId,
+        'choices_made',
+        { choiceId: choice.id, sessionId },
+      );
 
     unlockedAchievements = [...unlockedAchievements, ...choiceAchievements];
 
@@ -233,12 +257,17 @@ export class PlayerService {
       data: {
         session: updatedSession,
         nextNode: choice.toNode,
-        unlockedAchievements: unlockedAchievements.length > 0 ? unlockedAchievements : undefined,
+        unlockedAchievements:
+          unlockedAchievements.length > 0 ? unlockedAchievements : undefined,
       },
     };
   }
 
-  async updateGameState(userId: string, sessionId: string, updateDto: UpdateGameStateDto) {
+  async updateGameState(
+    userId: string,
+    sessionId: string,
+    updateDto: UpdateGameStateDto,
+  ) {
     const session = await this.prisma.playSession.findFirst({
       where: {
         id: sessionId,
@@ -257,9 +286,10 @@ export class PlayerService {
     }
 
     if (updateDto.gameState !== undefined) {
-      const currentGameState = (session.gameState as any) || {};
+      const currentGameState: Record<string, unknown> =
+        (session.gameState as Record<string, unknown>) || {};
       updateData.gameState = {
-        ...currentGameState,
+        ...(currentGameState as Record<string, any>),
         ...updateDto.gameState,
       };
     }

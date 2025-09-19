@@ -21,6 +21,9 @@ import { VariablesPanel } from './VariablesPanel';
 import { ItemsPanel } from './ItemsPanel';
 import { ConditionsBuilder, type Condition } from './ConditionsBuilder';
 import { EffectsBuilder, type Effect } from './EffectsBuilder';
+import type { StoryVariable } from '../services/variablesService';
+import type { StoryItem } from '../services/itemsService';
+
 
 interface StoryFlowProps {
   storyId: string;
@@ -44,16 +47,28 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const [showItemsPanel, setShowItemsPanel] = useState(false);
   const [choiceConditions, setChoiceConditions] = useState<Condition | null>(null);
   const [choiceEffects, setChoiceEffects] = useState<Effect[]>([]);
-  const [availableVariables, setAvailableVariables] = useState<Array<{id: string, name: string, type: string}>>([]);
-  const [availableItems, setAvailableItems] = useState<Array<{id: string, name: string}>>([]);
+  const [availableVariables, setAvailableVariables] = useState<StoryVariable[]>([]);
+  const [availableItems, setAvailableItems] = useState<StoryItem[]>([]);
 
-  const handleVariablesUpdated = useCallback((variables: Array<{id: string, name: string, type: string}>) => {
+  const handleVariablesUpdated = useCallback((variables: StoryVariable[]) => {
     setAvailableVariables(variables);
   }, []);
 
-  const handleItemsUpdated = useCallback((items: Array<{id: string, name: string}>) => {
+  const handleItemsUpdated = useCallback((items: StoryItem[]) => {
     setAvailableItems(items);
   }, []);
+
+  // Transform data for ConditionsBuilder and EffectsBuilder components
+  const transformedVariables = availableVariables.map(variable => ({
+    id: variable.id,
+    name: variable.variableName,
+    type: variable.variableType
+  }));
+
+  const transformedItems = availableItems.map(item => ({
+    id: item.id,
+    name: item.itemName
+  }));
 
   useEffect(() => {
     console.log('StoryFlow useEffect triggered with storyId:', storyId);
@@ -430,14 +445,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
                 <ConditionsBuilder
                   conditions={choiceConditions}
                   onChange={setChoiceConditions}
-                  variables={availableVariables}
-                  items={availableItems}
+                  variables={transformedVariables}
+                  items={transformedItems}
                 />
                 <EffectsBuilder
                   effects={choiceEffects}
                   onChange={setChoiceEffects}
-                  variables={availableVariables}
-                  items={availableItems}
+                  variables={transformedVariables}
+                  items={transformedItems}
                 />
               </div>
             )}
@@ -546,8 +561,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
               <ConditionsBuilder
                 conditions={choiceConditions}
                 onChange={setChoiceConditions}
-                variables={availableVariables}
-                items={availableItems}
+                variables={transformedVariables}
+                items={transformedItems}
               />
             </div>
 
@@ -558,8 +573,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
               <EffectsBuilder
                 effects={choiceEffects}
                 onChange={setChoiceEffects}
-                variables={availableVariables}
-                items={availableItems}
+                variables={transformedVariables}
+                items={transformedItems}
               />
             </div>
 

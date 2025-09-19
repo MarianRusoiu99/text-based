@@ -105,7 +105,7 @@ let SocialService = class SocialService {
         return {
             success: true,
             data: {
-                followers: followers.map(f => f.follower),
+                followers: followers.map((f) => f.follower),
                 pagination: {
                     page,
                     limit,
@@ -142,7 +142,7 @@ let SocialService = class SocialService {
         return {
             success: true,
             data: {
-                following: following.map(f => f.following),
+                following: following.map((f) => f.following),
                 pagination: {
                     page,
                     limit,
@@ -400,7 +400,7 @@ let SocialService = class SocialService {
             throw new common_1.NotFoundException('Comment not found');
         }
         if (comment.userId !== userId) {
-            throw new common_1.BadRequestException('Cannot delete another user\'s comment');
+            throw new common_1.BadRequestException("Cannot delete another user's comment");
         }
         await this.prisma.comment.delete({
             where: { id: commentId },
@@ -515,12 +515,13 @@ let SocialService = class SocialService {
             }),
             this.prisma.storyBookmark.count({ where: { userId } }),
         ]);
-        const bookmarksWithStats = bookmarks.map(bookmark => ({
+        const bookmarksWithStats = bookmarks.map((bookmark) => ({
             ...bookmark,
             story: {
                 ...bookmark.story,
                 averageRating: bookmark.story.ratings.length > 0
-                    ? bookmark.story.ratings.reduce((sum, r) => sum + r.rating, 0) / bookmark.story.ratings.length
+                    ? bookmark.story.ratings.reduce((sum, r) => sum + r.rating, 0) /
+                        bookmark.story.ratings.length
                     : 0,
                 totalRatings: bookmark.story._count.ratings,
                 totalPlays: bookmark.story._count.playSessions,

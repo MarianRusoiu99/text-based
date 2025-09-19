@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
@@ -262,7 +267,10 @@ describe('AuthService', () => {
 
       prismaService.verificationToken.findUnique.mockResolvedValue(mockToken);
       prismaService.verificationToken.update.mockResolvedValue(mockToken);
-      prismaService.user.update.mockResolvedValue({ id: 'user-123', isVerified: true });
+      prismaService.user.update.mockResolvedValue({
+        id: 'user-123',
+        isVerified: true,
+      });
 
       const result = await service.verifyEmail(verifyEmailDto);
 
@@ -315,13 +323,17 @@ describe('AuthService', () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
 
       prismaService.user.findUnique.mockResolvedValue(mockUser);
-      prismaService.passwordResetToken.create.mockResolvedValue({ id: 'token-123' });
+      prismaService.passwordResetToken.create.mockResolvedValue({
+        id: 'token-123',
+      });
       emailProvider.sendEmail.mockResolvedValue(undefined);
 
       const result = await service.forgotPassword(forgotPasswordDto);
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe('If an account with this email exists, a password reset link has been sent.');
+      expect(result.message).toBe(
+        'If an account with this email exists, a password reset link has been sent.',
+      );
       expect(emailProvider.sendEmail).toHaveBeenCalled();
     });
 
@@ -335,7 +347,9 @@ describe('AuthService', () => {
       const result = await service.forgotPassword(forgotPasswordDto);
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe('If an account with this email exists, a password reset link has been sent.');
+      expect(result.message).toBe(
+        'If an account with this email exists, a password reset link has been sent.',
+      );
       expect(emailProvider.sendEmail).not.toHaveBeenCalled();
     });
   });
@@ -395,7 +409,10 @@ describe('AuthService', () => {
       prismaService.user.findUnique.mockResolvedValue(mockUser);
       prismaService.user.update.mockResolvedValue(mockUser);
 
-      const result = await service.changePassword('user-123', changePasswordDto);
+      const result = await service.changePassword(
+        'user-123',
+        changePasswordDto,
+      );
 
       expect(result.success).toBe(true);
       expect(result.message).toBe('Password changed successfully');
@@ -414,9 +431,9 @@ describe('AuthService', () => {
 
       prismaService.user.findUnique.mockResolvedValue(mockUser);
 
-      await expect(service.changePassword('user-123', changePasswordDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.changePassword('user-123', changePasswordDto),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException for non-existent user', async () => {
@@ -427,9 +444,9 @@ describe('AuthService', () => {
 
       prismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.changePassword('nonexistent-user', changePasswordDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.changePassword('nonexistent-user', changePasswordDto),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

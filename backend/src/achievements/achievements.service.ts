@@ -22,7 +22,11 @@ export class AchievementsService {
     });
   }
 
-  async checkAndUnlockAchievements(userId: string, eventType: string, eventData: any = {}) {
+  async checkAndUnlockAchievements(
+    userId: string,
+    eventType: string,
+    eventData: any = {},
+  ) {
     const achievements = await this.prisma.achievement.findMany({
       where: {
         isActive: true,
@@ -45,7 +49,9 @@ export class AchievementsService {
       if (alreadyUnlocked) continue;
 
       // Check if achievement conditions are met
-      if (await this.checkAchievementCondition(achievement, userId, eventData)) {
+      if (
+        await this.checkAchievementCondition(achievement, userId, eventData)
+      ) {
         const userAchievement = await this.prisma.userAchievement.create({
           data: {
             userId,
@@ -63,8 +69,12 @@ export class AchievementsService {
     return unlockedAchievements;
   }
 
-  private async checkAchievementCondition(achievement: any, userId: string, eventData: any): Promise<boolean> {
-    const triggerData = achievement.triggerData as any;
+  private async checkAchievementCondition(
+    achievement: any,
+    userId: string,
+    eventData: any,
+  ): Promise<boolean> {
+    const triggerData = achievement.triggerData;
 
     switch (achievement.triggerType) {
       case 'story_completed':
@@ -106,24 +116,28 @@ export class AchievementsService {
     ]);
 
     // Get total points by joining with achievements
-    const userAchievementsWithPoints = await this.prisma.userAchievement.findMany({
-      where: { userId },
-      include: {
-        achievement: {
-          select: { points: true },
+    const userAchievementsWithPoints =
+      await this.prisma.userAchievement.findMany({
+        where: { userId },
+        include: {
+          achievement: {
+            select: { points: true },
+          },
         },
-      },
-    });
+      });
 
     const totalPoints = userAchievementsWithPoints.reduce(
       (sum, ua) => sum + (ua.achievement.points || 0),
-      0
+      0,
     );
 
     return {
       totalAchievements,
       unlockedAchievements: userAchievements,
-      completionPercentage: totalAchievements > 0 ? (userAchievements / totalAchievements) * 100 : 0,
+      completionPercentage:
+        totalAchievements > 0
+          ? (userAchievements / totalAchievements) * 100
+          : 0,
       totalPoints,
     };
   }

@@ -173,10 +173,7 @@ export class StoriesController {
     @Param('storyId') storyId: string,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.findStoryVariables(
-      storyId,
-      req.user.id
-    );
+    return this.storiesService.findStoryVariables(storyId, req.user.id);
   }
 
   @Put(':storyId/variables/:variableId')
@@ -205,7 +202,7 @@ export class StoriesController {
     return this.storiesService.deleteStoryVariable(
       storyId,
       variableId,
-      req.user.id
+      req.user.id,
     );
   }
 
@@ -252,11 +249,7 @@ export class StoriesController {
     @Param('itemId') itemId: string,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.deleteItem(
-      storyId,
-      itemId,
-      req.user.id
-    );
+    return this.storiesService.deleteItem(storyId, itemId, req.user.id);
   }
 
   // Node endpoints
@@ -267,23 +260,16 @@ export class StoriesController {
     @Body() createNodeDto: CreateNodeDto,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.createNode(
-      storyId,
-      req.user.id,
-      createNodeDto,
-    );
+    return this.storiesService.createNode(storyId, req.user.id, createNodeDto);
   }
 
-    @Get(':storyId/nodes')
+  @Get(':storyId/nodes')
   @UseGuards(JwtAuthGuard)
   findNodes(
     @Param('storyId') storyId: string,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.findNodes(
-      storyId,
-      req.user.id,
-    );
+    return this.storiesService.findNodes(storyId, req.user.id);
   }
 
   @Put('nodes/:nodeId')
@@ -293,11 +279,7 @@ export class StoriesController {
     @Body() updateNodeDto: UpdateNodeDto,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.updateNode(
-      nodeId,
-      req.user.id,
-      updateNodeDto,
-    );
+    return this.storiesService.updateNode(nodeId, req.user.id, updateNodeDto);
   }
 
   @Delete('nodes/:nodeId')
@@ -306,10 +288,7 @@ export class StoriesController {
     @Param('nodeId') nodeId: string,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.removeNode(
-      nodeId,
-      req.user.id
-    );
+    return this.storiesService.removeNode(nodeId, req.user.id);
   }
 
   // Choice endpoints
@@ -347,9 +326,6 @@ export class StoriesController {
     @Param('choiceId') choiceId: string,
     @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.removeChoice(
-      choiceId,
-      req.user.id
-    );
+    return this.storiesService.removeChoice(choiceId, req.user.id);
   }
 }

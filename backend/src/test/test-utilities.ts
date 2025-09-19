@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { faker } from '@faker-js/faker';
+// Using hardcoded values instead of faker to avoid ES module import issues
 
 // Mock types for better type safety
 export type MockType<T> = {
@@ -39,44 +39,44 @@ export const createMockPrismaService = () => {
     user: mockTable(),
     // Story operations
     story: mockTable(),
-    
+
     // RPG Template operations
     rpgTemplate: mockTable(),
-    
+
     // Story Variable operations
     storyVariable: mockTable(),
-    
+
     // Item operations
     item: mockTable(),
-    
+
     // Node operations
     node: mockTable(),
-    
+
     // Choice operations
     choice: mockTable(),
-    
+
     // Social features
     userFollow: mockTable(),
     storyBookmark: mockTable(),
     rating: mockTable(),
     comment: mockTable(),
-    
+
     // Authentication tokens
     verificationToken: mockTable(),
     passwordResetToken: mockTable(),
     refreshToken: mockTable(),
-    
+
     // Achievements
     achievement: mockTable(),
     userAchievement: mockTable(),
-    
+
     // Player session data
     playSession: mockTable(),
     savedGame: mockTable(),
-    
+
     // Analytics
     choiceAnalytics: mockTable(),
-    
+
     // Transaction support
     $transaction: jest.fn(),
     $connect: jest.fn(),
@@ -137,17 +137,15 @@ export class TestDataFactory {
    */
   static createUser(overrides: any = {}): any {
     return {
-      id: faker.string.uuid(),
-      username: faker.internet.username().toLowerCase(),
-      email: faker.internet.email().toLowerCase(),
-      displayName: faker.person.fullName(),
-      passwordHash: bcrypt.hashSync('TestPassword123!', 12),
-      isVerified: false,
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
-      bio: faker.lorem.paragraph(),
-      avatarUrl: faker.image.avatar(),
-      lastLoginAt: faker.date.recent(),
+      id: 'user-test-123',
+      username: 'testuser',
+      email: 'test@example.com',
+      displayName: 'Test User',
+      bio: 'This is a test user bio',
+      avatarUrl: 'https://example.com/avatar.jpg',
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-02'),
+      lastLoginAt: new Date('2023-01-02'),
       ...overrides,
     };
   }
@@ -157,18 +155,18 @@ export class TestDataFactory {
    */
   static createStory(authorId: string, overrides: any = {}): any {
     return {
-      id: faker.string.uuid(),
-      title: faker.lorem.words(3),
-      description: faker.lorem.paragraph(),
+      id: 'story-test-123',
+      title: 'Test Adventure Story',
+      description: 'This is a test story for unit testing purposes',
       authorId,
       isPublished: false,
       visibility: 'private',
-      tags: [faker.lorem.word(), faker.lorem.word()],
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
-      playCount: faker.number.int({ min: 0, max: 1000 }),
-      averageRating: faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
-      ratingCount: faker.number.int({ min: 0, max: 100 }),
+      tags: ['adventure', 'test'],
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-02'),
+      playCount: 100,
+      averageRating: 4.5,
+      ratingCount: 20,
       ...overrides,
     };
   }
@@ -178,9 +176,9 @@ export class TestDataFactory {
    */
   static createRpgTemplate(creatorId: string, overrides: any = {}): any {
     return {
-      id: faker.string.uuid(),
-      name: faker.lorem.words(2),
-      description: faker.lorem.paragraph(),
+      id: 'rpg-template-123',
+      name: 'Test RPG Template',
+      description: 'This is a test RPG template for unit testing',
       creatorId,
       isPublic: true,
       mechanics: {
@@ -188,13 +186,11 @@ export class TestDataFactory {
           { name: 'strength', type: 'integer', defaultValue: 10 },
           { name: 'intelligence', type: 'integer', defaultValue: 10 },
         ],
-        skills: [
-          { name: 'swordplay', type: 'integer', defaultValue: 0 },
-        ],
+        skills: [{ name: 'swordplay', type: 'integer', defaultValue: 0 }],
         checkTypes: ['skill', 'stat', 'luck'],
       },
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-02'),
       ...overrides,
     };
   }
@@ -204,14 +200,14 @@ export class TestDataFactory {
    */
   static createStoryVariable(storyId: string, overrides: any = {}): any {
     return {
-      id: faker.string.uuid(),
+      id: 'variable-test-123',
       storyId,
-      variableName: faker.lorem.word(),
-      variableType: faker.helpers.arrayElement(['string', 'integer', 'boolean']),
-      defaultValue: faker.lorem.word(),
-      description: faker.lorem.sentence(),
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
+      variableName: 'testVariable',
+      variableType: 'string',
+      defaultValue: 'testValue',
+      description: 'This is a test variable',
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-02'),
       ...overrides,
     };
   }
@@ -221,11 +217,11 @@ export class TestDataFactory {
    */
   static createItem(storyId: string, overrides: any = {}): any {
     return {
-      id: faker.string.uuid(),
+      id: 'item-test-123',
       storyId,
-      itemName: faker.lorem.words(2),
-      description: faker.lorem.sentence(),
-      imageUrl: faker.image.url(),
+      itemName: 'Test Item',
+      description: 'This is a test item for unit testing',
+      imageUrl: 'https://example.com/test-image.jpg',
       ...overrides,
     };
   }
@@ -235,15 +231,16 @@ export class TestDataFactory {
    */
   static createNode(storyId: string, overrides: any = {}): any {
     return {
-      id: faker.string.uuid(),
+      id: 'node-test-123',
       storyId,
-      title: faker.lorem.words(3),
-      content: faker.lorem.paragraphs(2),
+      title: 'Test Story Node',
+      content:
+        'This is test content for a story node. It contains the narrative text that players will read.',
       type: 'story',
-      position: { x: faker.number.int({ min: 0, max: 1000 }), y: faker.number.int({ min: 0, max: 1000 }) },
+      position: { x: 100, y: 200 },
       metadata: {},
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-02'),
       ...overrides,
     };
   }
@@ -251,15 +248,19 @@ export class TestDataFactory {
   /**
    * Generate a choice between nodes
    */
-  static createChoice(fromNodeId: string, toNodeId: string, overrides: any = {}): any {
+  static createChoice(
+    fromNodeId: string,
+    toNodeId: string,
+    overrides: any = {},
+  ): any {
     return {
-      id: faker.string.uuid(),
+      id: 'choice-test-123',
       fromNodeId,
       toNodeId,
-      text: faker.lorem.sentence(),
+      text: 'This is a test choice option',
       conditions: {},
       effects: {},
-      order: faker.number.int({ min: 0, max: 10 }),
+      order: 1,
       ...overrides,
     };
   }
@@ -279,11 +280,11 @@ export class TestDataFactory {
    */
   static createVerificationToken(userId: string): any {
     return {
-      id: faker.string.uuid(),
+      id: 'token-test-123',
       userId,
-      token: faker.string.alphanumeric(32),
-      expiresAt: faker.date.future(),
-      createdAt: faker.date.recent(),
+      token: 'test-verification-token-12345678',
+      expiresAt: new Date('2023-12-31'),
+      createdAt: new Date('2023-01-01'),
     };
   }
 }
@@ -297,7 +298,7 @@ export class TestUtils {
    */
   static async createTestModule(
     providers: any[],
-    imports: any[] = []
+    imports: any[] = [],
   ): Promise<TestingModule> {
     return Test.createTestingModule({
       imports,
@@ -332,7 +333,7 @@ export class TestUtils {
     mockPrisma.story.findMany.mockResolvedValue([]);
     mockPrisma.user.findMany.mockResolvedValue([]);
     mockPrisma.rpgTemplate.findMany.mockResolvedValue([]);
-    
+
     // Default count responses
     mockPrisma.story.count.mockResolvedValue(0);
     mockPrisma.user.count.mockResolvedValue(0);
@@ -342,9 +343,14 @@ export class TestUtils {
   /**
    * Reset all mocks to clean state
    */
-  static resetAllMocks(mockPrisma: any, mockJwt: any, mockEmail?: any, mockLogger?: any) {
+  static resetAllMocks(
+    mockPrisma: any,
+    mockJwt: any,
+    mockEmail?: any,
+    mockLogger?: any,
+  ) {
     jest.clearAllMocks();
-    
+
     // Reset Prisma mocks
     Object.values(mockPrisma).forEach((table: any) => {
       if (typeof table === 'object') {
@@ -355,14 +361,14 @@ export class TestUtils {
         });
       }
     });
-    
+
     // Reset JWT mocks
     Object.values(mockJwt).forEach((method: any) => {
       if (jest.isMockFunction(method)) {
         method.mockReset();
       }
     });
-    
+
     // Reset additional service mocks
     if (mockEmail) {
       Object.values(mockEmail).forEach((method: any) => {
@@ -371,7 +377,7 @@ export class TestUtils {
         }
       });
     }
-    
+
     if (mockLogger) {
       Object.values(mockLogger).forEach((method: any) => {
         if (jest.isMockFunction(method)) {
@@ -384,7 +390,11 @@ export class TestUtils {
   /**
    * Create error response for testing error handling
    */
-  static createErrorResponse(statusCode: number, message: string, errorCode?: string) {
+  static createErrorResponse(
+    statusCode: number,
+    message: string,
+    errorCode?: string,
+  ) {
     return {
       statusCode,
       message,
@@ -420,7 +430,7 @@ export class TestAssertions {
     expect(response).toHaveProperty('success', expectSuccess);
     expect(response).toHaveProperty('data');
     expect(response).toHaveProperty('message');
-    
+
     if (response.meta) {
       expect(response.meta).toHaveProperty('timestamp');
     }
@@ -429,7 +439,11 @@ export class TestAssertions {
   /**
    * Assert that pagination data is properly formatted
    */
-  static assertPaginationMeta(meta: any, expectedPage: number, expectedLimit: number) {
+  static assertPaginationMeta(
+    meta: any,
+    expectedPage: number,
+    expectedLimit: number,
+  ) {
     expect(meta).toHaveProperty('pagination');
     expect(meta.pagination).toHaveProperty('page', expectedPage);
     expect(meta.pagination).toHaveProperty('limit', expectedLimit);
@@ -440,10 +454,14 @@ export class TestAssertions {
   /**
    * Assert that error response follows standard format
    */
-  static assertErrorResponse(response: any, expectedStatusCode: number, expectedMessage?: string) {
+  static assertErrorResponse(
+    response: any,
+    expectedStatusCode: number,
+    expectedMessage?: string,
+  ) {
     expect(response).toHaveProperty('statusCode', expectedStatusCode);
     expect(response).toHaveProperty('message');
-    
+
     if (expectedMessage) {
       expect(response.message).toContain(expectedMessage);
     }
@@ -452,7 +470,11 @@ export class TestAssertions {
   /**
    * Assert that service method was called with correct parameters
    */
-  static assertServiceMethodCall(mockMethod: jest.Mock, expectedArgs: any[], callIndex: number = 0) {
+  static assertServiceMethodCall(
+    mockMethod: jest.Mock,
+    expectedArgs: any[],
+    callIndex: number = 0,
+  ) {
     expect(mockMethod).toHaveBeenCalledTimes(callIndex + 1);
     expect(mockMethod).toHaveBeenNthCalledWith(callIndex + 1, ...expectedArgs);
   }

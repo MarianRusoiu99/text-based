@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RpgMechanicsService } from './rpg-mechanics.service';
-import { RpgTemplateConfig, RpgCharacterState } from './types/rpg-mechanics.types';
+import {
+  RpgTemplateConfig,
+  RpgCharacterState,
+} from './types/rpg-mechanics.types';
 
 describe('RpgMechanicsService', () => {
   let service: RpgMechanicsService;
@@ -84,7 +87,7 @@ describe('RpgMechanicsService', () => {
         expect.objectContaining({
           field: 'version',
           code: 'INVALID_VERSION',
-        })
+        }),
       );
     });
   });

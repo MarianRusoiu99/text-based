@@ -326,7 +326,7 @@ export class DiscoveryService {
       .then((sessions) => sessions.map((s) => s.storyId));
 
     // Find stories with similar tags/categories that user hasn't played
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const baseWhere: any = {
       isPublished: true,
       id: {

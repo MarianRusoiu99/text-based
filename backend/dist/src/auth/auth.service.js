@@ -110,7 +110,7 @@ let AuthService = class AuthService {
         });
         return {
             success: true,
-            message: 'User registered successfully. Please check your email to verify your account.',
+            message: 'User registered successfully',
             data: {
                 user: {
                     id: user.id,
@@ -195,7 +195,9 @@ let AuthService = class AuthService {
                 data: { isVerified: true },
             }),
         ]);
-        this.logger.log('info', 'Email verified successfully', { userId: verificationToken.userId });
+        this.logger.log('info', 'Email verified successfully', {
+            userId: verificationToken.userId,
+        });
         return {
             success: true,
             message: 'Email verified successfully',
@@ -218,7 +220,10 @@ let AuthService = class AuthService {
         });
         const resetToken = await this.generatePasswordResetToken(user.id);
         await this.sendPasswordResetEmail(user.email, resetToken);
-        this.logger.log('info', 'Password reset requested', { userId: user.id, email: user.email });
+        this.logger.log('info', 'Password reset requested', {
+            userId: user.id,
+            email: user.email,
+        });
         return {
             success: true,
             message: 'If an account with this email exists, a password reset link has been sent.',
@@ -250,7 +255,9 @@ let AuthService = class AuthService {
                 data: { passwordHash: hashedPassword },
             }),
         ]);
-        this.logger.log('info', 'Password reset successfully', { userId: resetToken.userId });
+        this.logger.log('info', 'Password reset successfully', {
+            userId: resetToken.userId,
+        });
         return {
             success: true,
             message: 'Password reset successfully',

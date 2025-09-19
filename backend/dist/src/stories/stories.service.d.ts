@@ -18,6 +18,8 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -28,8 +30,6 @@ export declare class StoriesService {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
-            createdAt: Date;
-            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -46,6 +46,8 @@ export declare class StoriesService {
                 };
             } & {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 title: string;
                 description: string | null;
                 coverImageUrl: string | null;
@@ -56,8 +58,6 @@ export declare class StoriesService {
                 visibility: string;
                 contentRating: string;
                 estimatedDuration: number | null;
-                createdAt: Date;
-                updatedAt: Date;
                 publishedAt: Date | null;
                 authorId: string;
                 rpgTemplateId: string | null;
@@ -80,16 +80,18 @@ export declare class StoriesService {
             };
             chapters: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 title: string;
                 description: string | null;
                 isPublished: boolean;
-                createdAt: Date;
-                updatedAt: Date;
                 chapterOrder: number;
                 storyId: string;
             }[];
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -100,8 +102,6 @@ export declare class StoriesService {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
-            createdAt: Date;
-            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -112,6 +112,8 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -122,8 +124,6 @@ export declare class StoriesService {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
-            createdAt: Date;
-            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -138,6 +138,8 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -148,8 +150,6 @@ export declare class StoriesService {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
-            createdAt: Date;
-            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -160,11 +160,11 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         };
@@ -173,11 +173,11 @@ export declare class StoriesService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         }[];
@@ -186,11 +186,11 @@ export declare class StoriesService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         };
@@ -200,11 +200,11 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         };
@@ -225,20 +225,20 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            storyId: string;
             variableName: string;
             variableType: string;
             defaultValue: import("@prisma/client/runtime/library").JsonValue | null;
+            storyId: string;
         };
     }>;
     findStoryVariables(storyId: string, userId?: string): Promise<{
         success: boolean;
         data: {
             id: string;
-            storyId: string;
             variableName: string;
             variableType: string;
             defaultValue: import("@prisma/client/runtime/library").JsonValue | null;
+            storyId: string;
         }[];
     }>;
     updateStoryVariable(storyId: string, variableId: string, userId: string, updateVariableDto: UpdateStoryVariableDto): Promise<{
@@ -246,10 +246,10 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            storyId: string;
             variableName: string;
             variableType: string;
             defaultValue: import("@prisma/client/runtime/library").JsonValue | null;
+            storyId: string;
         };
     }>;
     deleteStoryVariable(storyId: string, variableId: string, userId: string): Promise<{
@@ -262,9 +262,9 @@ export declare class StoriesService {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         };
     }>;
     findItems(storyId: string, userId?: string): Promise<{
@@ -272,9 +272,9 @@ export declare class StoriesService {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         }[];
     }>;
     updateItem(storyId: string, itemId: string, userId: string, updateItemDto: UpdateItemDto): Promise<{
@@ -283,9 +283,9 @@ export declare class StoriesService {
         data: {
             id: string;
             description: string | null;
-            storyId: string;
             itemName: string;
             imageUrl: string | null;
+            storyId: string;
         };
     }>;
     deleteItem(storyId: string, itemId: string, userId: string): Promise<{
@@ -297,14 +297,14 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            title: string;
             createdAt: Date;
             updatedAt: Date;
-            storyId: string;
+            title: string;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
             chapterId: string | null;
+            storyId: string;
         };
     }>;
     findNodes(storyId: string, userId?: string): Promise<{
@@ -313,57 +313,57 @@ export declare class StoriesService {
             fromChoices: ({
                 toNode: {
                     id: string;
-                    title: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    storyId: string;
+                    title: string;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
                     chapterId: string | null;
+                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             })[];
             toChoices: ({
                 fromNode: {
                     id: string;
-                    title: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    storyId: string;
+                    title: string;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
                     chapterId: string | null;
+                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             })[];
         } & {
             id: string;
-            title: string;
             createdAt: Date;
             updatedAt: Date;
-            storyId: string;
+            title: string;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
             chapterId: string | null;
+            storyId: string;
         })[];
     }>;
     updateNode(nodeId: string, userId: string, updateNodeDto: UpdateNodeDto): Promise<{
@@ -371,14 +371,14 @@ export declare class StoriesService {
         message: string;
         data: {
             id: string;
-            title: string;
             createdAt: Date;
             updatedAt: Date;
-            storyId: string;
+            title: string;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
             chapterId: string | null;
+            storyId: string;
         };
     }>;
     removeNode(nodeId: string, userId: string): Promise<{
@@ -392,11 +392,11 @@ export declare class StoriesService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            fromNodeId: string;
             toNodeId: string;
             choiceText: string;
             conditions: import("@prisma/client/runtime/library").JsonValue | null;
             effects: import("@prisma/client/runtime/library").JsonValue | null;
+            fromNodeId: string;
         };
     }>;
     updateChoice(choiceId: string, userId: string, updateChoiceDto: UpdateChoiceDto): Promise<{
@@ -406,11 +406,11 @@ export declare class StoriesService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            fromNodeId: string;
             toNodeId: string;
             choiceText: string;
             conditions: import("@prisma/client/runtime/library").JsonValue | null;
             effects: import("@prisma/client/runtime/library").JsonValue | null;
+            fromNodeId: string;
         };
     }>;
     removeChoice(choiceId: string, userId: string): Promise<{

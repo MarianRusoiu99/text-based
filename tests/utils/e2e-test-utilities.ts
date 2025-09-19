@@ -511,10 +511,21 @@ export class E2ETestUtils {
    * Clear all test data (for cleanup)
    */
   static async clearTestData(page: Page): Promise<void> {
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    try {
+      // Navigate to the app first to ensure localStorage is accessible
+      await page.goto('http://localhost:5173');
+      
+      await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+      });
+
+      // Clear cookies
+      const context = page.context();
+      await context.clearCookies();
+    } catch (error) {
+      console.warn('Failed to clear test data:', error);
+    }
   }
 
   /**

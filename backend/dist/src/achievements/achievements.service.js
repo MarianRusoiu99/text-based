@@ -112,7 +112,9 @@ let AchievementsService = class AchievementsService {
         return {
             totalAchievements,
             unlockedAchievements: userAchievements,
-            completionPercentage: totalAchievements > 0 ? (userAchievements / totalAchievements) * 100 : 0,
+            completionPercentage: totalAchievements > 0
+                ? (userAchievements / totalAchievements) * 100
+                : 0,
             totalPoints,
         };
     }

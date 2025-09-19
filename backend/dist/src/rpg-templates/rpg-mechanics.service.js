@@ -31,7 +31,7 @@ let RpgMechanicsService = class RpgMechanicsService {
                 const statErrors = this.validateStatDefinition(stat, index);
                 errors.push(...statErrors);
             });
-            const statIds = config.stats.map(s => s.id);
+            const statIds = config.stats.map((s) => s.id);
             const duplicateStats = statIds.filter((id, index) => statIds.indexOf(id) !== index);
             if (duplicateStats.length > 0) {
                 errors.push({
@@ -105,7 +105,9 @@ let RpgMechanicsService = class RpgMechanicsService {
                     code: 'INVALID_DEFAULT_VALUE',
                 });
             }
-            if (stat.minValue !== undefined && stat.maxValue !== undefined && stat.minValue > stat.maxValue) {
+            if (stat.minValue !== undefined &&
+                stat.maxValue !== undefined &&
+                stat.minValue > stat.maxValue) {
                 errors.push({
                     field: `${field}.minValue`,
                     message: 'Minimum value cannot be greater than maximum value',
@@ -134,7 +136,7 @@ let RpgMechanicsService = class RpgMechanicsService {
         }
         else {
             const formulaErrors = this.validateFormulaExpression(check.formula, stats);
-            formulaErrors.forEach(error => {
+            formulaErrors.forEach((error) => {
                 errors.push({
                     field: `${field}.formula`,
                     message: error.message,
@@ -170,7 +172,7 @@ let RpgMechanicsService = class RpgMechanicsService {
         }
         else {
             const expressionErrors = this.validateFormulaExpression(formula.expression, stats);
-            expressionErrors.forEach(error => {
+            expressionErrors.forEach((error) => {
                 errors.push({
                     field: `${field}.expression`,
                     message: error.message,
@@ -190,11 +192,23 @@ let RpgMechanicsService = class RpgMechanicsService {
     validateFormulaExpression(expression, stats) {
         const errors = [];
         const variables = expression.match(/\b\w+\b/g) || [];
-        const statIds = stats.map(s => s.id);
-        const undefinedVars = variables.filter(v => !statIds.includes(v) && !['true', 'false', 'null'].includes(v));
+        const statIds = stats.map((s) => s.id);
+        const undefinedVars = variables.filter((v) => !statIds.includes(v) && !['true', 'false', 'null'].includes(v));
         if (undefinedVars.length > 0) {
-            const filteredVars = undefinedVars.filter(v => !['Math', 'min', 'max', 'floor', 'ceil', 'round', 'abs', 'sqrt', 'pow', 'sin', 'cos', 'tan'].includes(v) &&
-                !/^\d+$/.test(v));
+            const filteredVars = undefinedVars.filter((v) => ![
+                'Math',
+                'min',
+                'max',
+                'floor',
+                'ceil',
+                'round',
+                'abs',
+                'sqrt',
+                'pow',
+                'sin',
+                'cos',
+                'tan',
+            ].includes(v) && !/^\d+$/.test(v));
             if (filteredVars.length > 0) {
                 errors.push({
                     field: 'expression',
@@ -216,7 +230,8 @@ let RpgMechanicsService = class RpgMechanicsService {
             };
         }
         catch (error) {
-            throw new common_1.BadRequestException(`Failed to evaluate formula ${formula.id}: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            throw new common_1.BadRequestException(`Failed to evaluate formula ${formula.id}: ${errorMessage}`);
         }
     }
     safeEvaluateExpression(expression, variables) {
@@ -224,15 +239,40 @@ let RpgMechanicsService = class RpgMechanicsService {
         const sortedVars = Object.keys(variables).sort((a, b) => b.length - a.length);
         for (const varName of sortedVars) {
             const regex = new RegExp(`\\b${varName}\\b`, 'g');
-            safeExpression = safeExpression.replace(regex, variables[varName]);
+            safeExpression = safeExpression.replace(regex, String(variables[varName]));
         }
-        try {
-            const func = new Function('Math', `return ${safeExpression};`);
-            return func(Math);
+        return this.evaluateMathExpression(safeExpression);
+    }
+    evaluateSafeCondition(condition, context) {
+        let safeCondition = condition;
+        const sortedVars = Object.keys(context).sort((a, b) => b.length - a.length);
+        for (const varName of sortedVars) {
+            const regex = new RegExp(`\\b${varName}\\b`, 'g');
+            safeCondition = safeCondition.replace(regex, String(context[varName]));
         }
-        catch (error) {
-            throw new Error(`Invalid expression: ${error.message}`);
+        return this.evaluateConditionExpression(safeCondition);
+    }
+    evaluateMathExpression(expression) {
+        const numMatch = expression.match(/^\s*([+-]?\d*\.?\d+)\s*$/);
+        if (numMatch) {
+            return parseFloat(numMatch[1]);
         }
+        throw new Error(`Complex expression evaluation not implemented: ${expression}`);
+    }
+    evaluateConditionExpression(condition) {
+        const gtMatch = condition.match(/^\s*(\d+(?:\.\d+)?)\s*>\s*(\d+(?:\.\d+)?)\s*$/);
+        if (gtMatch) {
+            return parseFloat(gtMatch[1]) > parseFloat(gtMatch[2]);
+        }
+        const ltMatch = condition.match(/^\s*(\d+(?:\.\d+)?)\s*<\s*(\d+(?:\.\d+)?)\s*$/);
+        if (ltMatch) {
+            return parseFloat(ltMatch[1]) < parseFloat(ltMatch[2]);
+        }
+        const eqMatch = condition.match(/^\s*(\d+(?:\.\d+)?)\s*==\s*(\d+(?:\.\d+)?)\s*$/);
+        if (eqMatch) {
+            return parseFloat(eqMatch[1]) === parseFloat(eqMatch[2]);
+        }
+        return true;
     }
     performCheck(check, characterState) {
         try {
@@ -243,9 +283,9 @@ let RpgMechanicsService = class RpgMechanicsService {
                 variables: [],
                 returnType: 'number',
             }, characterState);
-            const roll = formulaResult.result;
+            const roll = typeof formulaResult.result === 'number' ? formulaResult.result : 0;
             const threshold = check.successThreshold;
-            let total = roll;
+            let total = typeof roll === 'number' ? roll : 0;
             const modifierResults = [];
             if (check.modifiers) {
                 for (const modifier of check.modifiers) {
@@ -263,32 +303,32 @@ let RpgMechanicsService = class RpgMechanicsService {
             }
             const success = total >= threshold;
             const critical = (check.criticalSuccess && total >= check.criticalSuccess) ||
-                (check.criticalFailure && total <= check.criticalFailure) || false;
+                (check.criticalFailure && total <= check.criticalFailure) ||
+                false;
             return {
                 checkId: check.id,
-                roll,
+                roll: roll,
                 threshold,
                 success,
                 critical,
                 modifiers: modifierResults,
-                total,
+                total: total,
             };
         }
         catch (error) {
-            throw new common_1.BadRequestException(`Failed to perform check ${check.id}: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            throw new common_1.BadRequestException(`Failed to perform check ${check.id}: ${errorMessage}`);
         }
     }
     applyModifier(modifier, characterState) {
         let applied = true;
-        let value = typeof modifier.value === 'number' ? modifier.value : 0;
+        const value = typeof modifier.value === 'number' ? modifier.value : 0;
         if (modifier.condition) {
             try {
                 const context = { ...characterState.stats };
-                context['Math'] = Math;
-                const conditionFunc = new Function(...Object.keys(context), `return ${modifier.condition};`);
-                applied = !!conditionFunc(...Object.values(context));
+                applied = !!this.evaluateSafeCondition(modifier.condition, context);
             }
-            catch (error) {
+            catch {
                 applied = false;
             }
         }
@@ -302,7 +342,8 @@ let RpgMechanicsService = class RpgMechanicsService {
     initializeCharacterState(templateId, config) {
         const stats = {};
         for (const stat of config.stats) {
-            stats[stat.id] = stat.defaultValue;
+            const defaultValue = typeof stat.defaultValue === 'number' ? stat.defaultValue : 0;
+            stats[stat.id] = defaultValue;
         }
         return {
             templateId,

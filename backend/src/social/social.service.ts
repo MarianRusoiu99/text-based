@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -106,7 +110,7 @@ export class SocialService {
     return {
       success: true,
       data: {
-        followers: followers.map(f => f.follower),
+        followers: followers.map((f) => f.follower),
         pagination: {
           page,
           limit,
@@ -146,7 +150,7 @@ export class SocialService {
     return {
       success: true,
       data: {
-        following: following.map(f => f.following),
+        following: following.map((f) => f.following),
         pagination: {
           page,
           limit,
@@ -176,7 +180,12 @@ export class SocialService {
   }
 
   // Story Ratings
-  async rateStory(userId: string, storyId: string, rating: number, review?: string) {
+  async rateStory(
+    userId: string,
+    storyId: string,
+    rating: number,
+    review?: string,
+  ) {
     if (rating < 1 || rating > 5) {
       throw new BadRequestException('Rating must be between 1 and 5');
     }
@@ -300,7 +309,12 @@ export class SocialService {
   }
 
   // Story Comments
-  async addComment(userId: string, storyId: string, content: string, parentCommentId?: string) {
+  async addComment(
+    userId: string,
+    storyId: string,
+    content: string,
+    parentCommentId?: string,
+  ) {
     // Verify story exists and is published
     const story = await this.prisma.story.findUnique({
       where: { id: storyId },
@@ -435,7 +449,7 @@ export class SocialService {
     }
 
     if (comment.userId !== userId) {
-      throw new BadRequestException('Cannot delete another user\'s comment');
+      throw new BadRequestException("Cannot delete another user's comment");
     }
 
     await this.prisma.comment.delete({
@@ -569,13 +583,15 @@ export class SocialService {
     ]);
 
     // Calculate average ratings for each story
-    const bookmarksWithStats = bookmarks.map(bookmark => ({
+    const bookmarksWithStats = bookmarks.map((bookmark) => ({
       ...bookmark,
       story: {
         ...bookmark.story,
-        averageRating: bookmark.story.ratings.length > 0
-          ? bookmark.story.ratings.reduce((sum, r) => sum + r.rating, 0) / bookmark.story.ratings.length
-          : 0,
+        averageRating:
+          bookmark.story.ratings.length > 0
+            ? bookmark.story.ratings.reduce((sum, r) => sum + r.rating, 0) /
+              bookmark.story.ratings.length
+            : 0,
         totalRatings: bookmark.story._count.ratings,
         totalPlays: bookmark.story._count.playSessions,
       },

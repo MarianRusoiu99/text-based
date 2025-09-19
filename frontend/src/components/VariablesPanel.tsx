@@ -73,10 +73,10 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
       let defaultValue: string | number | boolean | undefined;
       if (variableDefaultValue.trim()) {
         switch (variableType) {
-          case 'number':
+          case 'integer':
             defaultValue = parseFloat(variableDefaultValue);
             if (isNaN(defaultValue)) {
-              setError('Invalid number value');
+              setError('Invalid integer value');
               return;
             }
             break;
@@ -118,7 +118,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
       let defaultValue: string | number | boolean | undefined;
       if (variableDefaultValue.trim()) {
         switch (variableType) {
-          case 'number':
+          case 'integer':
             defaultValue = parseFloat(variableDefaultValue);
             break;
           case 'boolean':
@@ -164,7 +164,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
   };
 
   const startEditing = (variable: StoryVariable) => {
-    setEditingId(variable.id);
+    // setEditingId(variable.id);
     setVariableName(variable.variableName);
     setVariableType(variable.variableType as 'string' | 'boolean' | 'integer');
   };
@@ -313,3 +313,4 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
     </div>
   );
 };
+

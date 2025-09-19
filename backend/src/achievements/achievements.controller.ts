@@ -24,7 +24,9 @@ export class AchievementsController {
   @Get('user')
   @UseGuards(JwtAuthGuard)
   async getUserAchievements(@Req() req: AuthenticatedRequest) {
-    const achievements = await this.achievementsService.getUserAchievements(req.user.id);
+    const achievements = await this.achievementsService.getUserAchievements(
+      req.user.id,
+    );
     return {
       success: true,
       data: achievements,
@@ -34,7 +36,9 @@ export class AchievementsController {
   @Get('stats')
   @UseGuards(JwtAuthGuard)
   async getAchievementStats(@Req() req: AuthenticatedRequest) {
-    const stats = await this.achievementsService.getAchievementStats(req.user.id);
+    const stats = await this.achievementsService.getAchievementStats(
+      req.user.id,
+    );
     return {
       success: true,
       data: stats,

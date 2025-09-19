@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsObject, IsBoolean, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsObject,
+  IsBoolean,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateRpgTemplateDto {
   @IsString()

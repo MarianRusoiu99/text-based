@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRpgTemplateDto } from './dto/create-rpg-template.dto';
 import { UpdateRpgTemplateDto } from './dto/create-rpg-template.dto';
@@ -114,7 +118,11 @@ export class RpgTemplatesService {
     };
   }
 
-  async update(id: string, userId: string, updateRpgTemplateDto: UpdateRpgTemplateDto) {
+  async update(
+    id: string,
+    userId: string,
+    updateRpgTemplateDto: UpdateRpgTemplateDto,
+  ) {
     const template = await this.prisma.rpgTemplate.findUnique({
       where: { id },
     });

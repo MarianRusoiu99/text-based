@@ -13,7 +13,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { RpgTemplatesService } from './rpg-templates.service';
-import { CreateRpgTemplateDto, UpdateRpgTemplateDto } from './dto/create-rpg-template.dto';
+import {
+  CreateRpgTemplateDto,
+  UpdateRpgTemplateDto,
+} from './dto/create-rpg-template.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { Request } from 'express';
 import type { RequestUser } from '../auth/request-user.interface';
@@ -53,7 +56,11 @@ export class RpgTemplatesController {
     @Body() updateRpgTemplateDto: UpdateRpgTemplateDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.rpgTemplatesService.update(id, req.user.id, updateRpgTemplateDto);
+    return this.rpgTemplatesService.update(
+      id,
+      req.user.id,
+      updateRpgTemplateDto,
+    );
   }
 
   @Delete(':id')

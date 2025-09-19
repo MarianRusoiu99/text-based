@@ -20,18 +20,19 @@ export declare class PlayerService {
                     description: string | null;
                     rpgTemplate: {
                         id: string;
-                        description: string | null;
                         createdAt: Date;
                         updatedAt: Date;
                         name: string;
-                        creatorId: string;
+                        description: string | null;
                         version: string;
                         isPublic: boolean;
                         config: import("@prisma/client/runtime/library").JsonValue;
+                        creatorId: string;
                     } | null;
                 };
             } & {
                 id: string;
+                userId: string;
                 storyId: string;
                 currentNodeId: string | null;
                 gameState: import("@prisma/client/runtime/library").JsonValue;
@@ -39,18 +40,17 @@ export declare class PlayerService {
                 startedAt: Date;
                 completedAt: Date | null;
                 lastPlayedAt: Date;
-                userId: string;
             };
             currentNode: {
                 id: string;
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
-                storyId: string;
+                title: string;
                 nodeType: string;
                 content: import("@prisma/client/runtime/library").JsonValue;
                 position: import("@prisma/client/runtime/library").JsonValue;
                 chapterId: string | null;
+                storyId: string;
             } | undefined;
             unlockedAchievements: any[] | undefined;
         };
@@ -69,32 +69,32 @@ export declare class PlayerService {
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    fromNodeId: string;
                     toNodeId: string;
                     choiceText: string;
                     conditions: import("@prisma/client/runtime/library").JsonValue | null;
                     effects: import("@prisma/client/runtime/library").JsonValue | null;
+                    fromNodeId: string;
                 }[];
             } & {
                 id: string;
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
-                storyId: string;
+                title: string;
                 nodeType: string;
                 content: import("@prisma/client/runtime/library").JsonValue;
                 position: import("@prisma/client/runtime/library").JsonValue;
                 chapterId: string | null;
+                storyId: string;
             };
             choices: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
+                fromNodeId: string;
             }[];
         };
     }>;
@@ -104,6 +104,7 @@ export declare class PlayerService {
         data: {
             session: {
                 id: string;
+                userId: string;
                 storyId: string;
                 currentNodeId: string | null;
                 gameState: import("@prisma/client/runtime/library").JsonValue;
@@ -111,18 +112,17 @@ export declare class PlayerService {
                 startedAt: Date;
                 completedAt: Date | null;
                 lastPlayedAt: Date;
-                userId: string;
             };
             nextNode: {
                 id: string;
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
-                storyId: string;
+                title: string;
                 nodeType: string;
                 content: import("@prisma/client/runtime/library").JsonValue;
                 position: import("@prisma/client/runtime/library").JsonValue;
                 chapterId: string | null;
+                storyId: string;
             };
             unlockedAchievements: any[] | undefined;
         };
@@ -132,6 +132,7 @@ export declare class PlayerService {
         message: string;
         data: {
             id: string;
+            userId: string;
             storyId: string;
             currentNodeId: string | null;
             gameState: import("@prisma/client/runtime/library").JsonValue;
@@ -139,7 +140,6 @@ export declare class PlayerService {
             startedAt: Date;
             completedAt: Date | null;
             lastPlayedAt: Date;
-            userId: string;
         };
     }>;
     getPlaySessions(userId: string, storyId?: string): Promise<{
@@ -152,6 +152,7 @@ export declare class PlayerService {
             };
         } & {
             id: string;
+            userId: string;
             storyId: string;
             currentNodeId: string | null;
             gameState: import("@prisma/client/runtime/library").JsonValue;
@@ -159,7 +160,6 @@ export declare class PlayerService {
             startedAt: Date;
             completedAt: Date | null;
             lastPlayedAt: Date;
-            userId: string;
         })[];
     }>;
     getPlaySession(userId: string, sessionId: string): Promise<{
@@ -173,6 +173,7 @@ export declare class PlayerService {
             };
         } & {
             id: string;
+            userId: string;
             storyId: string;
             currentNodeId: string | null;
             gameState: import("@prisma/client/runtime/library").JsonValue;
@@ -180,7 +181,6 @@ export declare class PlayerService {
             startedAt: Date;
             completedAt: Date | null;
             lastPlayedAt: Date;
-            userId: string;
         };
     }>;
     savePlaySession(userId: string, sessionId: string, saveName?: string): Promise<{
@@ -190,13 +190,13 @@ export declare class PlayerService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             storyId: string;
             currentNodeId: string | null;
             gameState: import("@prisma/client/runtime/library").JsonValue;
             isCompleted: boolean;
-            userId: string;
-            sessionId: string;
             saveName: string;
+            sessionId: string;
         };
     }>;
     loadSavedGame(userId: string, savedGameId: string): Promise<{
@@ -210,18 +210,19 @@ export declare class PlayerService {
                     description: string | null;
                     rpgTemplate: {
                         id: string;
-                        description: string | null;
                         createdAt: Date;
                         updatedAt: Date;
                         name: string;
-                        creatorId: string;
+                        description: string | null;
                         version: string;
                         isPublic: boolean;
                         config: import("@prisma/client/runtime/library").JsonValue;
+                        creatorId: string;
                     } | null;
                 };
             } & {
                 id: string;
+                userId: string;
                 storyId: string;
                 currentNodeId: string | null;
                 gameState: import("@prisma/client/runtime/library").JsonValue;
@@ -229,7 +230,6 @@ export declare class PlayerService {
                 startedAt: Date;
                 completedAt: Date | null;
                 lastPlayedAt: Date;
-                userId: string;
             };
             savedGame: {
                 story: {
@@ -242,13 +242,13 @@ export declare class PlayerService {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                userId: string;
                 storyId: string;
                 currentNodeId: string | null;
                 gameState: import("@prisma/client/runtime/library").JsonValue;
                 isCompleted: boolean;
-                userId: string;
-                sessionId: string;
                 saveName: string;
+                sessionId: string;
             };
         };
     }>;
@@ -263,13 +263,13 @@ export declare class PlayerService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             storyId: string;
             currentNodeId: string | null;
             gameState: import("@prisma/client/runtime/library").JsonValue;
             isCompleted: boolean;
-            userId: string;
-            sessionId: string;
             saveName: string;
+            sessionId: string;
         })[];
     }>;
     deleteSavedGame(userId: string, savedGameId: string): Promise<{

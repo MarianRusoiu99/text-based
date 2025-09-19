@@ -106,8 +106,7 @@ export class AuthService implements OnModuleInit {
 
     return {
       success: true,
-      message:
-        'User registered successfully. Please check your email to verify your account.',
+      message: 'User registered successfully',
       data: {
         user: {
           id: user.id,
@@ -213,7 +212,9 @@ export class AuthService implements OnModuleInit {
       }),
     ]);
 
-    this.logger.log('info', 'Email verified successfully', { userId: verificationToken.userId });
+    this.logger.log('info', 'Email verified successfully', {
+      userId: verificationToken.userId,
+    });
 
     return {
       success: true,
@@ -232,7 +233,8 @@ export class AuthService implements OnModuleInit {
       // Don't reveal if email exists or not for security
       return {
         success: true,
-        message: 'If an account with this email exists, a password reset link has been sent.',
+        message:
+          'If an account with this email exists, a password reset link has been sent.',
       };
     }
 
@@ -248,11 +250,15 @@ export class AuthService implements OnModuleInit {
     // Send reset email
     await this.sendPasswordResetEmail(user.email, resetToken);
 
-    this.logger.log('info', 'Password reset requested', { userId: user.id, email: user.email });
+    this.logger.log('info', 'Password reset requested', {
+      userId: user.id,
+      email: user.email,
+    });
 
     return {
       success: true,
-      message: 'If an account with this email exists, a password reset link has been sent.',
+      message:
+        'If an account with this email exists, a password reset link has been sent.',
     };
   }
 
@@ -291,7 +297,9 @@ export class AuthService implements OnModuleInit {
       }),
     ]);
 
-    this.logger.log('info', 'Password reset successfully', { userId: resetToken.userId });
+    this.logger.log('info', 'Password reset successfully', {
+      userId: resetToken.userId,
+    });
 
     return {
       success: true,
@@ -311,7 +319,10 @@ export class AuthService implements OnModuleInit {
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.passwordHash,
+    );
     if (!isCurrentPasswordValid) {
       throw new BadRequestException('Current password is incorrect');
     }
@@ -369,7 +380,10 @@ export class AuthService implements OnModuleInit {
     };
   }
 
-  private async generateVerificationToken(userId: string, type: string): Promise<string> {
+  private async generateVerificationToken(
+    userId: string,
+    type: string,
+  ): Promise<string> {
     const token = randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -385,7 +399,10 @@ export class AuthService implements OnModuleInit {
     return token;
   }
 
-  private async sendVerificationEmail(email: string, token: string): Promise<void> {
+  private async sendVerificationEmail(
+    email: string,
+    token: string,
+  ): Promise<void> {
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
 
     await this.emailProvider.sendEmail({
@@ -416,7 +433,10 @@ export class AuthService implements OnModuleInit {
     return token;
   }
 
-  private async sendPasswordResetEmail(email: string, token: string): Promise<void> {
+  private async sendPasswordResetEmail(
+    email: string,
+    token: string,
+  ): Promise<void> {
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
     await this.emailProvider.sendEmail({

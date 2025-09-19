@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -47,6 +50,14 @@ describe('UsersService', () => {
         isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        _count: {
+          stories: 5,
+          followers: 10,
+          following: 8,
+          ratings: 15,
+          comments: 20,
+          playSessions: 25,
+        },
       };
 
       prismaService.user.findUnique.mockResolvedValue(mockUser);
@@ -65,11 +76,31 @@ describe('UsersService', () => {
           isVerified: true,
           createdAt: true,
           updatedAt: true,
+          _count: {
+            select: {
+              stories: true,
+              followers: true,
+              following: true,
+              ratings: true,
+              comments: true,
+              playSessions: true,
+            },
+          },
         },
       });
       expect(result).toEqual({
         success: true,
-        data: mockUser,
+        data: {
+          ...mockUser,
+          stats: {
+            totalStories: 5,
+            totalFollowers: 10,
+            totalFollowing: 8,
+            totalRatings: 15,
+            totalComments: 20,
+            totalPlaySessions: 25,
+          },
+        },
       });
     });
 
@@ -144,6 +175,11 @@ describe('UsersService', () => {
         bio: 'Test bio',
         avatarUrl: 'http://example.com/avatar.jpg',
         createdAt: new Date(),
+        _count: {
+          stories: 3,
+          followers: 7,
+          following: 5,
+        },
       };
 
       prismaService.user.findUnique.mockResolvedValue(mockUser);
@@ -159,11 +195,25 @@ describe('UsersService', () => {
           bio: true,
           avatarUrl: true,
           createdAt: true,
+          _count: {
+            select: {
+              stories: true,
+              followers: true,
+              following: true,
+            },
+          },
         },
       });
       expect(result).toEqual({
         success: true,
-        data: mockUser,
+        data: {
+          ...mockUser,
+          stats: {
+            totalStories: 3,
+            totalFollowers: 7,
+            totalFollowing: 5,
+          },
+        },
       });
     });
 

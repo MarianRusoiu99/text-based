@@ -75,7 +75,12 @@ export class SocialController {
     @Body() rateDto: RateStoryDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.socialService.rateStory(req.user.id, storyId, rateDto.rating, rateDto.review);
+    return this.socialService.rateStory(
+      req.user.id,
+      storyId,
+      rateDto.rating,
+      rateDto.review,
+    );
   }
 
   @Get('stories/:storyId/rating')
@@ -116,7 +121,11 @@ export class SocialController {
     @Param('storyId') storyId: string,
     @Query() query: GetPaginatedDto,
   ) {
-    return this.socialService.getStoryComments(storyId, query.page, query.limit);
+    return this.socialService.getStoryComments(
+      storyId,
+      query.page,
+      query.limit,
+    );
   }
 
   @Delete('comments/:commentId')
@@ -153,7 +162,11 @@ export class SocialController {
     @Req() req: AuthenticatedRequest,
     @Query() query: GetPaginatedDto,
   ) {
-    return this.socialService.getUserBookmarks(req.user.id, query.page, query.limit);
+    return this.socialService.getUserBookmarks(
+      req.user.id,
+      query.page,
+      query.limit,
+    );
   }
 
   @Get('stories/:storyId/is-bookmarked')

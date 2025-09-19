@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -60,7 +61,7 @@ describe('Auth (e2e)', () => {
         .expect(201)
         .expect((res) => {
           expect(res.body.success).toBe(true);
-          expect(res.body.message).toBe('User registered successfully. Please check your email to verify your account.');
+          expect(res.body.message).toBe('User registered successfully');
           expect(res.body.data.user).toHaveProperty('id');
           expect(res.body.data.user.username).toBe('newuser');
           expect(res.body.data.user.email).toBe('newuser@example.com');

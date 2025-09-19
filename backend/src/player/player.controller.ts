@@ -68,7 +68,11 @@ export class PlayerController {
     @Body() updateDto: UpdateGameStateDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.playerService.updateGameState(req.user.id, sessionId, updateDto);
+    return this.playerService.updateGameState(
+      req.user.id,
+      sessionId,
+      updateDto,
+    );
   }
 
   @Get('sessions')
@@ -96,7 +100,11 @@ export class PlayerController {
     @Body() saveDto: SaveGameDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.playerService.savePlaySession(req.user.id, sessionId, saveDto.saveName);
+    return this.playerService.savePlaySession(
+      req.user.id,
+      sessionId,
+      saveDto.saveName,
+    );
   }
 
   @Post('saved-games/load')

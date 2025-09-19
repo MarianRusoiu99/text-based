@@ -81,10 +81,17 @@ describe('StoriesService', () => {
       };
       const mockNode = { id: 'node-1', ...createNodeDto, storyId };
 
-      prismaService.story.findUnique.mockResolvedValue({ id: storyId, authorId: userId });
+      prismaService.story.findUnique.mockResolvedValue({
+        id: storyId,
+        authorId: userId,
+      });
       prismaService.node.create.mockResolvedValue(mockNode);
 
-      const result = await service.createNode(storyId, userId, createNodeDto as any);
+      const result = await service.createNode(
+        storyId,
+        userId,
+        createNodeDto as any,
+      );
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockNode);
@@ -96,13 +103,20 @@ describe('StoriesService', () => {
     it('should throw NotFoundException if story not found', async () => {
       prismaService.story.findUnique.mockResolvedValue(null);
 
-      await expect(service.createNode('invalid-id', 'user-1', {} as any)).rejects.toThrow('Story not found');
+      await expect(
+        service.createNode('invalid-id', 'user-1', {} as any),
+      ).rejects.toThrow('Story not found');
     });
 
     it('should throw ForbiddenException if user is not author', async () => {
-      prismaService.story.findUnique.mockResolvedValue({ id: 'story-1', authorId: 'other-user' });
+      prismaService.story.findUnique.mockResolvedValue({
+        id: 'story-1',
+        authorId: 'other-user',
+      });
 
-      await expect(service.createNode('story-1', 'user-1', {} as any)).rejects.toThrow('Access denied');
+      await expect(
+        service.createNode('story-1', 'user-1', {} as any),
+      ).rejects.toThrow('Access denied');
     });
   });
 
@@ -120,15 +134,19 @@ describe('StoriesService', () => {
         .mockResolvedValueOnce({
           id: fromNodeId,
           storyId: 'story-1',
-          story: { id: 'story-1', authorId: userId }
+          story: { id: 'story-1', authorId: userId },
         })
         .mockResolvedValueOnce({
           id: 'node-2',
-          storyId: 'story-1'
+          storyId: 'story-1',
         });
       prismaService.choice.create.mockResolvedValue(mockChoice);
 
-      const result = await service.createChoice(fromNodeId, userId, createChoiceDto as any);
+      const result = await service.createChoice(
+        fromNodeId,
+        userId,
+        createChoiceDto as any,
+      );
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockChoice);

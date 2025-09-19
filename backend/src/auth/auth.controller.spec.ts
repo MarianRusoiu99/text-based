@@ -44,7 +44,10 @@ describe('AuthController', () => {
         password: 'password123',
         displayName: 'Test User',
       };
-      const expectedResult = { success: true, data: { id: '1', ...registerDto } };
+      const expectedResult = {
+        success: true,
+        data: { id: '1', ...registerDto },
+      };
 
       authService.register.mockResolvedValue(expectedResult);
 
@@ -63,7 +66,7 @@ describe('AuthController', () => {
       };
       const expectedResult = {
         success: true,
-        data: { accessToken: 'token', refreshToken: 'refresh' }
+        data: { accessToken: 'token', refreshToken: 'refresh' },
       };
 
       authService.login.mockResolvedValue(expectedResult);
@@ -80,7 +83,7 @@ describe('AuthController', () => {
       const refreshTokenDto = { refreshToken: 'refresh-token' };
       const expectedResult = {
         success: true,
-        data: { accessToken: 'new-token', refreshToken: 'new-refresh' }
+        data: { accessToken: 'new-token', refreshToken: 'new-refresh' },
       };
 
       authService.refreshToken.mockResolvedValue(expectedResult);

@@ -7,6 +7,9 @@ export declare class RpgMechanicsService {
     private validateFormulaExpression;
     evaluateFormula(formula: RpgFormula, characterState: RpgCharacterState): RpgFormulaResult;
     private safeEvaluateExpression;
+    private evaluateSafeCondition;
+    private evaluateMathExpression;
+    private evaluateConditionExpression;
     performCheck(check: RpgCheckDefinition, characterState: RpgCharacterState): RpgCheckResult;
     private applyModifier;
     initializeCharacterState(templateId: string, config: RpgTemplateConfig): RpgCharacterState;
