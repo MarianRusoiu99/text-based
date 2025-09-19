@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -44,7 +44,7 @@ model Story {
   description       String?
   coverImageUrl     String?         @map("cover_image_url")
   category          String?
-  tags              String          @default("") // Store as comma-separated string for SQLite
+  tags              String[]        @default([])
   isPublished       Boolean         @default(false) @map("is_published")
   isFeatured        Boolean         @default(false) @map("is_featured")
   visibility        String          @default("public")
