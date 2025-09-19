@@ -47,11 +47,13 @@ class RpgService {
       const response = await fetch(`${this.baseUrl}/rpg-templates`);
       if (!response.ok) throw new Error('Failed to fetch RPG templates');
       const data = await response.json();
-      return data.data || [];
+      // Backend returns {success: true, data: {templates: [...], pagination: {...}}}
+      return data.data?.templates || data.data || [];
     } catch (error) {
       console.error('Error fetching RPG templates, using mock API:', error);
       const result = await mockApi.getRpgTemplates();
-      return result.data;
+      // Mock API returns {success: true, data: [...]}
+      return result.data || [];
     }
   }
 

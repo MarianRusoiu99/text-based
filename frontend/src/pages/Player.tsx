@@ -54,7 +54,8 @@ const Player: React.FC = () => {
     };
 
     startPlaySession();
-  }, [storyId, showSuccess]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storyId]); // Remove showSuccess from dependencies to prevent infinite loop
 
   useEffect(() => {
     if (session?.id) {
