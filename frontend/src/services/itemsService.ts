@@ -4,7 +4,7 @@ const API_BASE_URL = 'http://localhost:3000';
 
 export interface StoryItem {
   id: string;
-  name: string;
+  itemName: string;
   description?: string;
   storyId: string;
   createdAt: string;
@@ -12,12 +12,12 @@ export interface StoryItem {
 }
 
 export interface CreateItemDto {
-  name: string;
+  itemName: string;
   description?: string;
 }
 
 export interface UpdateItemDto {
-  name?: string;
+  itemName?: string;
   description?: string;
 }
 

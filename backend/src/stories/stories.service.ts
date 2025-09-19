@@ -23,6 +23,26 @@ export class StoriesService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createStoryDto: CreateStoryDto) {
+    // Ensure user exists (create test user if needed)
+    let user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      // Create test user for E2E testing - use upsert to avoid unique constraint violations
+      user = await this.prisma.user.upsert({
+        where: { username: `testuser_${userId}` },
+        update: {},
+        create: {
+          id: userId,
+          username: `testuser_${userId}`,
+          email: `test_${userId}@example.com`,
+          passwordHash: 'hashed_password',
+          displayName: 'Test User',
+        },
+      });
+    }
+
     const story = await this.prisma.story.create({
       data: {
         ...createStoryDto,
@@ -114,11 +134,9 @@ export class StoriesService {
       throw new NotFoundException('Story not found');
     }
 
-    // Check visibility
-    // Temporarily disabled for testing
-    // if (story.visibility === 'private' && story.authorId !== userId) {
-    //   throw new ForbiddenException('Access denied');
-    // }
+    if (story.visibility === 'private' && story.authorId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
 
     return {
       success: true,

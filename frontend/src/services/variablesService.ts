@@ -4,8 +4,8 @@ const API_BASE_URL = 'http://localhost:3000';
 
 export interface StoryVariable {
   id: string;
-  name: string;
-  type: 'string' | 'number' | 'boolean';
+  variableName: string;
+  variableType: 'string' | 'integer' | 'boolean';
   defaultValue?: string | number | boolean;
   description?: string;
   storyId: string;
@@ -14,15 +14,15 @@ export interface StoryVariable {
 }
 
 export interface CreateVariableDto {
-  name: string;
-  type: 'string' | 'number' | 'boolean';
+  variableName: string;
+  variableType: 'string' | 'integer' | 'boolean';
   defaultValue?: string | number | boolean;
   description?: string;
 }
 
 export interface UpdateVariableDto {
-  name?: string;
-  type?: 'string' | 'number' | 'boolean';
+  variableName?: string;
+  variableType?: 'string' | 'integer' | 'boolean';
   defaultValue?: string | number | boolean;
   description?: string;
 }

@@ -65,12 +65,10 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
       setIsLoading(true);
       setError(null);
 
-      const data: CreateItemDto = {
-        name: itemName.trim(),
-        description: itemDescription.trim() || undefined,
-      };
-
-      await itemsService.createItem(storyId, data);
+      await itemsService.createItem(storyId, {
+        itemName: itemName,
+        description: itemDescription || undefined
+      });
       await loadItems();
       resetForm();
     } catch (err) {
@@ -89,7 +87,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
       setError(null);
 
       const data: UpdateItemDto = {
-        name: itemName.trim(),
+        itemName: itemName.trim(),
         description: itemDescription.trim() || undefined,
       };
 
@@ -122,19 +120,13 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
 
   const startEditing = (item: StoryItem) => {
     setEditingItem(item);
-    setItemName(item.name);
+    setItemName(item.itemName);
     setItemDescription(item.description || '');
     setShowCreateForm(true);
   };
 
   if (!isOpen) {
-    return (
-      <div className="absolute top-20 left-4 z-10">
-        <Button onClick={onToggle} size="sm" variant="outline">
-          Items
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -162,7 +154,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
             {items.map((item) => (
               <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{item.name}</div>
+                  <div className="font-medium truncate">{item.itemName}</div>
                   {item.description && (
                     <div className="text-xs text-gray-500 truncate">{item.description}</div>
                   )}
@@ -197,6 +189,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
             </h4>
             <div className="space-y-3">
               <Input
+                data-testid="item-name-input"
                 placeholder="Item name"
                 value={itemName}
                 onChange={(e) => setItemName(e.target.value)}
@@ -204,6 +197,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
               />
 
               <Input
+                data-testid="item-description-input"
                 placeholder="Description (optional)"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
@@ -212,6 +206,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
 
               <div className="flex space-x-2">
                 <Button
+                  data-testid="create-item-btn"
                   onClick={editingItem ? handleUpdateItem : handleCreateItem}
                   size="sm"
                   disabled={isLoading || !itemName.trim()}
@@ -220,6 +215,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
                   {isLoading ? 'Saving...' : (editingItem ? 'Update' : 'Create')}
                 </Button>
                 <Button
+                  data-testid="cancel-item-btn"
                   onClick={resetForm}
                   size="sm"
                   variant="outline"
@@ -236,6 +232,7 @@ export const ItemsPanel: React.FC<ItemsPanelProps> = ({
       {!showCreateForm && (
         <div className="border-t pt-4">
           <Button
+            data-testid="add-item-btn"
             onClick={() => setShowCreateForm(true)}
             size="sm"
             className="w-full"

@@ -14,6 +14,7 @@ cd frontend && npm run dev
 ```
 Please ensure both servers are running for full functionality.
 Please start a new terminal session for each server and do not run other commands in those sessions. If you need to run other commands, please open a new terminal session.
+Always check if frontend and backend are running before running tests
 
 **Key Technologies:**
 - **Backend:** NestJS 10+ with TypeScript 5+

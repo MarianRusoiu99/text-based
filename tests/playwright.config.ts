@@ -42,7 +42,7 @@ export default defineConfig({
       name: 'firefox',
       testDir: './e2e',
       use: {
-        baseURL: 'http://localhost:5174',
+        baseURL: 'http://localhost:5173',
         trace: 'on-first-retry',
         ...devices['Desktop Firefox']
       },

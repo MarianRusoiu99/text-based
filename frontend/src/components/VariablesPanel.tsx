@@ -25,7 +25,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
 
   // Form state
   const [variableName, setVariableName] = useState('');
-  const [variableType, setVariableType] = useState<'string' | 'number' | 'boolean'>('string');
+  const [variableType, setVariableType] = useState<'string' | 'integer' | 'boolean'>('string');
   const [variableDefaultValue, setVariableDefaultValue] = useState<string>('');
   const [variableDescription, setVariableDescription] = useState('');
 
@@ -63,6 +63,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
   };
 
   const handleCreateVariable = async () => {
+    console.log('handleCreateVariable called with:', { variableName, variableType, variableDefaultValue });
     if (!variableName.trim()) return;
 
     try {
@@ -74,6 +75,10 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
         switch (variableType) {
           case 'number':
             defaultValue = parseFloat(variableDefaultValue);
+            if (isNaN(defaultValue)) {
+              setError('Invalid number value');
+              return;
+            }
             break;
           case 'boolean':
             defaultValue = variableDefaultValue.toLowerCase() === 'true';
@@ -84,13 +89,15 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
       }
 
       const data: CreateVariableDto = {
-        name: variableName.trim(),
-        type: variableType,
+        variableName: variableName.trim(),
+        variableType: variableType,
         defaultValue,
         description: variableDescription.trim() || undefined,
       };
 
-      await variablesService.createVariable(storyId, data);
+      console.log('Creating variable with data:', data);
+      const result = await variablesService.createVariable(storyId, data);
+      console.log('Variable created successfully:', result);
       await loadVariables();
       resetForm();
     } catch (err) {
@@ -123,8 +130,8 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
       }
 
       const data: UpdateVariableDto = {
-        name: variableName.trim(),
-        type: variableType,
+        variableName: variableName.trim(),
+        variableType: variableType,
         defaultValue,
         description: variableDescription.trim() || undefined,
       };
@@ -157,22 +164,13 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
   };
 
   const startEditing = (variable: StoryVariable) => {
-    setEditingVariable(variable);
-    setVariableName(variable.name);
-    setVariableType(variable.type);
-    setVariableDefaultValue(variable.defaultValue?.toString() || '');
-    setVariableDescription(variable.description || '');
-    setShowCreateForm(true);
+    setEditingId(variable.id);
+    setVariableName(variable.variableName);
+    setVariableType(variable.variableType as 'string' | 'boolean' | 'integer');
   };
 
   if (!isOpen) {
-    return (
-      <div className="absolute top-4 left-4 z-10">
-        <Button onClick={onToggle} size="sm" variant="outline">
-          Variables
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -200,9 +198,9 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
             {variables.map((variable) => (
               <div key={variable.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{variable.name}</div>
+                  <div className="font-medium truncate">{variable.variableName}</div>
                   <div className="text-xs text-gray-600">
-                    {variable.type}
+                    {variable.variableType}
                     {variable.defaultValue !== undefined && ` = ${variable.defaultValue}`}
                   </div>
                   {variable.description && (
@@ -239,6 +237,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
             </h4>
             <div className="space-y-3">
               <Input
+                data-testid="variable-name-input"
                 placeholder="Variable name"
                 value={variableName}
                 onChange={(e) => setVariableName(e.target.value)}
@@ -246,17 +245,19 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
               />
 
               <select
+                data-testid="variable-type-select"
                 value={variableType}
-                onChange={(e) => setVariableType(e.target.value as 'string' | 'number' | 'boolean')}
+                onChange={(e) => setVariableType(e.target.value as 'string' | 'integer' | 'boolean')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                 disabled={isLoading}
               >
                 <option value="string">String</option>
-                <option value="number">Number</option>
+                <option value="integer">Integer</option>
                 <option value="boolean">Boolean</option>
               </select>
 
               <Input
+                data-testid="variable-default-value-input"
                 placeholder="Default value (optional)"
                 value={variableDefaultValue}
                 onChange={(e) => setVariableDefaultValue(e.target.value)}
@@ -264,6 +265,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
               />
 
               <Input
+                data-testid="variable-description-input"
                 placeholder="Description (optional)"
                 value={variableDescription}
                 onChange={(e) => setVariableDescription(e.target.value)}
@@ -272,6 +274,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
 
               <div className="flex space-x-2">
                 <Button
+                  data-testid="create-variable-btn"
                   onClick={editingVariable ? handleUpdateVariable : handleCreateVariable}
                   size="sm"
                   disabled={isLoading || !variableName.trim()}
@@ -280,6 +283,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
                   {isLoading ? 'Saving...' : (editingVariable ? 'Update' : 'Create')}
                 </Button>
                 <Button
+                  data-testid="cancel-variable-btn"
                   onClick={resetForm}
                   size="sm"
                   variant="outline"
@@ -296,6 +300,7 @@ export const VariablesPanel: React.FC<VariablesPanelProps> = ({
       {!showCreateForm && (
         <div className="border-t pt-4">
           <Button
+            data-testid="add-variable-btn"
             onClick={() => setShowCreateForm(true)}
             size="sm"
             className="w-full"

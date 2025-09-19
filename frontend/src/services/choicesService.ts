@@ -51,9 +51,23 @@ class ChoicesService {
     return result;
   }
 
+  async getChoice(id: string) {
+    const response = await fetch(`${API_BASE_URL}/choices/${id}`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to get choice: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result;
+  }
+
   async updateChoice(id: string, data: UpdateChoiceData) {
-    const response = await fetch(`${API_BASE_URL}/stories/choices/${id}`, {
-      method: 'PUT',
+    const response = await fetch(`${API_BASE_URL}/choices/${id}`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         ...this.getAuthHeaders(),
@@ -66,7 +80,7 @@ class ChoicesService {
   }
 
   async deleteChoice(id: string) {
-    const response = await fetch(`${API_BASE_URL}/stories/choices/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/choices/${id}`, {
       method: 'DELETE',
       headers: this.getAuthHeaders(),
     });

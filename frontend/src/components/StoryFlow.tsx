@@ -245,18 +245,28 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
       // In a real implementation, you might need to store choice id in edge data
       const choiceId = edge.id;
       
-      // Try to get choice data - this might need to be implemented differently
-      // since we don't have a getChoice endpoint yet
-      console.log('Selected choice:', choiceId);
+      const result = await choicesService.getChoice(choiceId);
       
-      // For now, reset the choice data
-      setSelectedChoice({ id: choiceId });
+      if (result.success) {
+        const choice = result.data;
+        setSelectedChoice({ id: choiceId });
+        setChoiceText(choice.choiceText || '');
+        setChoiceConditions(choice.conditions || null);
+        setChoiceEffects(choice.effects || []);
+      } else {
+        // If choice doesn't exist yet, create a new one
+        setSelectedChoice({ id: choiceId });
+        setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
+        setChoiceConditions(null);
+        setChoiceEffects([]);
+      }
+    } catch (error) {
+      console.error('Failed to load choice data:', error);
+      // Fallback to placeholder data
+      setSelectedChoice({ id: edge.id });
       setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
       setChoiceConditions(null);
       setChoiceEffects([]);
-      
-    } catch (error) {
-      console.error('Failed to load choice data:', error);
     }
   }, []);
 
@@ -584,7 +594,45 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
         </div>
       </div>
 
-      {/* RPG Mechanics Panels */}
+      {/* RPG Mechanics Toggle Buttons */}
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <div className="bg-white rounded-lg shadow-lg p-3">
+          <div className="flex flex-col gap-2">
+            <Button 
+              data-testid="variables-toggle-btn"
+              onClick={() => setShowVariablesPanel(!showVariablesPanel)}
+              variant={showVariablesPanel ? "primary" : "outline"}
+              size="sm"
+            >
+              Variables
+            </Button>
+            <Button 
+              data-testid="items-toggle-btn"
+              onClick={() => setShowItemsPanel(!showItemsPanel)}
+              variant={showItemsPanel ? "primary" : "outline"}
+              size="sm"
+            >
+              Items
+            </Button>
+            <Button 
+              data-testid="conditions-toggle-btn"
+              onClick={() => {/* TODO: Add conditions panel */}}
+              variant="outline"
+              size="sm"
+            >
+              Conditions
+            </Button>
+            <Button 
+              data-testid="effects-toggle-btn"
+              onClick={() => {/* TODO: Add effects panel */}}
+              variant="outline"
+              size="sm"
+            >
+              Effects
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* RPG Mechanics Panels */}
       <VariablesPanel

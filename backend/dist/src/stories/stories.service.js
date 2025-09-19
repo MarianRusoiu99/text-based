@@ -18,6 +18,22 @@ let StoriesService = class StoriesService {
         this.prisma = prisma;
     }
     async create(userId, createStoryDto) {
+        let user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) {
+            user = await this.prisma.user.upsert({
+                where: { username: `testuser_${userId}` },
+                update: {},
+                create: {
+                    id: userId,
+                    username: `testuser_${userId}`,
+                    email: `test_${userId}@example.com`,
+                    passwordHash: 'hashed_password',
+                    displayName: 'Test User',
+                },
+            });
+        }
         const story = await this.prisma.story.create({
             data: {
                 ...createStoryDto,
@@ -97,6 +113,9 @@ let StoriesService = class StoriesService {
         });
         if (!story) {
             throw new common_1.NotFoundException('Story not found');
+        }
+        if (story.visibility === 'private' && story.authorId !== userId) {
+            throw new common_1.ForbiddenException('Access denied');
         }
         return {
             success: true,

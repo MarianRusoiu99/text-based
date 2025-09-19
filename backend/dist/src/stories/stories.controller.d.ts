@@ -23,8 +23,6 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -35,6 +33,8 @@ export declare class StoriesController {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -51,8 +51,6 @@ export declare class StoriesController {
                 };
             } & {
                 id: string;
-                createdAt: Date;
-                updatedAt: Date;
                 title: string;
                 description: string | null;
                 coverImageUrl: string | null;
@@ -63,6 +61,8 @@ export declare class StoriesController {
                 visibility: string;
                 contentRating: string;
                 estimatedDuration: number | null;
+                createdAt: Date;
+                updatedAt: Date;
                 publishedAt: Date | null;
                 authorId: string;
                 rpgTemplateId: string | null;
@@ -75,9 +75,7 @@ export declare class StoriesController {
             };
         };
     }>;
-    findOne(id: string, req: {
-        user?: AuthenticatedUser;
-    }): Promise<{
+    findOne(id: string): Promise<{
         success: boolean;
         data: {
             author: {
@@ -87,18 +85,16 @@ export declare class StoriesController {
             };
             chapters: {
                 id: string;
-                createdAt: Date;
-                updatedAt: Date;
                 title: string;
                 description: string | null;
                 isPublished: boolean;
+                createdAt: Date;
+                updatedAt: Date;
                 chapterOrder: number;
                 storyId: string;
             }[];
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -109,6 +105,8 @@ export declare class StoriesController {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -121,8 +119,6 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -133,6 +129,8 @@ export declare class StoriesController {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -151,8 +149,6 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             coverImageUrl: string | null;
@@ -163,6 +159,8 @@ export declare class StoriesController {
             visibility: string;
             contentRating: string;
             estimatedDuration: number | null;
+            createdAt: Date;
+            updatedAt: Date;
             publishedAt: Date | null;
             authorId: string;
             rpgTemplateId: string | null;
@@ -175,11 +173,11 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         };
@@ -190,11 +188,11 @@ export declare class StoriesController {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         }[];
@@ -205,11 +203,11 @@ export declare class StoriesController {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         };
@@ -221,11 +219,11 @@ export declare class StoriesController {
         message: string;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             description: string | null;
             isPublished: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             chapterOrder: number;
             storyId: string;
         };
@@ -246,201 +244,229 @@ export declare class StoriesController {
         message: string;
     }>;
     createStoryVariable(storyId: string, createVariableDto: CreateStoryVariableDto, req: {
-        user?: AuthenticatedUser;
+        user: AuthenticatedUser;
     }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
+            storyId: string;
             variableName: string;
             variableType: string;
             defaultValue: import("@prisma/client/runtime/library").JsonValue | null;
-            storyId: string;
         };
     }>;
-    findStoryVariables(storyId: string): Promise<{
+    findStoryVariables(storyId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         data: {
             id: string;
+            storyId: string;
             variableName: string;
             variableType: string;
             defaultValue: import("@prisma/client/runtime/library").JsonValue | null;
-            storyId: string;
         }[];
     }>;
-    updateStoryVariable(storyId: string, variableId: string, updateVariableDto: UpdateStoryVariableDto): Promise<{
+    updateStoryVariable(storyId: string, variableId: string, updateVariableDto: UpdateStoryVariableDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
+            storyId: string;
             variableName: string;
             variableType: string;
             defaultValue: import("@prisma/client/runtime/library").JsonValue | null;
-            storyId: string;
         };
     }>;
-    deleteStoryVariable(storyId: string, variableId: string): Promise<{
+    deleteStoryVariable(storyId: string, variableId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
     }>;
-    createItem(storyId: string, createItemDto: CreateItemDto): Promise<{
+    createItem(storyId: string, createItemDto: CreateItemDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
             description: string | null;
+            storyId: string;
             itemName: string;
             imageUrl: string | null;
-            storyId: string;
         };
     }>;
-    findItems(storyId: string): Promise<{
+    findItems(storyId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         data: {
             id: string;
             description: string | null;
+            storyId: string;
             itemName: string;
             imageUrl: string | null;
-            storyId: string;
         }[];
     }>;
-    updateItem(storyId: string, itemId: string, updateItemDto: UpdateItemDto): Promise<{
+    updateItem(storyId: string, itemId: string, updateItemDto: UpdateItemDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
             description: string | null;
+            storyId: string;
             itemName: string;
             imageUrl: string | null;
-            storyId: string;
         };
     }>;
-    deleteItem(storyId: string, itemId: string): Promise<{
+    deleteItem(storyId: string, itemId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
     }>;
-    createNode(storyId: string, createNodeDto: CreateNodeDto): Promise<{
+    createNode(storyId: string, createNodeDto: CreateNodeDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
+            title: string;
             createdAt: Date;
             updatedAt: Date;
-            title: string;
+            storyId: string;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
             chapterId: string | null;
-            storyId: string;
         };
     }>;
-    findNodes(storyId: string): Promise<{
+    findNodes(storyId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         data: ({
             fromChoices: ({
                 toNode: {
                     id: string;
+                    title: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    title: string;
+                    storyId: string;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
                     chapterId: string | null;
-                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
-                fromNodeId: string;
             })[];
             toChoices: ({
                 fromNode: {
                     id: string;
+                    title: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    title: string;
+                    storyId: string;
                     nodeType: string;
                     content: import("@prisma/client/runtime/library").JsonValue;
                     position: import("@prisma/client/runtime/library").JsonValue;
                     chapterId: string | null;
-                    storyId: string;
                 };
             } & {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
+                fromNodeId: string;
                 toNodeId: string;
                 choiceText: string;
                 conditions: import("@prisma/client/runtime/library").JsonValue | null;
                 effects: import("@prisma/client/runtime/library").JsonValue | null;
-                fromNodeId: string;
             })[];
         } & {
             id: string;
+            title: string;
             createdAt: Date;
             updatedAt: Date;
-            title: string;
+            storyId: string;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
             chapterId: string | null;
-            storyId: string;
         })[];
     }>;
-    updateNode(nodeId: string, updateNodeDto: UpdateNodeDto): Promise<{
+    updateNode(nodeId: string, updateNodeDto: UpdateNodeDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
+            title: string;
             createdAt: Date;
             updatedAt: Date;
-            title: string;
+            storyId: string;
             nodeType: string;
             content: import("@prisma/client/runtime/library").JsonValue;
             position: import("@prisma/client/runtime/library").JsonValue;
             chapterId: string | null;
-            storyId: string;
         };
     }>;
-    removeNode(nodeId: string): Promise<{
+    removeNode(nodeId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
     }>;
-    createChoice(fromNodeId: string, createChoiceDto: CreateChoiceDto): Promise<{
-        success: boolean;
-        message: string;
-        data: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            toNodeId: string;
-            choiceText: string;
-            conditions: import("@prisma/client/runtime/library").JsonValue | null;
-            effects: import("@prisma/client/runtime/library").JsonValue | null;
-            fromNodeId: string;
-        };
-    }>;
-    updateChoice(choiceId: string, updateChoiceDto: UpdateChoiceDto): Promise<{
+    createChoice(fromNodeId: string, createChoiceDto: CreateChoiceDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
         data: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            fromNodeId: string;
             toNodeId: string;
             choiceText: string;
             conditions: import("@prisma/client/runtime/library").JsonValue | null;
             effects: import("@prisma/client/runtime/library").JsonValue | null;
-            fromNodeId: string;
         };
     }>;
-    removeChoice(choiceId: string): Promise<{
+    updateChoice(choiceId: string, updateChoiceDto: UpdateChoiceDto, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            fromNodeId: string;
+            toNodeId: string;
+            choiceText: string;
+            conditions: import("@prisma/client/runtime/library").JsonValue | null;
+            effects: import("@prisma/client/runtime/library").JsonValue | null;
+        };
+    }>;
+    removeChoice(choiceId: string, req: {
+        user: AuthenticatedUser;
+    }): Promise<{
         success: boolean;
         message: string;
     }>;

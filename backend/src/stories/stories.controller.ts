@@ -33,12 +33,12 @@ export class StoriesController {
   constructor(private readonly storiesService: StoriesService) {}
 
   @Post()
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createStoryDto: CreateStoryDto,
     @Request() req: { user?: AuthenticatedUser },
   ) {
-    // Use a default user ID for testing
+    // Use a default user ID for testing, create user if doesn't exist
     const userId = req.user?.id || 'test-user-id';
     return this.storiesService.create(userId, createStoryDto);
   }
@@ -49,12 +49,9 @@ export class StoriesController {
   }
 
   @Get(':id')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
-  findOne(
-    @Param('id') id: string,
-    @Request() req: { user?: AuthenticatedUser },
-  ) {
-    return this.storiesService.findOne(id, req.user?.id);
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: string) {
+    return this.storiesService.findOne(id);
   }
 
   @Put(':id')
@@ -157,185 +154,202 @@ export class StoriesController {
 
   // Story Variables endpoints
   @Post(':storyId/variables')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   createStoryVariable(
     @Param('storyId') storyId: string,
     @Body() createVariableDto: CreateStoryVariableDto,
-    @Request() req: { user?: AuthenticatedUser },
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.createStoryVariable(
       storyId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       createVariableDto,
     );
   }
 
   @Get(':storyId/variables')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
-  findStoryVariables(@Param('storyId') storyId: string) {
+  @UseGuards(JwtAuthGuard)
+  findStoryVariables(
+    @Param('storyId') storyId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
     return this.storiesService.findStoryVariables(
       storyId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id
     );
   }
 
   @Put(':storyId/variables/:variableId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   updateStoryVariable(
     @Param('storyId') storyId: string,
     @Param('variableId') variableId: string,
     @Body() updateVariableDto: UpdateStoryVariableDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.updateStoryVariable(
       storyId,
       variableId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       updateVariableDto,
     );
   }
 
   @Delete(':storyId/variables/:variableId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   deleteStoryVariable(
     @Param('storyId') storyId: string,
     @Param('variableId') variableId: string,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.deleteStoryVariable(
       storyId,
       variableId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id
     );
   }
 
   // Items endpoints
   @Post(':storyId/items')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   createItem(
     @Param('storyId') storyId: string,
     @Body() createItemDto: CreateItemDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
-    return this.storiesService.createItem(
-      storyId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
-      createItemDto,
-    );
+    return this.storiesService.createItem(storyId, req.user.id, createItemDto);
   }
 
   @Get(':storyId/items')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
-  findItems(@Param('storyId') storyId: string) {
-    return this.storiesService.findItems(
-      storyId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
-    );
+  @UseGuards(JwtAuthGuard)
+  findItems(
+    @Param('storyId') storyId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
+    return this.storiesService.findItems(storyId, req.user.id);
   }
 
   @Put(':storyId/items/:itemId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   updateItem(
     @Param('storyId') storyId: string,
     @Param('itemId') itemId: string,
     @Body() updateItemDto: UpdateItemDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.updateItem(
       storyId,
       itemId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       updateItemDto,
     );
   }
 
   @Delete(':storyId/items/:itemId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   deleteItem(
     @Param('storyId') storyId: string,
     @Param('itemId') itemId: string,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.deleteItem(
       storyId,
       itemId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id
     );
   }
 
   // Node endpoints
   @Post(':storyId/nodes')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   createNode(
     @Param('storyId') storyId: string,
     @Body() createNodeDto: CreateNodeDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.createNode(
       storyId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       createNodeDto,
     );
   }
 
-  @Get(':storyId/nodes')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
-  findNodes(@Param('storyId') storyId: string) {
+    @Get(':storyId/nodes')
+  @UseGuards(JwtAuthGuard)
+  findNodes(
+    @Param('storyId') storyId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
     return this.storiesService.findNodes(
       storyId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
     );
   }
 
   @Put('nodes/:nodeId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   updateNode(
     @Param('nodeId') nodeId: string,
     @Body() updateNodeDto: UpdateNodeDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.updateNode(
       nodeId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       updateNodeDto,
     );
   }
 
   @Delete('nodes/:nodeId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
-  removeNode(@Param('nodeId') nodeId: string) {
+  @UseGuards(JwtAuthGuard)
+  removeNode(
+    @Param('nodeId') nodeId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
     return this.storiesService.removeNode(
       nodeId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id
     );
   }
 
   // Choice endpoints
   @Post('nodes/:fromNodeId/choices')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   createChoice(
     @Param('fromNodeId') fromNodeId: string,
     @Body() createChoiceDto: CreateChoiceDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.createChoice(
       fromNodeId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       createChoiceDto,
     );
   }
 
   @Put('choices/:choiceId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
+  @UseGuards(JwtAuthGuard)
   updateChoice(
     @Param('choiceId') choiceId: string,
     @Body() updateChoiceDto: UpdateChoiceDto,
+    @Request() req: { user: AuthenticatedUser },
   ) {
     return this.storiesService.updateChoice(
       choiceId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id,
       updateChoiceDto,
     );
   }
 
   @Delete('choices/:choiceId')
-  // @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
-  removeChoice(@Param('choiceId') choiceId: string) {
+  @UseGuards(JwtAuthGuard)
+  removeChoice(
+    @Param('choiceId') choiceId: string,
+    @Request() req: { user: AuthenticatedUser },
+  ) {
     return this.storiesService.removeChoice(
       choiceId,
-      '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9', // Use correct authorId for testing
+      req.user.id
     );
   }
 }
