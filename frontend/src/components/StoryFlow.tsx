@@ -16,12 +16,9 @@ import '@xyflow/react/dist/style.css';
 import { nodesService } from '../services/nodesService';
 import { choicesService } from '../services/choicesService';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { VariablesPanel } from './VariablesPanel';
 import { ItemsPanel } from './ItemsPanel';
-import { ConditionsBuilder, type Condition } from './ConditionsBuilder';
-import { EffectsBuilder, type Effect } from './EffectsBuilder';
-import { RpgCheckBuilder, type RpgCheck } from './RpgCheckBuilder';
+import { NodePreviewModal } from './NodePreviewModal';
 import type { StoryVariable } from '../services/variablesService';
 import type { StoryItem } from '../services/itemsService';
 
@@ -34,24 +31,15 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<RFNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<RFEdge>([]);
   const [selectedNode, setSelectedNode] = useState<RFNode | null>(null);
-  const [selectedChoice, setSelectedChoice] = useState<{ id: string } | null>(null);
+  const [isNodeModalOpen, setIsNodeModalOpen] = useState(false);
   const [nodeType, setNodeType] = useState<'story' | 'choice' | 'condition' | 'ending'>('story');
   const [isAddingNode, setIsAddingNode] = useState(false);
-  const [nodeTitle, setNodeTitle] = useState('');
-  const [nodeContent, setNodeContent] = useState('');
-  const [nodeCharacter, setNodeCharacter] = useState('');
-  const [nodeBackground, setNodeBackground] = useState('');
-  const [choiceText, setChoiceText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showVariablesPanel, setShowVariablesPanel] = useState(false);
   const [showItemsPanel, setShowItemsPanel] = useState(false);
-  const [choiceConditions, setChoiceConditions] = useState<Condition | null>(null);
-  const [choiceEffects, setChoiceEffects] = useState<Effect[]>([]);
   const [availableVariables, setAvailableVariables] = useState<StoryVariable[]>([]);
   const [availableItems, setAvailableItems] = useState<StoryItem[]>([]);
-  const [showRpgCheckBuilder, setShowRpgCheckBuilder] = useState(false);
-  const [currentRpgCheck, setCurrentRpgCheck] = useState<RpgCheck | null>(null);
 
   const handleVariablesUpdated = useCallback((variables: StoryVariable[]) => {
     setAvailableVariables(variables);
@@ -60,6 +48,182 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const handleItemsUpdated = useCallback((items: StoryItem[]) => {
     setAvailableItems(items);
   }, []);
+
+  // Transform data for ConditionsBuilder and EffectsBuilder components
+  const transformedVariables = availableVariables.map(variable => ({
+    id: variable.id,
+    name: variable.variableName,
+    type: variable.variableType
+  }));
+
+  const transformedItems = availableItems.map(item => ({
+    id: item.id,
+    name: item.itemName
+  }));
+
+  useEffect(() => {
+    console.log('StoryFlow useEffect triggered with storyId:', storyId);
+    if (!storyId) {
+      console.log('No storyId provided');
+      setError('No story ID provided');
+      setIsLoading(false);
+      return;
+    }
+
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        console.log('Loading data for storyId:', storyId);
+
+        const [nodesRes, choicesRes] = await Promise.all([
+          nodesService.getNodes(storyId),
+          choicesService.getChoices(storyId),
+        ]);
+
+        console.log('Nodes response:', nodesRes);
+        console.log('Choices response:', choicesRes);
+
+        if (nodesRes.success) {
+          const rfNodes: RFNode[] = nodesRes.data.map((node) => {
+            console.log('Processing node:', node);
+            console.log('Node position:', node.position);
+            // Ensure position is in correct format
+            let position = { x: 0, y: 0 }; // default
+            if (node.position && typeof node.position === 'object') {
+              const pos = node.position as { x?: number; y?: number };
+              if (typeof pos.x === 'number' && typeof pos.y === 'number') {
+                position = { x: pos.x, y: pos.y };
+              }
+            }
+            const rfNode: RFNode = {
+              id: node.id,
+              type: 'default',
+              data: {
+                label: node.title,
+                type: 'story', // Default to story type for now
+                content: typeof node.content === 'object' && node.content ? node.content.text : node.content,
+                character: typeof node.content === 'object' && node.content ? node.content.character : undefined,
+                background: typeof node.content === 'object' && node.content ? node.content.background : undefined
+              },
+              position,
+            };
+            console.log('Created RF node:', rfNode);
+            return rfNode;
+          });
+          console.log('Setting nodes:', rfNodes);
+          setNodes(rfNodes);
+        } else {
+          console.error('Failed to load nodes:', nodesRes);
+          setError('Failed to load story nodes');
+        }
+
+        if (choicesRes.success) {
+          const rfEdges: RFEdge[] = choicesRes.data.map((choice) => ({
+            id: choice.id,
+            source: choice.fromNodeId,
+            target: choice.toNodeId,
+            label: choice.choiceText,
+          }));
+          console.log('Setting edges:', rfEdges);
+          setEdges(rfEdges);
+        } else {
+          console.error('Failed to load choices:', choicesRes);
+          // Don't set error for choices since they might not exist yet
+        }
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        setError('Failed to load story data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [storyId, setNodes, setEdges]);
+
+  const onConnect = useCallback(
+    async (params: Connection) => {
+      try {
+        const result = await choicesService.createChoice({
+          fromNodeId: params.source!,
+          toNodeId: params.target!,
+          choiceText: 'New Choice',
+        });
+
+        if (result.success) {
+          setEdges((eds) => addEdge({ ...params, id: result.data.id, label: 'New Choice' }, eds));
+        }
+      } catch (error) {
+        console.error('Failed to create choice:', error);
+      }
+    },
+    [setEdges],
+  );
+
+  const handleAddNode = useCallback(async () => {
+    try {
+      console.log('Adding new node...');
+      setIsAddingNode(true);
+      setError(null);
+
+      const result = await nodesService.createNode({
+        storyId,
+        title: 'New Node',
+        content: { text: 'New node content' },
+        position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
+      });
+
+      console.log('Create node result:', result);
+
+      if (result.success) {
+        console.log('Node creation successful:', result.data);
+        // Ensure position is in correct format
+        let position = { x: 100, y: 100 }; // default
+        if (result.data.position && typeof result.data.position === 'object') {
+          const pos = result.data.position as { x?: number; y?: number };
+          if (typeof pos.x === 'number' && typeof pos.y === 'number') {
+            position = { x: pos.x, y: pos.y };
+          }
+        }
+        const newNode: RFNode = {
+          id: result.data.id,
+          type: 'default',
+          data: {
+            label: result.data.title,
+            type: nodeType
+          },
+          position,
+        };
+        console.log('Adding node to state:', newNode);
+        setNodes((nds) => [...nds, newNode]);
+      } else {
+        setError('Failed to create node');
+        console.error('Failed to create node:', result);
+      }
+    } catch (error) {
+      console.error('Failed to create node:', error);
+      setError('Failed to create node');
+    } finally {
+      setIsAddingNode(false);
+    }
+  }, [storyId, setNodes, nodeType]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-lg">Loading story...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-600 text-lg">{error}</div>
+      </div>
+    );
+  }
 
   // Transform data for ConditionsBuilder and EffectsBuilder components
   const transformedVariables = availableVariables.map(variable => ({
@@ -165,25 +329,42 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
 
   const onNodeClick: NodeMouseHandler = useCallback(async (_, node) => {
     setSelectedNode(node);
-    try {
-      const result = await nodesService.getNode(node.id);
-      if (result.success) {
-        const nodeData = result.data;
-        setNodeTitle(nodeData.title);
-        if (typeof nodeData.content === 'object' && nodeData.content) {
-          setNodeContent(nodeData.content.text || '');
-          setNodeCharacter(nodeData.content.character || '');
-          setNodeBackground(nodeData.content.background || '');
-        } else {
-          setNodeContent(typeof nodeData.content === 'string' ? nodeData.content : '');
-          setNodeCharacter('');
-          setNodeBackground('');
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load node data:', error);
-    }
+    setIsNodeModalOpen(true);
   }, []);
+
+  const handleNodeSave = useCallback(async (node: RFNode, updatedData: any) => {
+    try {
+      await nodesService.updateNode(node.id, updatedData);
+
+      // Update the node in the flow
+      setNodes((nds) =>
+        nds.map((n) =>
+          n.id === node.id
+            ? { 
+                ...n, 
+                data: { 
+                  ...n.data, 
+                  label: updatedData.title,
+                  ...updatedData 
+                } 
+              }
+            : n
+        )
+      );
+    } catch (error) {
+      console.error('Failed to save node:', error);
+    }
+  }, [setNodes]);
+
+  const handleNodeDelete = useCallback(async (nodeId: string) => {
+    try {
+      await nodesService.deleteNode(nodeId);
+      setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+      setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
+    } catch (error) {
+      console.error('Failed to delete node:', error);
+    }
+  }, [setNodes, setEdges]);
 
   const onConnect = useCallback(
     async (params: Connection) => {
@@ -252,101 +433,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
       setIsAddingNode(false);
     }
   }, [storyId, setNodes, nodeType]);
-
-  const onEdgeClick = useCallback(async (_event: React.MouseEvent, edge: RFEdge) => {
-    // Deselect node if one is selected
-    setSelectedNode(null);
-    
-    // Load choice data
-    try {
-      // For now, we'll assume the edge id is the choice id
-      // In a real implementation, you might need to store choice id in edge data
-      const choiceId = edge.id;
-      
-      const result = await choicesService.getChoice(choiceId);
-      
-      if (result.success) {
-        const choice = result.data;
-        setSelectedChoice({ id: choiceId });
-        setChoiceText(choice.choiceText || '');
-        setChoiceConditions(choice.conditions || null);
-        setChoiceEffects(choice.effects || []);
-      } else {
-        // If choice doesn't exist yet, create a new one
-        setSelectedChoice({ id: choiceId });
-        setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
-        setChoiceConditions(null);
-        setChoiceEffects([]);
-      }
-    } catch (error) {
-      console.error('Failed to load choice data:', error);
-      // Fallback to placeholder data
-      setSelectedChoice({ id: edge.id });
-      setChoiceText(typeof edge.label === 'string' ? edge.label : 'New Choice');
-      setChoiceConditions(null);
-      setChoiceEffects([]);
-    }
-  }, []);
-
-  const handleSaveChoice = useCallback(async () => {
-    if (!selectedChoice) return;
-
-    try {
-      const result = await choicesService.updateChoice(selectedChoice.id, {
-        choiceText,
-        conditions: choiceConditions || undefined,
-        effects: choiceEffects,
-      });
-
-      if (result.success) {
-        // Update the edge label
-        setEdges((eds) =>
-          eds.map((edge) =>
-            edge.id === selectedChoice.id
-              ? { ...edge, label: choiceText }
-              : edge
-          )
-        );
-      }
-    } catch (error) {
-      console.error('Failed to save choice:', error);
-    }
-  }, [selectedChoice, choiceText, choiceConditions, choiceEffects, setEdges]);
-
-  const handleSaveNode = useCallback(async () => {
-    if (!selectedNode) return;
-
-    try {
-      await nodesService.updateNode(selectedNode.id, {
-        title: nodeTitle,
-        content: {
-          character: nodeCharacter || undefined,
-          background: nodeBackground || undefined,
-          text: nodeContent
-        },
-        position: selectedNode.position,
-      });
-
-      // Update the node in the flow
-      setNodes((nds) =>
-        nds.map((node) =>
-          node.id === selectedNode.id
-            ? { ...node, data: { ...node.data, label: nodeTitle } }
-            : node
-        )
-      );
-    } catch (error) {
-      console.error('Failed to save node:', error);
-    }
-  }, [selectedNode, nodeTitle, nodeContent, nodeCharacter, nodeBackground, setNodes]);
-
-  const handleSaveRpgCheck = useCallback((rpgCheck: RpgCheck) => {
-    setCurrentRpgCheck(rpgCheck);
-    setShowRpgCheckBuilder(false);
-  }, []);
-
-  const handleCancelRpgCheck = useCallback(() => {
-    setShowRpgCheckBuilder(false);
   }, []);
 
   if (isLoading) {
