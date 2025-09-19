@@ -83,9 +83,10 @@ test.describe('Nodes API', () => {
     expect(response.status()).toBe(201);
 
     const responseBody = await response.json();
-    expect(responseBody).toHaveProperty('id');
-    expect(responseBody.title).toBe(nodeData.title);
-    expect(responseBody.storyId).toBe(storyId);
+    expect(responseBody).toHaveProperty('success', true);
+    expect(responseBody.data).toHaveProperty('id');
+    expect(responseBody.data.title).toBe(nodeData.title);
+    expect(responseBody.data.storyId).toBe(storyId);
   });
 
   test('GET /nodes/story/:storyId - should get all nodes for a story', async ({ request }) => {
@@ -138,8 +139,9 @@ test.describe('Nodes API', () => {
     expect(response.status()).toBe(200);
 
     const responseBody = await response.json();
-    expect(Array.isArray(responseBody)).toBe(true);
-    expect(responseBody.length).toBeGreaterThan(0);
+    expect(responseBody).toHaveProperty('success', true);
+    expect(Array.isArray(responseBody.data)).toBe(true);
+    expect(responseBody.data.length).toBeGreaterThan(0);
   });
 
   test('GET /nodes/:id - should get node by id', async ({ request }) => {
@@ -182,7 +184,7 @@ test.describe('Nodes API', () => {
 
     expect(nodeResponse.status()).toBe(201);
     const nodeBody = await nodeResponse.json();
-    const testNodeId = nodeBody.id;
+    const testNodeId = nodeBody.data.id;
 
     // Now test GET /nodes/:id
     const response = await request.get(`http://localhost:3000/nodes/${testNodeId}`, {
@@ -194,8 +196,9 @@ test.describe('Nodes API', () => {
     expect(response.status()).toBe(200);
 
     const responseBody = await response.json();
-    expect(responseBody).toHaveProperty('id', testNodeId);
-    expect(responseBody.title).toBe(nodeData.title);
+    expect(responseBody).toHaveProperty('success', true);
+    expect(responseBody.data).toHaveProperty('id', testNodeId);
+    expect(responseBody.data.title).toBe(nodeData.title);
   });
 
   test('PATCH /nodes/:id - should update node', async ({ request }) => {
@@ -238,7 +241,7 @@ test.describe('Nodes API', () => {
 
     expect(nodeResponse.status()).toBe(201);
     const nodeBody = await nodeResponse.json();
-    const testNodeId = nodeBody.id;
+    const testNodeId = nodeBody.data.id;
 
     // Now test PATCH /nodes/:id
     const updateData = {
@@ -259,6 +262,7 @@ test.describe('Nodes API', () => {
     expect(response.status()).toBe(200);
 
     const responseBody = await response.json();
-    expect(responseBody.title).toBe(updateData.title);
+    expect(responseBody).toHaveProperty('success', true);
+    expect(responseBody.data.title).toBe(updateData.title);
   });
 });

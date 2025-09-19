@@ -55,6 +55,12 @@ export declare class AuthController {
         success: boolean;
         message: string;
     }>;
+    verifyEmailTest(body: {
+        email: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
+    }>;
     forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{
         success: boolean;
         message: string;

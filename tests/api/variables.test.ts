@@ -104,7 +104,11 @@ test.describe('Story Variables API', () => {
       },
     });
 
-    const response = await request.get(`http://localhost:3000/stories/${storyId}/variables`);
+    const response = await request.get(`http://localhost:3000/stories/${storyId}/variables`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
 
     expect(response.status()).toBe(200);
 

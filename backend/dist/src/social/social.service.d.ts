@@ -258,8 +258,8 @@ export declare class SocialService {
                         displayName: string | null;
                     };
                     _count: {
-                        ratings: number;
                         playSessions: number;
+                        ratings: number;
                     };
                 };
                 id: string;

@@ -13,8 +13,7 @@ test.describe.serial('RPG Mechanics API', () => {
   let endNodeId: string;
   let healthVariableId: string;
   let potionItemId: string;
-
-  test.beforeAll(async () => {
+  let authToken: string;  test.beforeAll(async () => {
     // Clean up
     await prisma.choice.deleteMany();
     await prisma.node.deleteMany();
@@ -24,29 +23,47 @@ test.describe.serial('RPG Mechanics API', () => {
     await prisma.story.deleteMany();
     await prisma.user.deleteMany();
 
-    // Create test user directly in database (since auth is disabled for testing)
-    // Use the hardcoded authorId that the controller expects
-    const user = await prisma.user.create({
-      data: {
-        id: '1c5268c3-c2b5-4b82-acbe-c4d9a90dead9',
-        username: 'rpg_testuser',
-        email: 'rpg_test@example.com',
-        passwordHash: 'hashed_password', // Not used since auth is disabled
-        displayName: 'RPG Test User',
-      },
-    });
-    userId = user.id;
+    // Create test user and get token
+    const userData = {
+      username: 'rpg_testuser',
+      email: 'rpg_test@example.com',
+      password: 'password123',
+      displayName: 'RPG Test User',
+    };
 
-    // Create a test story directly
-    const story = await prisma.story.create({
-      data: {
-        title: 'RPG Mechanics Test Story',
-        description: 'A test story for RPG mechanics API testing',
-        visibility: 'public',
-        authorId: userId,
+    const registerResponse = await fetch('http://localhost:3000/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify(userData),
     });
-    storyId = story.id;
+
+    expect(registerResponse.status).toBe(201);
+    const registerData = await registerResponse.json();
+    expect(registerData).toHaveProperty('success', true);
+    expect(registerData.data).toHaveProperty('accessToken');
+    authToken = registerData.data.accessToken;
+    userId = registerData.data.user.id;
+
+    // Create a test story
+    const storyData = {
+      title: 'RPG Mechanics Test Story',
+      description: 'A test story for RPG mechanics API testing',
+      visibility: 'public',
+    };
+
+    const storyResponse = await fetch('http://localhost:3000/stories', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(storyData),
+    });
+
+    const storyResponseData = await storyResponse.json();
+    storyId = storyResponseData.data.id;
   });
 
   test.afterAll(async () => {
@@ -71,6 +88,7 @@ test.describe.serial('RPG Mechanics API', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify(variableData),
     });
@@ -95,6 +113,7 @@ test.describe.serial('RPG Mechanics API', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify(itemData),
     });
@@ -110,7 +129,11 @@ test.describe.serial('RPG Mechanics API', () => {
 
   test('should retrieve story variables and items', async () => {
     // Test variables
-    const variablesResponse = await fetch(`http://localhost:3000/stories/${storyId}/variables`);
+    const variablesResponse = await fetch(`http://localhost:3000/stories/${storyId}/variables`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
 
     expect(variablesResponse.status).toBe(200);
     const variablesResult = await variablesResponse.json();
@@ -119,7 +142,11 @@ test.describe.serial('RPG Mechanics API', () => {
     expect(variablesResult.data[0].variableName).toBe('player_health');
 
     // Test items
-    const itemsResponse = await fetch(`http://localhost:3000/stories/${storyId}/items`);
+    const itemsResponse = await fetch(`http://localhost:3000/stories/${storyId}/items`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
 
     expect(itemsResponse.status).toBe(200);
     const itemsResult = await itemsResponse.json();
@@ -140,6 +167,7 @@ test.describe.serial('RPG Mechanics API', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify(startNodeData),
     });
@@ -161,6 +189,7 @@ test.describe.serial('RPG Mechanics API', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify(endNodeData),
     });
@@ -211,6 +240,7 @@ test.describe.serial('RPG Mechanics API', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify(choiceData),
     });
@@ -228,7 +258,11 @@ test.describe.serial('RPG Mechanics API', () => {
   });
 
   test('should retrieve choices for a node', async () => {
-    const response = await fetch(`http://localhost:3000/choices/story/${storyId}`);
+    const response = await fetch(`http://localhost:3000/choices/story/${storyId}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
 
     expect(response.status).toBe(200);
     const result = await response.json();
@@ -242,7 +276,11 @@ test.describe.serial('RPG Mechanics API', () => {
   test('should test backend condition evaluation', async () => {
     // This would require implementing the game-mechanics service
     // For now, we'll just verify the data structure is correct
-    const choicesResponse = await fetch(`http://localhost:3000/choices/story/${storyId}`);
+    const choicesResponse = await fetch(`http://localhost:3000/choices/story/${storyId}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
 
     const choicesResult = await choicesResponse.json();
     const choice = choicesResult.data[0];

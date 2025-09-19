@@ -21,9 +21,9 @@ export declare class DiscoveryService {
                     avatarUrl: string | null;
                 };
                 _count: {
-                    ratings: number;
                     comments: number;
                     playSessions: number;
+                    ratings: number;
                 };
                 id: string;
                 createdAt: Date;
@@ -78,9 +78,9 @@ export declare class DiscoveryService {
                 avatarUrl: string | null;
             };
             _count: {
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
             };
             id: string;
             createdAt: Date;
@@ -117,9 +117,9 @@ export declare class DiscoveryService {
                 avatarUrl: string | null;
             };
             _count: {
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
             };
             id: string;
             createdAt: Date;
@@ -156,9 +156,9 @@ export declare class DiscoveryService {
                 avatarUrl: string | null;
             };
             _count: {
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
             };
             id: string;
             createdAt: Date;

@@ -80,16 +80,16 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: [
-  //   {
-  //     command: 'cd ../backend && npm run start:dev',
-  //     port: 3000,
-  //     reuseExistingServer: !process.env.CI,
-  //   },
-  //   {
-  //     command: 'cd ../frontend && npm run dev',
-  //     port: 5173,
-  //     reuseExistingServer: !process.env.CI,
-  //   },
-  // ],
+  webServer: [
+    {
+      command: 'cd ../backend && npm run start:dev',
+      port: 3000,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'cd ../frontend && npm run dev',
+      port: 5173,
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });

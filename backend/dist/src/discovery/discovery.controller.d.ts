@@ -26,9 +26,9 @@ export declare class DiscoveryController {
                     avatarUrl: string | null;
                 };
                 _count: {
-                    ratings: number;
                     comments: number;
                     playSessions: number;
+                    ratings: number;
                 };
                 id: string;
                 createdAt: Date;
@@ -83,9 +83,9 @@ export declare class DiscoveryController {
                 avatarUrl: string | null;
             };
             _count: {
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
             };
             id: string;
             createdAt: Date;
@@ -122,9 +122,9 @@ export declare class DiscoveryController {
                 avatarUrl: string | null;
             };
             _count: {
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
             };
             id: string;
             createdAt: Date;
@@ -161,9 +161,9 @@ export declare class DiscoveryController {
                 avatarUrl: string | null;
             };
             _count: {
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
             };
             id: string;
             createdAt: Date;

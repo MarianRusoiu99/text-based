@@ -286,7 +286,7 @@ test.describe('Chapters API', () => {
       },
     });
 
-    expect(response.status()).toBe(200);
+    expect(response.status()).toBe(201);
 
     const responseBody = await response.json();
     expect(responseBody).toHaveProperty('success', true);

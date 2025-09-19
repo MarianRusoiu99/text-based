@@ -264,8 +264,8 @@ export declare class SocialController {
                         displayName: string | null;
                     };
                     _count: {
-                        ratings: number;
                         playSessions: number;
+                        ratings: number;
                     };
                 };
                 id: string;

@@ -9,6 +9,18 @@ async function main() {
   // Create sample users
   const hashedPassword = await bcrypt.hash('password123', 12);
 
+  // Create default test user for E2E tests
+  const testUser = await prisma.user.create({
+    data: {
+      username: 'testuser',
+      email: 'test@example.com',
+      passwordHash: hashedPassword,
+      displayName: 'Test User',
+      bio: 'Default test user for automated testing',
+      isVerified: true,
+    },
+  });
+
   const user1 = await prisma.user.create({
     data: {
       username: 'storyteller1',

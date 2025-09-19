@@ -39,6 +39,16 @@ const prisma = new client_1.PrismaClient();
 async function main() {
     console.log('Seeding sample data...');
     const hashedPassword = await bcrypt.hash('password123', 12);
+    const testUser = await prisma.user.create({
+        data: {
+            username: 'testuser',
+            email: 'test@example.com',
+            passwordHash: hashedPassword,
+            displayName: 'Test User',
+            bio: 'Default test user for automated testing',
+            isVerified: true,
+        },
+    });
     const user1 = await prisma.user.create({
         data: {
             username: 'storyteller1',

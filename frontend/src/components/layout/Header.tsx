@@ -23,14 +23,14 @@ export const Header: React.FC = () => {
               </Link>
             )}
             {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4" data-testid="user-menu">
                 <Link to="/profile" className="text-gray-600 hover:text-gray-900">
                   Profile
                 </Link>
                 <span className="text-gray-700">
                   Welcome, {user?.displayName || user?.username}
                 </span>
-                <Button variant="outline" size="sm" onClick={logout}>
+                <Button variant="outline" size="sm" onClick={logout} data-testid="logout-button">
                   Logout
                 </Button>
               </div>

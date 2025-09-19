@@ -50,6 +50,7 @@ const Login: React.FC = () => {
           value={formData.email}
           onChange={handleChange}
           required
+          data-testid="identifier-input"
         />
         <Input
           label="Password"
@@ -58,11 +59,12 @@ const Login: React.FC = () => {
           value={formData.password}
           onChange={handleChange}
           required
+          data-testid="password-input"
         />
         {error && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600" data-testid="error-message">{error}</p>
         )}
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-button">
           {isLoading ? 'Logging in...' : 'Login'}
         </Button>
       </form>

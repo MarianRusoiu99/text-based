@@ -13,17 +13,36 @@ const Register: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Client-side validation
+    if (!formData.username.trim()) {
+      setError('Username is required');
+      return;
+    }
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    if (!formData.password.trim()) {
+      setError('Password is required');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const result = await authService.register(formData);
       if (result.success) {
-        navigate('/');
+        setIsSuccess(true);
+        setError('');
+        // Show success message briefly before redirect
+        setTimeout(() => navigate('/'), 1000);
       } else {
         setError(result.message || 'Registration failed');
       }
@@ -52,6 +71,7 @@ const Register: React.FC = () => {
           value={formData.username}
           onChange={handleChange}
           required
+          data-testid="username-input"
         />
         <Input
           label="Email"
@@ -60,6 +80,7 @@ const Register: React.FC = () => {
           value={formData.email}
           onChange={handleChange}
           required
+          data-testid="email-input"
         />
         <Input
           label="Display Name (optional)"
@@ -67,6 +88,7 @@ const Register: React.FC = () => {
           name="displayName"
           value={formData.displayName}
           onChange={handleChange}
+          data-testid="display-name-input"
         />
         <Input
           label="Password"
@@ -75,11 +97,15 @@ const Register: React.FC = () => {
           value={formData.password}
           onChange={handleChange}
           required
+          data-testid="password-input"
         />
         {error && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600" data-testid="error-message">{error}</p>
         )}
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        {isSuccess && (
+          <p className="text-sm text-green-600" data-testid="success-message">Registration successful! Redirecting...</p>
+        )}
+        <Button type="submit" className="w-full" disabled={isLoading} data-testid="register-button">
           {isLoading ? 'Registering...' : 'Register'}
         </Button>
       </form>

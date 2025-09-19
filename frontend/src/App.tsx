@@ -1,8 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Header } from './components/layout/Header';
+import { useAuthStore } from './stores/authStore';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -12,6 +13,11 @@ import Player from './pages/Player';
 import Profile from './pages/Profile';
 
 const queryClient = new QueryClient();
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuthStore();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+}
 
 function App() {
   return (
@@ -25,10 +31,10 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/stories" element={<Stories />} />
-                <Route path="/editor/:storyId?" element={<Editor />} />
-                <Route path="/player/:storyId" element={<Player />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/stories" element={<ProtectedRoute><Stories /></ProtectedRoute>} />
+                <Route path="/editor/:storyId?" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
+                <Route path="/player/:storyId" element={<ProtectedRoute><Player /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               </Routes>
             </main>
             <Toaster />

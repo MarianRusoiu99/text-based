@@ -29,10 +29,14 @@ interface AuthResponse {
   };
 }
 
-interface UpdateProfileData {
-  displayName?: string;
-  bio?: string;
-  avatarUrl?: string;
+interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
 }
 
 interface ProfileResponse {
@@ -131,6 +135,19 @@ class AuthService {
   async updateProfile(data: UpdateProfileData): Promise<UpdateProfileResponse> {
     const response = await fetch(`${API_BASE_URL}/users/profile`, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...this.getAuthHeaders(),
+      },
+      body: JSON.stringify(data),
+    });
+
+    return response.json();
+  }
+
+  async changePassword(data: ChangePasswordData): Promise<ChangePasswordResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...this.getAuthHeaders(),

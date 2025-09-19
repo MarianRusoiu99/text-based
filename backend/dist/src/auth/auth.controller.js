@@ -41,6 +41,9 @@ let AuthController = class AuthController {
     async verifyEmail(verifyEmailDto) {
         return this.authService.verifyEmail(verifyEmailDto);
     }
+    async verifyEmailTest(body) {
+        return await this.authService.verifyEmailTest(body.email);
+    }
     async forgotPassword(forgotPasswordDto) {
         return this.authService.forgotPassword(forgotPasswordDto);
     }
@@ -92,6 +95,14 @@ __decorate([
     __metadata("design:paramtypes", [verify_email_dto_1.VerifyEmailDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "verifyEmail", null);
+__decorate([
+    (0, common_1.Post)('verify-email-test'),
+    (0, common_1.HttpCode)(200),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyEmailTest", null);
 __decorate([
     (0, common_1.Post)('forgot-password'),
     (0, common_1.HttpCode)(200),

@@ -54,6 +54,13 @@ export class AuthController {
     return this.authService.verifyEmail(verifyEmailDto);
   }
 
+  @Post('verify-email-test')
+  @HttpCode(200)
+  async verifyEmailTest(@Body() body: { email: string }) {
+    // For testing purposes only - auto-verify user
+    return await this.authService.verifyEmailTest(body.email);
+  }
+
   @Post('forgot-password')
   @HttpCode(200)
   @Throttle({ medium: { limit: 10, ttl: 60000 } }) // 10 forgot password requests per minute

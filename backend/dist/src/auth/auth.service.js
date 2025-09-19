@@ -203,6 +203,25 @@ let AuthService = class AuthService {
             message: 'Email verified successfully',
         };
     }
+    async verifyEmailTest(email) {
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+        });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { isVerified: true },
+        });
+        this.logger.log('info', 'Email verified successfully (test)', {
+            userId: user.id,
+        });
+        return {
+            success: true,
+            message: 'Email verified successfully (test)',
+        };
+    }
     async forgotPassword(forgotPasswordDto) {
         const { email } = forgotPasswordDto;
         const user = await this.prisma.user.findUnique({

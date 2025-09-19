@@ -5,7 +5,7 @@ import {
   E2EStoryHelper,
   E2EAssertions, 
   E2ETestUtils
-} from '../utils/e2e-test-utilities';
+} from '../../utils/e2e-test-utilities';
 
 /**
  * RPG Mechanics E2E Tests

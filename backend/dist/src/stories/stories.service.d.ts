@@ -73,11 +73,6 @@ export declare class StoriesService {
     findOne(id: string, userId?: string): Promise<{
         success: boolean;
         data: {
-            author: {
-                id: string;
-                username: string;
-                displayName: string | null;
-            };
             chapters: {
                 id: string;
                 createdAt: Date;
@@ -88,6 +83,11 @@ export declare class StoriesService {
                 chapterOrder: number;
                 storyId: string;
             }[];
+            author: {
+                id: string;
+                username: string;
+                displayName: string | null;
+            };
         } & {
             id: string;
             createdAt: Date;

@@ -222,6 +222,30 @@ export class AuthService implements OnModuleInit {
     };
   }
 
+  async verifyEmailTest(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { isVerified: true },
+    });
+
+    this.logger.log('info', 'Email verified successfully (test)', {
+      userId: user.id,
+    });
+
+    return {
+      success: true,
+      message: 'Email verified successfully (test)',
+    };
+  }
+
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
 

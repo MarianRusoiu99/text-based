@@ -30,7 +30,6 @@ This document provides a comprehensive summary of all revised technical document
 #### 1. Technical Specifications (`technical_specifications.md`)
 **Purpose**: Comprehensive feature overview and requirements analysis
 **Key Updates**:
-- Removed Doki Doki Literature Club references
 - Refocused RPG mechanics on editor-defined flexibility
 - Emphasized modular, reusable, and maintainable architecture
 - Added comprehensive social features and community management

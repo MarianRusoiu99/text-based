@@ -4,7 +4,7 @@ import {
   E2EAuthHelper, 
   E2EAssertions, 
   E2ETestUtils 
-} from '../utils/e2e-test-utilities';
+} from '../../utils/e2e-test-utilities';
 
 /**
  * Authentication E2E Tests
@@ -272,7 +272,7 @@ test.describe('Authentication Flow', () => {
 
     test('should redirect unauthenticated users to login', async ({ page }) => {
       // Try to access protected route without authentication
-      await page.goto('/stories/new');
+      await page.goto('/editor');
 
       // Should redirect to login
       await E2EAssertions.assertUrlMatches(page, '/login');
@@ -293,7 +293,7 @@ test.describe('Authentication Flow', () => {
       });
 
       // Try to access protected route
-      await page.goto('/stories/new');
+      await page.goto('/editor');
 
       // Should redirect to login due to expired token
       await E2EAssertions.assertUrlMatches(page, '/login');

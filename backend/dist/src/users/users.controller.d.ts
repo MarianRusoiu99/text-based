@@ -27,10 +27,10 @@ export declare class UsersController {
             createdAt: Date;
             updatedAt: Date;
             _count: {
-                stories: number;
-                ratings: number;
                 comments: number;
                 playSessions: number;
+                ratings: number;
+                stories: number;
                 followers: number;
                 following: number;
             };

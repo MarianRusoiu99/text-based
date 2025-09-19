@@ -419,13 +419,27 @@ export class StoriesService {
       }
     }
 
-    // Update chapter orders sequentially to avoid unique constraint violations
-    for (const { id, order } of chapterOrders) {
-      await this.prisma.chapter.update({
-        where: { id },
-        data: { chapterOrder: order },
-      });
-    }
+    // Update chapter orders in a transaction to avoid unique constraint violations
+    await this.prisma.$transaction(async (tx) => {
+      // First, temporarily set all chapters to negative orders to avoid conflicts
+      const tempOrder = -999;
+      let tempCounter = 0;
+      for (const { id } of chapterOrders) {
+        await tx.chapter.update({
+          where: { id },
+          data: { chapterOrder: tempOrder - tempCounter },
+        });
+        tempCounter++;
+      }
+
+      // Then update to the final orders
+      for (const { id, order } of chapterOrders) {
+        await tx.chapter.update({
+          where: { id },
+          data: { chapterOrder: order },
+        });
+      }
+    });
 
     return {
       success: true,

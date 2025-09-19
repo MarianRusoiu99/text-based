@@ -53,10 +53,16 @@ interface ProfileResponse {
 
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [formData, setFormData] = useState({
     displayName: '',
     bio: '',
     avatarUrl: '',
+  });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   const queryClient = useQueryClient();
@@ -122,6 +128,19 @@ const Profile: React.FC = () => {
     },
   });
 
+  const changePasswordMutation = useMutation({
+    mutationFn: authService.changePassword,
+    onSuccess: () => {
+      setIsChangingPassword(false);
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      // Show success message or toast
+    },
+  });
+
   useEffect(() => {
     if (profile?.data) {
       setFormData({
@@ -140,6 +159,16 @@ const Profile: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordChange = (e: React.FormEvent) => {
+    e.preventDefault();
+    changePasswordMutation.mutate(passwordData);
+  };
+
+  const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -233,6 +262,71 @@ const Profile: React.FC = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Password Change */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Change Password</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!isChangingPassword ? (
+                <Button onClick={() => setIsChangingPassword(true)}>
+                  Change Password
+                </Button>
+              ) : (
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <div>
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input
+                      id="currentPassword"
+                      name="currentPassword"
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordInputChange}
+                      data-testid="current-password-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      name="newPassword"
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordInputChange}
+                      data-testid="new-password-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordInputChange}
+                      data-testid="confirm-password-input"
+                      required
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button type="submit" data-testid="change-password-button">
+                      Change Password
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsChangingPassword(false)}
                     >
                       Cancel
                     </Button>

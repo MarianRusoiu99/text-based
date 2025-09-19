@@ -325,12 +325,23 @@ let StoriesService = class StoriesService {
                 throw new common_1.NotFoundException(`Chapter with id ${id} not found`);
             }
         }
-        for (const { id, order } of chapterOrders) {
-            await this.prisma.chapter.update({
-                where: { id },
-                data: { chapterOrder: order },
-            });
-        }
+        await this.prisma.$transaction(async (tx) => {
+            const tempOrder = -999;
+            let tempCounter = 0;
+            for (const { id } of chapterOrders) {
+                await tx.chapter.update({
+                    where: { id },
+                    data: { chapterOrder: tempOrder - tempCounter },
+                });
+                tempCounter++;
+            }
+            for (const { id, order } of chapterOrders) {
+                await tx.chapter.update({
+                    where: { id },
+                    data: { chapterOrder: order },
+                });
+            }
+        });
         return {
             success: true,
             message: 'Chapters reordered successfully',

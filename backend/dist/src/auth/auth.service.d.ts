@@ -57,6 +57,10 @@ export declare class AuthService implements OnModuleInit {
         success: boolean;
         message: string;
     }>;
+    verifyEmailTest(email: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
     forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{
         success: boolean;
         message: string;

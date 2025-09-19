@@ -103,7 +103,11 @@ test.describe('Items API', () => {
       },
     });
 
-    const response = await request.get(`http://localhost:3000/stories/${storyId}/items`);
+    const response = await request.get(`http://localhost:3000/stories/${storyId}/items`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
 
     expect(response.status()).toBe(200);
 

@@ -6,7 +6,7 @@ import {
   E2EAssertions, 
   E2ETestUtils,
   StoryEditorPage
-} from '../utils/e2e-test-utilities';
+} from '../../utils/e2e-test-utilities';
 
 /**
  * Story Player E2E Tests
