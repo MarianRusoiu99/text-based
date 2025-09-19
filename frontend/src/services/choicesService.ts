@@ -29,7 +29,7 @@ class ChoicesService {
   async getChoices(_storyId: string) {
     // TODO: Implement proper choices fetching when backend endpoint is ready
     // For now, return empty array to prevent compilation errors
-    return { success: true, data: [] };
+    return { success: true, data: [] as any[] };
   }
 
   async createChoice(data: CreateChoiceData) {

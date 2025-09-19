@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { rpgService, type RpgTemplate, type RpgStat } from '../services/rpgService';
+import { rpgService, type RpgTemplate } from '../services/rpgService';
 
 interface CharacterStats {
   [key: string]: any;

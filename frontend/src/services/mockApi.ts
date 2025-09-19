@@ -145,7 +145,7 @@ export const mockApi = {
   },
 
   // Variables endpoints
-  async getVariables(storyId: string) {
+  async getVariables(_storyId: string) {
     return [];
   },
 
@@ -159,7 +159,7 @@ export const mockApi = {
   },
 
   // Items endpoints
-  async getItems(storyId: string) {
+  async getItems(_storyId: string) {
     return [];
   },
 

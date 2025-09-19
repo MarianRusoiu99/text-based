@@ -8,8 +8,6 @@ import { ConditionsBuilder, type Condition } from './ConditionsBuilder';
 import { EffectsBuilder, type Effect } from './EffectsBuilder';
 import { RpgCheckBuilder, type RpgCheck } from './RpgCheckBuilder';
 import type { Node as RFNode } from '@xyflow/react';
-import type { StoryVariable } from '../services/variablesService';
-import type { StoryItem } from '../services/itemsService';
 
 interface NodePreviewModalProps {
   node: RFNode | null;
@@ -297,7 +295,7 @@ export const NodePreviewModal: React.FC<NodePreviewModalProps> = ({
                         <div>
                           <Label className="text-xs">Conditions</Label>
                           <ConditionsBuilder
-                            conditions={choice.conditions}
+                            conditions={choice.conditions || null}
                             onChange={(conditions) => updateChoice(index, { conditions })}
                             variables={variables}
                             items={items}
@@ -384,7 +382,7 @@ export const NodePreviewModal: React.FC<NodePreviewModalProps> = ({
                 {choices.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="font-medium text-sm text-gray-700">Choices:</h4>
-                    {choices.map((choice, index) => (
+                    {choices.map((choice) => (
                       <div
                         key={choice.id}
                         className="p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer transition-colors"
@@ -432,12 +430,12 @@ export const NodePreviewModal: React.FC<NodePreviewModalProps> = ({
       {showRpgCheckBuilder && (
         <RpgCheckBuilder
           isOpen={showRpgCheckBuilder}
-          onClose={() => setShowRpgCheckBuilder(false)}
+          onCancel={() => setShowRpgCheckBuilder(false)}
           onSave={(rpgCheck) => {
             setCurrentRpgCheck(rpgCheck);
             setShowRpgCheckBuilder(false);
           }}
-          initialCheck={currentRpgCheck}
+          initialData={currentRpgCheck || undefined}
         />
       )}
     </>
