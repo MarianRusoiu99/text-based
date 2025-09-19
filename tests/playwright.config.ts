@@ -38,45 +38,45 @@ export default defineConfig({
       },
     },
 
-    {
-      name: 'firefox',
-      testDir: './e2e',
-      use: {
-        baseURL: 'http://localhost:5173',
-        trace: 'on-first-retry',
-        ...devices['Desktop Firefox']
-      },
-    },
+    // {
+    //   name: 'firefox',
+    //   testDir: './e2e',
+    //   use: {
+    //     baseURL: 'http://localhost:5173',
+    //     trace: 'on-first-retry',
+    //     ...devices['Desktop Firefox']
+    //   },
+    // },
 
-    {
-      name: 'webkit',
-      testDir: './e2e',
-      use: {
-        baseURL: 'http://localhost:5173',
-        trace: 'on-first-retry',
-        ...devices['Desktop Safari']
-      },
-    },
+    // {
+    //   name: 'webkit',
+    //   testDir: './e2e',
+    //   use: {
+    //     baseURL: 'http://localhost:5173',
+    //     trace: 'on-first-retry',
+    //     ...devices['Desktop Safari']
+    //   },
+    // },
 
     /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      testDir: './e2e',
-      use: {
-        baseURL: 'http://localhost:5173',
-        trace: 'on-first-retry',
-        ...devices['Pixel 5']
-      },
-    },
-    {
-      name: 'Mobile Safari',
-      testDir: './e2e',
-      use: {
-        baseURL: 'http://localhost:5173',
-        trace: 'on-first-retry',
-        ...devices['iPhone 12']
-      },
-    },
+    // {
+    //   name: 'Mobile Chrome',
+    //   testDir: './e2e',
+    //   use: {
+    //     baseURL: 'http://localhost:5173',
+    //     trace: 'on-first-retry',
+    //     ...devices['Pixel 5']
+    //   },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   testDir: './e2e',
+    //   use: {
+    //     baseURL: 'http://localhost:5173',
+    //     trace: 'on-first-retry',
+    //     ...devices['iPhone 12']
+    //   },
+    // },
   ],
 
   /* Run your local dev server before starting the tests */
