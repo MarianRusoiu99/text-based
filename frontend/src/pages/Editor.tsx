@@ -11,6 +11,8 @@ const Editor: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [visibility, setVisibility] = useState('private');
+  const [tags, setTags] = useState<string[]>([]);
+  const [currentTag, setCurrentTag] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -44,6 +46,17 @@ const Editor: React.FC = () => {
     );
   }
 
+  const handleAddTag = () => {
+    if (currentTag.trim() && !tags.includes(currentTag.trim())) {
+      setTags([...tags, currentTag.trim()]);
+      setCurrentTag('');
+    }
+  };
+
+  const handleRemoveTag = (index: number) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -54,6 +67,7 @@ const Editor: React.FC = () => {
         title,
         description: description || undefined,
         visibility,
+        tags: tags.length > 0 ? tags : undefined,
       });
 
       if (result.success) {
@@ -86,6 +100,7 @@ const Editor: React.FC = () => {
             required
             placeholder="Enter story title"
             className="w-full"
+            data-testid="story-title-input"
           />
         </div>
 
@@ -100,6 +115,7 @@ const Editor: React.FC = () => {
             placeholder="Enter story description (optional)"
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             rows={4}
+            data-testid="story-description-input"
           />
         </div>
 
@@ -112,11 +128,57 @@ const Editor: React.FC = () => {
             value={visibility}
             onChange={(e) => setVisibility(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            data-testid="visibility-select"
           >
             <option value="private">Private</option>
             <option value="unlisted">Unlisted</option>
             <option value="public">Public</option>
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+            Tags
+          </label>
+          <div className="flex gap-2 mb-2">
+            <Input
+              id="tag-input"
+              type="text"
+              value={currentTag}
+              onChange={(e) => setCurrentTag(e.target.value)}
+              placeholder="Add a tag"
+              className="flex-1"
+              data-testid="tag-input"
+              onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+            />
+            <Button
+              type="button"
+              onClick={handleAddTag}
+              variant="outline"
+              data-testid="add-tag-button"
+            >
+              Add
+            </Button>
+          </div>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(index)}
+                    className="ml-1 text-blue-600 hover:text-blue-800"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {error && (
@@ -129,6 +191,7 @@ const Editor: React.FC = () => {
           type="submit"
           disabled={isLoading || !title.trim()}
           className="w-full"
+          data-testid="create-story-button"
         >
           {isLoading ? 'Creating...' : 'Create Story'}
         </Button>

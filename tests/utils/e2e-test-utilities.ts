@@ -236,7 +236,7 @@ export class E2EStoryHelper {
    * Create a new story through the UI
    */
   static async createStory(page: Page, story: TestStory): Promise<string> {
-    await page.goto('/stories/new');
+    await page.goto('/editor');
     await page.waitForLoadState('networkidle');
 
     // Fill story creation form
@@ -255,8 +255,8 @@ export class E2EStoryHelper {
     // Submit story creation
     await page.getByTestId('create-story-button').click();
     
-    // Wait for redirect to editor
-    await page.waitForURL(/\/editor\/[a-zA-Z0-9-]+/, { timeout: 10000 });
+    // Wait for navigation to editor by checking for the story editor header
+    await page.waitForSelector(`h1:has-text("Story Editor")`, { timeout: 10000 });
     
     // Extract story ID from URL
     const url = page.url();

@@ -18,7 +18,7 @@ export const Header: React.FC = () => {
               Stories
             </Link>
             {isAuthenticated && (
-              <Link to="/editor" className="text-gray-600 hover:text-gray-900">
+              <Link to="/editor" className="text-gray-600 hover:text-gray-900" data-testid="create-story-link">
                 Editor
               </Link>
             )}

@@ -148,6 +148,7 @@ const Home: React.FC = () => {
               size="lg"
               onClick={() => navigate('/editor')}
               className="border-white text-white hover:bg-white hover:text-blue-600"
+              data-testid="create-story-button"
             >
               Start Creating
             </Button>

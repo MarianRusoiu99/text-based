@@ -10,10 +10,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Configure parallel workers - use more workers for better performance */
+  workers: process.env.CI ? 2 : 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'line',
+  reporter: process.env.CI ? 'github' : [['list'], ['html', { open: 'never' }]],
 
   /* Configure projects for major browsers and API tests */
   projects: [
@@ -21,10 +21,12 @@ export default defineConfig({
       name: 'api',
       testDir: './api',
       use: {
+        /* Base URL for API tests */
+        baseURL: 'http://localhost:3000',
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
       },
-      workers: 1,
+      workers: 1, // API tests should run sequentially to avoid conflicts
     },
     {
       name: 'chromium',
@@ -34,7 +36,12 @@ export default defineConfig({
         baseURL: 'http://localhost:5173',
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
-        ...devices['Desktop Chrome']
+        /* Browser configuration */
+        browserName: 'chromium',
+        /* Viewport for consistent testing */
+        viewport: { width: 1280, height: 720 },
+        /* Ignore HTTPS errors in development */
+        ignoreHTTPSErrors: true,
       },
     },
 
@@ -79,17 +86,27 @@ export default defineConfig({
     // },
   ],
 
+  /* Global test configuration */
+  use: {
+    /* Maximum time each action can take */
+    actionTimeout: 10000,
+    /* Maximum time for navigation */
+    navigationTimeout: 30000,
+  },
+
   /* Run your local dev server before starting the tests */
   webServer: [
     {
       command: 'cd ../backend && npm run start:dev',
       port: 3000,
       reuseExistingServer: !process.env.CI,
+      timeout: 120000, // 2 minutes timeout for server startup
     },
     {
       command: 'cd ../frontend && npm run dev',
       port: 5173,
       reuseExistingServer: !process.env.CI,
+      timeout: 120000, // 2 minutes timeout for server startup
     },
   ],
 });

@@ -48,7 +48,7 @@ class StoriesService {
     return result;
   }
 
-  async createStory(data: { title: string; description?: string; visibility?: string }) {
+  async createStory(data: { title: string; description?: string; visibility?: string; tags?: string[] }) {
     const response = await fetch(`${API_BASE_URL}/stories`, {
       method: 'POST',
       headers: {
