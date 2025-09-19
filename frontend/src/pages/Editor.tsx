@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storiesService } from '../services/storiesService';
+import { rpgService, type RpgTemplate } from '../services/rpgService';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import StoryFlow from '../components/StoryFlow';
@@ -13,8 +14,26 @@ const Editor: React.FC = () => {
   const [visibility, setVisibility] = useState('private');
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState('');
+  const [selectedRpgTemplate, setSelectedRpgTemplate] = useState('');
+  const [availableTemplates, setAvailableTemplates] = useState<RpgTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Load available RPG templates
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const templates = await rpgService.getTemplates();
+        setAvailableTemplates(templates);
+      } catch (err) {
+        console.error('Failed to load RPG templates:', err);
+      }
+    };
+    
+    if (!storyId) {
+      loadTemplates();
+    }
+  }, [storyId]);
 
   const handlePublish = async (id: string) => {
     try {
@@ -68,6 +87,7 @@ const Editor: React.FC = () => {
         description: description || undefined,
         visibility,
         tags: tags.length > 0 ? tags : undefined,
+        rpgTemplateId: selectedRpgTemplate || undefined,
       });
 
       if (result.success) {
@@ -179,6 +199,37 @@ const Editor: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* RPG Template Selection */}
+        <div>
+          <label htmlFor="rpg-template" className="block text-sm font-medium text-gray-700 mb-2">
+            RPG Template (Optional)
+          </label>
+          <select
+            id="rpg-template"
+            value={selectedRpgTemplate}
+            onChange={(e) => setSelectedRpgTemplate(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            data-testid="rpg-template-select"
+          >
+            <option value="">No RPG Template</option>
+            {availableTemplates.map((template) => (
+              <option key={template.id} value={template.id}>
+                {template.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-sm text-gray-500 mt-1">
+            Choose an RPG template to add stats, skills, and mechanics to your story.{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/rpg-templates/new')}
+              className="text-blue-600 hover:underline"
+            >
+              Create new template
+            </button>
+          </p>
         </div>
 
         {error && (
