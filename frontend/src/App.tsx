@@ -11,6 +11,7 @@ import Stories from './pages/Stories';
 import Editor from './pages/Editor';
 import Player from './pages/Player';
 import Profile from './pages/Profile';
+import RpgTemplates from './pages/RpgTemplates';
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/editor/:storyId?" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
                 <Route path="/player/:storyId" element={<ProtectedRoute><Player /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/rpg-templates/new" element={<ProtectedRoute><RpgTemplates /></ProtectedRoute>} />
               </Routes>
             </main>
             <Toaster />
