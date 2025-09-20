@@ -85,7 +85,7 @@ const Editor: React.FC = () => {
       const result = await storiesService.createStory({
         title,
         description: description || undefined,
-        visibility,
+        visibility: visibility as 'public' | 'unlisted' | 'private' | undefined,
         tags: tags.length > 0 ? tags : undefined,
         rpgTemplateId: selectedRpgTemplate || undefined,
       });

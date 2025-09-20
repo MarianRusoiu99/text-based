@@ -1,20 +1,4 @@
-import { useAuthStore } from '../stores/authStore';
-import { mockApi } from './mockApi';
-
-const API_BASE_URL = 'http://localhost:3000/api';
-
-interface Story {
-  id: string;
-  title: string;
-  description?: string;
-  author: {
-    id: string;
-    username: string;
-    displayName?: string;
-  };
-  createdAt: string;
-  isPublished: boolean;
-}
+import { storyApi, type Story, type CreateStoryData, type UpdateStoryData, type StoryFilters, ApiException } from '../lib/api';
 
 interface StoriesResponse {
   success: boolean;
@@ -30,57 +14,183 @@ interface StoriesResponse {
 }
 
 class StoriesService {
-  private getAuthHeaders(): Record<string, string> {
-    const token = useAuthStore.getState().accessToken;
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
-  async getStories(params: { page?: number; limit?: number; search?: string } = {}) {
-    const query = new URLSearchParams();
-    if (params.page) query.append('page', params.page.toString());
-    if (params.limit) query.append('limit', params.limit.toString());
-    if (params.search) query.append('search', params.search);
-
-    const response = await fetch(`${API_BASE_URL}/stories?${query}`, {
-      headers: this.getAuthHeaders(),
-    });
-
-    const result: StoriesResponse = await response.json();
-    return result;
-  }
-
-  async createStory(data: { title: string; description?: string; visibility?: string; tags?: string[]; rpgTemplateId?: string }) {
+  async getStories(params: StoryFilters = {}): Promise<StoriesResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/stories`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...this.getAuthHeaders(),
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-      return result;
+      const response = await storyApi.getStories(params);
+      
+      if (response.success && response.data) {
+        return {
+          success: true,
+          data: {
+            stories: response.data.stories || [],
+            pagination: response.data.pagination || { page: 1, limit: 20, total: 0, pages: 0 }
+          }
+        };
+      }
+      
+      return {
+        success: false,
+        data: {
+          stories: [],
+          pagination: { page: 1, limit: 20, total: 0, pages: 0 }
+        }
+      };
     } catch (error) {
-      // Fallback to mock API
-      console.log('Backend not available, using mock API for story creation');
-      return await mockApi.createStory(data);
+      console.error('Error fetching stories:', error);
+      return {
+        success: false,
+        data: {
+          stories: [],
+          pagination: { page: 1, limit: 20, total: 0, pages: 0 }
+        }
+      };
     }
   }
 
-  async publishStory(id: string, isPublished: boolean) {
-    const response = await fetch(`${API_BASE_URL}/stories/${id}/publish`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...this.getAuthHeaders(),
-      },
-      body: JSON.stringify({ isPublished }),
-    });
+  async getStory(id: string): Promise<{ success: boolean; data?: Story; message?: string }> {
+    try {
+      const response = await storyApi.getStory(id);
+      
+      if (response.success && response.data) {
+        return {
+          success: true,
+          data: response.data
+        };
+      }
+      
+      return {
+        success: false,
+        message: 'Story not found'
+      };
+    } catch (error) {
+      console.error('Error fetching story:', error);
+      if (error instanceof ApiException) {
+        return {
+          success: false,
+          message: error.message
+        };
+      }
+      return {
+        success: false,
+        message: 'Failed to fetch story'
+      };
+    }
+  }
 
-    const result = await response.json();
-    return result;
+  async createStory(data: CreateStoryData): Promise<{ success: boolean; data?: Story; message?: string }> {
+    try {
+      const response = await storyApi.createStory(data);
+      
+      if (response.success && response.data) {
+        return {
+          success: true,
+          data: response.data,
+          message: response.message || 'Story created successfully'
+        };
+      }
+      
+      return {
+        success: false,
+        message: 'Failed to create story'
+      };
+    } catch (error) {
+      console.error('Error creating story:', error);
+      if (error instanceof ApiException) {
+        return {
+          success: false,
+          message: error.message
+        };
+      }
+      return {
+        success: false,
+        message: 'Failed to create story'
+      };
+    }
+  }
+
+  async updateStory(id: string, data: UpdateStoryData): Promise<{ success: boolean; data?: Story; message?: string }> {
+    try {
+      const response = await storyApi.updateStory(id, data);
+      
+      if (response.success && response.data) {
+        return {
+          success: true,
+          data: response.data,
+          message: response.message || 'Story updated successfully'
+        };
+      }
+      
+      return {
+        success: false,
+        message: 'Failed to update story'
+      };
+    } catch (error) {
+      console.error('Error updating story:', error);
+      if (error instanceof ApiException) {
+        return {
+          success: false,
+          message: error.message
+        };
+      }
+      return {
+        success: false,
+        message: 'Failed to update story'
+      };
+    }
+  }
+
+  async deleteStory(id: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      const response = await storyApi.deleteStory(id);
+      
+      return {
+        success: response.success,
+        message: response.message || 'Story deleted successfully'
+      };
+    } catch (error) {
+      console.error('Error deleting story:', error);
+      if (error instanceof ApiException) {
+        return {
+          success: false,
+          message: error.message
+        };
+      }
+      return {
+        success: false,
+        message: 'Failed to delete story'
+      };
+    }
+  }
+
+  async publishStory(id: string, published: boolean): Promise<{ success: boolean; data?: Story; message?: string }> {
+    try {
+      const response = await storyApi.publishStory(id, published);
+      
+      if (response.success && response.data) {
+        return {
+          success: true,
+          data: response.data,
+          message: response.message || `Story ${published ? 'published' : 'unpublished'} successfully`
+        };
+      }
+      
+      return {
+        success: false,
+        message: `Failed to ${published ? 'publish' : 'unpublish'} story`
+      };
+    } catch (error) {
+      console.error(`Error ${published ? 'publishing' : 'unpublishing'} story:`, error);
+      if (error instanceof ApiException) {
+        return {
+          success: false,
+          message: error.message
+        };
+      }
+      return {
+        success: false,
+        message: `Failed to ${published ? 'publish' : 'unpublish'} story`
+      };
+    }
   }
 }
 
