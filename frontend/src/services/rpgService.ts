@@ -42,7 +42,9 @@ class RpgService {
       const response = await rpgTemplateApi.getTemplates({ isPublic: true });
       if (response.success && response.data) {
         // Backend returns { templates: [], pagination: {} } structure
-        return response.data.templates || [];
+        const templates = response.data.templates;
+        // Ensure we always return an array
+        return Array.isArray(templates) ? templates : [];
       }
       return [];
     } catch (error) {

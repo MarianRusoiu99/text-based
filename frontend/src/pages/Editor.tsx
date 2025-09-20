@@ -24,9 +24,12 @@ const Editor: React.FC = () => {
     const loadTemplates = async () => {
       try {
         const templates = await rpgService.getTemplates();
-        setAvailableTemplates(templates);
+        // Ensure templates is always an array
+        setAvailableTemplates(Array.isArray(templates) ? templates : []);
       } catch (err) {
         console.error('Failed to load RPG templates:', err);
+        // Ensure we set an empty array on error
+        setAvailableTemplates([]);
       }
     };
     
@@ -214,7 +217,7 @@ const Editor: React.FC = () => {
             data-testid="rpg-template-select"
           >
             <option value="">No RPG Template</option>
-            {availableTemplates.map((template) => (
+            {Array.isArray(availableTemplates) && availableTemplates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name}
               </option>

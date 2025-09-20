@@ -30,7 +30,7 @@ const Player: React.FC = () => {
 
   useEffect(() => {
     const startPlaySession = async () => {
-      if (!storyId) return;
+      if (!storyId || session) return; // Don't start if we already have a session
 
       try {
         setLoading(true);
@@ -54,7 +54,7 @@ const Player: React.FC = () => {
     };
 
     startPlaySession();
-  }, [storyId, showSuccess]);
+  }, [storyId]); // Remove showSuccess from dependencies to prevent infinite loop
 
   useEffect(() => {
     if (session?.id) {
