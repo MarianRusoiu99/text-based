@@ -150,8 +150,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
           choiceText: 'New Choice',
         });
 
-        if (result.success) {
-          setEdges((eds) => addEdge({ ...params, id: result.data.id, label: 'New Choice' }, eds));
+        if (result.success && result.data) {
+          setEdges((eds) => addEdge({ ...params, id: result.data!.id, label: 'New Choice' }, eds));
         }
       } catch (error) {
         console.error('Failed to create choice:', error);

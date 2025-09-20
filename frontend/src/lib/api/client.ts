@@ -7,14 +7,21 @@ import type { ApiResponse } from './types';
 
 // Custom error class for API errors
 export class ApiException extends Error {
+  readonly statusCode: number;
+  readonly errorCode: string;
+  readonly details?: any;
+
   constructor(
-    public readonly statusCode: number,
-    public readonly errorCode: string,
+    statusCode: number,
+    errorCode: string,
     message: string,
-    public readonly details?: any,
+    details?: any,
   ) {
     super(message);
     this.name = 'ApiException';
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
+    this.details = details;
   }
 }
 

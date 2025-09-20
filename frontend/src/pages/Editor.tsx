@@ -90,7 +90,7 @@ const Editor: React.FC = () => {
         rpgTemplateId: selectedRpgTemplate || undefined,
       });
 
-      if (result.success) {
+      if (result.success && result.data) {
         // Navigate to the story editor
         navigate(`/editor/${result.data.id}`);
       } else {

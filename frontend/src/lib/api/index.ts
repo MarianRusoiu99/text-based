@@ -3,7 +3,7 @@
  * This is the single source of truth for all API interactions
  */
 
-import { httpClient, ApiException, setTokens, clearTokens } from './client';
+import { httpClient, setTokens, clearTokens } from './client';
 import { ENDPOINTS } from './endpoints';
 import type {
   // Auth types
