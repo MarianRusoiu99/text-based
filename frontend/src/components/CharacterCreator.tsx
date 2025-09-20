@@ -31,17 +31,24 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({
       try {
         setIsLoading(true);
         const template = await rpgService.getTemplate(rpgTemplateId);
-        setRpgTemplate(template);
-        
-        // Initialize character stats with default values
-        const initialStats: CharacterStats = {};
-        template.stats.forEach(stat => {
-          initialStats[stat.id] = stat.defaultValue;
-        });
-        template.skills?.forEach(skill => {
-          initialStats[skill.id] = skill.defaultValue;
-        });
-        setCharacterStats(initialStats);
+        if (template) {
+          setRpgTemplate(template);
+          
+          // Initialize character stats with default values
+          const initialStats: CharacterStats = {};
+          const stats = template.stats || template.config?.stats || [];
+          const skills = template.skills || template.config?.skills || [];
+          
+          stats.forEach(stat => {
+            initialStats[stat.id] = stat.defaultValue;
+          });
+          skills.forEach(skill => {
+            initialStats[skill.id] = skill.defaultValue;
+          });
+          setCharacterStats(initialStats);
+        } else {
+          setError('RPG template not found');
+        }
       } catch (err) {
         setError('Failed to load RPG template');
         console.error('Error loading RPG template:', err);
@@ -140,11 +147,11 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({
         </div>
 
         {/* Character Stats */}
-        {rpgTemplate.stats.length > 0 && (
+        {(rpgTemplate.stats || rpgTemplate.config?.stats || []).length > 0 && (
           <div className="bg-white border rounded-lg p-4">
             <h3 className="text-lg font-semibold mb-3">Character Stats</h3>
             <div className="grid grid-cols-2 gap-4">
-              {rpgTemplate.stats.map((stat) => (
+              {(rpgTemplate.stats || rpgTemplate.config?.stats || []).map((stat) => (
                 <div key={stat.id}>
                   <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
                     {stat.name}
@@ -182,11 +189,11 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({
         )}
 
         {/* Character Skills */}
-        {rpgTemplate.skills && rpgTemplate.skills.length > 0 && (
+        {(rpgTemplate.skills || rpgTemplate.config?.skills || []).length > 0 && (
           <div className="bg-white border rounded-lg p-4">
             <h3 className="text-lg font-semibold mb-3">Character Skills</h3>
             <div className="grid grid-cols-2 gap-4">
-              {rpgTemplate.skills.map((skill) => (
+              {(rpgTemplate.skills || rpgTemplate.config?.skills || []).map((skill) => (
                 <div key={skill.id}>
                   <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
                     {skill.name}

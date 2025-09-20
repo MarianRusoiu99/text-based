@@ -16,6 +16,7 @@ interface AuthState {
   hydrated: boolean;
   login: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
   refreshAccessToken: (accessToken: string) => void;
   setHydrated: () => void;
 }
@@ -43,6 +44,9 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isAuthenticated: false,
         });
+      },
+      updateUser: (user) => {
+        set({ user });
       },
       refreshAccessToken: (accessToken) => {
         set({ accessToken });

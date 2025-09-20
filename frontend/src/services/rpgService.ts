@@ -1,88 +1,102 @@
 /**
  * RPG Service for managing RPG templates and mechanics
+ * Now uses the centralized API service
  */
 
-import { mockApi } from './mockApi';
+import { rpgTemplateApi, type RpgTemplate, type UpdateRpgTemplateData } from '../lib/api';
 
-export interface RpgStat {
-  id: string;
-  name: string;
-  type: 'integer' | 'string' | 'boolean';
-  defaultValue: any;
-  minValue?: number;
-  maxValue?: number;
-}
-
-export interface RpgCheck {
-  id: string;
-  type: 'stat' | 'skill' | 'luck';
-  statId?: string;
-  difficulty: number;
-  successText: string;
-  failureText: string;
-}
-
-export interface RpgTemplate {
-  id: string;
-  name: string;
-  description: string;
-  stats: RpgStat[];
-  skills: RpgStat[];
-  checkTypes: string[];
-}
+// Re-export types for backward compatibility
+export type { RpgTemplate, RpgStat, RpgSkill, RpgCheck, RpgTemplateConfig } from '../lib/api/types';
 
 export interface CreateRpgTemplateDto {
   name: string;
-  description: string;
-  stats: Omit<RpgStat, 'id'>[];
-  skills?: Omit<RpgStat, 'id'>[];
-  checkTypes?: string[];
+  description?: string;
+  version?: string;
+  isPublic?: boolean;
+  config: {
+    stats: Array<{
+      id: string;
+      name: string;
+      type: 'integer' | 'decimal' | 'boolean';
+      defaultValue: any;
+      minValue?: number;
+      maxValue?: number;
+      description?: string;
+    }>;
+    skills: Array<{
+      id: string;
+      name: string;
+      type: 'integer' | 'decimal' | 'boolean';
+      defaultValue: any;
+      minValue?: number;
+      maxValue?: number;
+      description?: string;
+    }>;
+    checkTypes: string[];
+  };
 }
 
 class RpgService {
-  private baseUrl = 'http://localhost:3000/api';
-
   async getTemplates(): Promise<RpgTemplate[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/rpg-templates`);
-      if (!response.ok) throw new Error('Failed to fetch RPG templates');
-      const data = await response.json();
-      return data.data || [];
+      const response = await rpgTemplateApi.getTemplates({ isPublic: true });
+      if (response.success && response.data) {
+        // Backend returns { templates: [], pagination: {} } structure
+        return response.data.templates || [];
+      }
+      return [];
     } catch (error) {
-      console.error('Error fetching RPG templates, using mock API:', error);
-      const result = await mockApi.getRpgTemplates();
-      return result.data;
+      console.error('Error fetching RPG templates:', error);
+      return [];
     }
   }
 
-  async createTemplate(templateData: CreateRpgTemplateDto): Promise<RpgTemplate> {
+  async createTemplate(templateData: CreateRpgTemplateDto): Promise<RpgTemplate | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/rpg-templates`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(templateData),
-      });
-      
-      if (!response.ok) throw new Error('Failed to create RPG template');
-      const data = await response.json();
-      return data.data;
+      const response = await rpgTemplateApi.createTemplate(templateData);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      return null;
     } catch (error) {
-      console.error('Error creating RPG template, using mock API:', error);
-      const result = await mockApi.createRpgTemplate(templateData);
-      return result.data;
+      console.error('Error creating RPG template:', error);
+      throw error;
     }
   }
 
-  async getTemplate(templateId: string): Promise<RpgTemplate> {
+  async getTemplate(templateId: string): Promise<RpgTemplate | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/rpg-templates/${templateId}`);
-      if (!response.ok) throw new Error('Failed to fetch RPG template');
-      const data = await response.json();
-      return data.data;
+      const response = await rpgTemplateApi.getTemplate(templateId);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      return null;
     } catch (error) {
-      console.error('Error fetching RPG template, using mock API:', error);
-      const result = await mockApi.getRpgTemplate(templateId);
-      return result.data;
+      console.error('Error fetching RPG template:', error);
+      throw error;
+    }
+  }
+
+  async updateTemplate(templateId: string, templateData: UpdateRpgTemplateData): Promise<RpgTemplate | null> {
+    try {
+      const response = await rpgTemplateApi.updateTemplate(templateId, templateData);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error updating RPG template:', error);
+      throw error;
+    }
+  }
+
+  async deleteTemplate(templateId: string): Promise<boolean> {
+    try {
+      const response = await rpgTemplateApi.deleteTemplate(templateId);
+      return response.success;
+    } catch (error) {
+      console.error('Error deleting RPG template:', error);
+      throw error;
     }
   }
 }
