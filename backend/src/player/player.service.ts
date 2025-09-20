@@ -57,7 +57,7 @@ export class PlayerService {
     if (story.rpgTemplate) {
       const characterState = this.rpgMechanicsService.initializeCharacterState(
         story.rpgTemplate.id,
-        story.rpgTemplate.config as any,
+        story.rpgTemplate.config,
       );
       gameState = JSON.parse(JSON.stringify(characterState));
     }
@@ -396,7 +396,7 @@ export class PlayerService {
         storyId: session.storyId,
         saveName: saveName || `Save at ${new Date().toLocaleString()}`,
         currentNodeId: session.currentNodeId,
-        gameState: session.gameState as any,
+        gameState: session.gameState,
         isCompleted: session.isCompleted,
       },
     });
@@ -443,7 +443,7 @@ export class PlayerService {
           where: { id: existingSession.id },
           data: {
             currentNodeId: savedGame.currentNodeId,
-            gameState: savedGame.gameState as any,
+            gameState: savedGame.gameState,
             isCompleted: savedGame.isCompleted,
             lastPlayedAt: new Date(),
           },
@@ -463,7 +463,7 @@ export class PlayerService {
             userId,
             storyId: savedGame.storyId,
             currentNodeId: savedGame.currentNodeId,
-            gameState: savedGame.gameState as any,
+            gameState: savedGame.gameState,
             isCompleted: savedGame.isCompleted,
           },
           include: {

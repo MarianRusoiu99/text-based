@@ -59,10 +59,7 @@ export class ChoicesController {
   }
 
   @Delete(':id')
-  remove(
-    @Param('id') id: string,
-    @Request() req: { user: AuthenticatedUser },
-  ) {
+  remove(@Param('id') id: string, @Request() req: { user: AuthenticatedUser }) {
     return this.choicesService.remove(id, req.user.id);
   }
 }

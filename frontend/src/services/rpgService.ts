@@ -8,7 +8,7 @@ export interface RpgStat {
   id: string;
   name: string;
   type: 'integer' | 'string' | 'boolean';
-  defaultValue: any;
+  defaultValue: number;
   minValue?: number;
   maxValue?: number;
 }
