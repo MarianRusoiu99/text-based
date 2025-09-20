@@ -115,7 +115,7 @@ export class PlayerService {
           include: {
             nodes: {
               include: {
-                toChoices: true,
+                fromChoices: true,
               },
             },
           },
@@ -145,7 +145,7 @@ export class PlayerService {
           isCompleted: session.isCompleted,
         },
         node: currentNode,
-        choices: currentNode.toChoices,
+        choices: currentNode.fromChoices,
       },
     };
   }

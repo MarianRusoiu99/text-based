@@ -1,4 +1,4 @@
-import { IsString, IsOptional, MaxLength, IsIn } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsIn, IsArray, IsUUID } from 'class-validator';
 
 export class CreateStoryDto {
   @IsString()
@@ -13,4 +13,14 @@ export class CreateStoryDto {
   @IsString()
   @IsIn(['public', 'unlisted', 'private'])
   visibility?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(50, { each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsUUID()
+  rpgTemplateId?: string;
 }
