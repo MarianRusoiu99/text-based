@@ -31,9 +31,9 @@ class ChoicesService {
     }
   }
 
-  async createChoice(data: CreateChoiceData): Promise<{ success: boolean; data?: Choice; message?: string }> {
+  async createChoice(fromNodeId: string, data: CreateChoiceData): Promise<{ success: boolean; data?: Choice; message?: string }> {
     try {
-      const response = await choiceApi.createChoice(data);
+      const response = await choiceApi.createChoice(fromNodeId, data);
       
       if (response.success && response.data) {
         return {

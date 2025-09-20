@@ -1,0 +1,36 @@
+{
+  "name": "text-based-adventure-platform",
+  "version": "1.0.0",
+  "description": "A comprehensive text-based adventure platform with flexible RPG mechanics",
+  "scripts": {
+    "validate-endpoints": "node validate-endpoints.js",
+    "test:comprehensive": "cd tests && npm run test:api",
+    "setup:dev": "cd docker && docker compose up -d && cd ../backend && npm install && npx prisma migrate dev && npx prisma db seed",
+    "start:backend": "cd backend && npm run start:dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "test:all": "cd tests && npm run test:all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MarianRusoiu99/text-based.git"
+  },
+  "keywords": [
+    "text-adventure",
+    "rpg",
+    "gaming",
+    "storytelling",
+    "nestjs",
+    "react",
+    "typescript"
+  ],
+  "author": "MarianRusoiu99",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
