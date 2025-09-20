@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
 
   const { data: followingData } = useQuery({
     queryKey: ['following', user?.id],
-    queryFn: () => user ? socialService.getFollowing(user.id) : null,
+    queryFn: () => user ? socialService.getFollowing(user.id, { page: 1, limit: 20 }) : null,
     enabled: !!user,
   });
 
@@ -190,7 +190,7 @@ const Profile: React.FC = () => {
                 <Avatar className="w-20 h-20">
                   <AvatarImage src={profile?.data?.avatarUrl} alt={profile?.data ? (profile.data.displayName || profile.data.username) : ''} />
                   <AvatarFallback className="text-2xl">
-                    {profile?.data ? (profile.data.displayName || profile.data.username).charAt(0).toUpperCase() : '?'}
+                    {profile?.data ? ((profile.data.displayName || profile.data.username || '?').charAt(0).toUpperCase()) : '?'}
                   </AvatarFallback>
                 </Avatar>
                 <div>

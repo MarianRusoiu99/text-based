@@ -4,8 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateRpgTemplateDto } from './dto/create-rpg-template.dto';
-import { UpdateRpgTemplateDto } from './dto/create-rpg-template.dto';
+import { CreateRpgTemplateDto, UpdateRpgTemplateDto, FindRpgTemplatesDto } from './dto/create-rpg-template.dto';
 
 @Injectable()
 export class RpgTemplatesService {
@@ -35,7 +34,7 @@ export class RpgTemplatesService {
     };
   }
 
-  async findAll(query: any = {}) {
+  async findAll(query: FindRpgTemplatesDto = {}) {
     const { page = 1, limit = 20, search, creatorId, isPublic } = query;
     const skip = (page - 1) * limit;
 
@@ -53,6 +52,7 @@ export class RpgTemplatesService {
     }
 
     if (isPublic !== undefined) {
+      // isPublic is already a boolean from the DTO
       where.isPublic = isPublic;
     }
 

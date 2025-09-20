@@ -12,9 +12,9 @@ export const ENDPOINTS = {
     LOGIN: '/auth/login',
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
-    PROFILE: '/auth/profile',
+    PROFILE: '/users/profile',
     CHANGE_PASSWORD: '/auth/change-password',
-    UPDATE_PROFILE: '/auth/update-profile',
+    UPDATE_PROFILE: '/users/profile',
   },
 
   // Stories endpoints

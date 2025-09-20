@@ -57,6 +57,15 @@ export interface User {
   avatarUrl?: string;
   isVerified: boolean;
   createdAt: string;
+  updatedAt: string;
+  stats?: {
+    totalStories: number;
+    totalFollowers: number;
+    totalFollowing: number;
+    totalRatings: number;
+    totalComments: number;
+    totalPlaySessions: number;
+  };
 }
 
 export interface ChangePasswordData {

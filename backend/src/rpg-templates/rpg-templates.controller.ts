@@ -12,10 +12,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { RpgTemplatesService } from './rpg-templates.service';
 import {
   CreateRpgTemplateDto,
   UpdateRpgTemplateDto,
+  FindRpgTemplatesDto,
 } from './dto/create-rpg-template.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { Request } from 'express';
@@ -39,7 +41,7 @@ export class RpgTemplatesController {
   }
 
   @Get()
-  async findAll(@Query() query: any) {
+  async findAll(@Query(new ValidationPipe({ transform: true })) query: FindRpgTemplatesDto) {
     return this.rpgTemplatesService.findAll(query);
   }
 
