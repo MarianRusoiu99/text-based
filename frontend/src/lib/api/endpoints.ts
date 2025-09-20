@@ -52,12 +52,14 @@ export const ENDPOINTS = {
 
   // Node Management endpoints
   NODES: {
+    BASE: '/nodes',
     BY_ID: (nodeId: string) => `/nodes/${nodeId}`,
     CHOICES: (fromNodeId: string) => `/nodes/${fromNodeId}/choices`,
   },
 
   // Choice Management endpoints
   CHOICES: {
+    BASE: '/choices',
     BY_ID: (choiceId: string) => `/choices/${choiceId}`,
     BY_STORY: (storyId: string) => `/choices/story/${storyId}`,
   },

@@ -19,6 +19,7 @@ import { Button } from './ui/button';
 import { VariablesPanel } from './VariablesPanel';
 import { ItemsPanel } from './ItemsPanel';
 import { NodePreviewModal } from './NodePreviewModal';
+import { StoryNode } from './nodes';
 import type { StoryVariable } from '../services/variablesService';
 import type { StoryItem } from '../services/itemsService';
 
@@ -97,13 +98,12 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
             }
             const rfNode: RFNode = {
               id: node.id,
-              type: 'default',
+              type: 'storyNode',
               data: {
-                label: node.title,
-                type: 'story', // Default to story type for now
-                content: typeof node.content === 'object' && node.content ? node.content.text : node.content,
-                character: typeof node.content === 'object' && node.content ? node.content.character : undefined,
-                background: typeof node.content === 'object' && node.content ? node.content.background : undefined
+                title: node.title,
+                content: typeof node.content === 'object' && node.content ? node.content.text || '' : (node.content || ''),
+                nodeType: (node.nodeType as 'story' | 'choice' | 'condition' | 'ending') || 'story',
+                choiceCount: node.nodeType === 'story' ? 3 : 1,
               },
               position,
             };
@@ -122,7 +122,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
             id: choice.id,
             source: choice.fromNodeId,
             target: choice.toNodeId,
-            label: choice.choiceText,
+            label: choice.text || choice.choiceText || 'Choice',
           }));
           console.log('Setting edges:', rfEdges);
           setEdges(rfEdges);
@@ -144,10 +144,9 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
   const onConnect = useCallback(
     async (params: Connection) => {
       try {
-        const result = await choicesService.createChoice({
-          fromNodeId: params.source!,
+        const result = await choicesService.createChoice(params.source!, {
           toNodeId: params.target!,
-          choiceText: 'New Choice',
+          text: 'New Choice',
         });
 
         if (result.success && result.data) {
@@ -187,10 +186,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
         }
         const newNode: RFNode = {
           id: result.data.id,
-          type: 'default',
+          type: 'storyNode',
           data: {
-            label: result.data.title,
-            type: nodeType
+            title: result.data.title,
+            content: typeof result.data.content === 'string' 
+              ? result.data.content 
+              : result.data.content?.text || 'New node content',
+            nodeType: nodeType,
+            choiceCount: nodeType === 'story' ? 3 : 1, // Story nodes get 3 choice handles, others get 1
           },
           position,
         };
@@ -263,7 +266,9 @@ const StoryFlow: React.FC<StoryFlowProps> = ({ storyId }) => {
     );
   }
 
-  const nodeTypes = {};
+  const nodeTypes = {
+    storyNode: StoryNode,
+  };
 
   return (
     <div className="flex flex-1 relative">

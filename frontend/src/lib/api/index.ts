@@ -81,7 +81,7 @@ export const authApi = {
   },
 
   async getProfile(): Promise<ApiResponse<User>> {
-    return httpClient.get<User>(ENDPOINTS.AUTH.PROFILE);
+    return httpClient.get<User>(ENDPOINTS.USERS.PROFILE);
   },
 
   async changePassword(data: ChangePasswordData): Promise<ApiResponse<void>> {
@@ -89,7 +89,7 @@ export const authApi = {
   },
 
   async updateProfile(data: UpdateProfileData): Promise<ApiResponse<User>> {
-    return httpClient.patch<User>(ENDPOINTS.AUTH.UPDATE_PROFILE, data);
+    return httpClient.put<User>(ENDPOINTS.USERS.UPDATE_PROFILE, data);
   },
 };
 
@@ -216,8 +216,8 @@ export const choiceApi = {
     return httpClient.get<Choice>(ENDPOINTS.CHOICES.BY_ID(id));
   },
 
-  async createChoice(data: CreateChoiceData): Promise<ApiResponse<Choice>> {
-    return httpClient.post<Choice>(ENDPOINTS.CHOICES.BASE, data);
+  async createChoice(fromNodeId: string, data: CreateChoiceData): Promise<ApiResponse<Choice>> {
+    return httpClient.post<Choice>(ENDPOINTS.NODES.CHOICES(fromNodeId), data);
   },
 
   async updateChoice(id: string, data: UpdateChoiceData): Promise<ApiResponse<Choice>> {
